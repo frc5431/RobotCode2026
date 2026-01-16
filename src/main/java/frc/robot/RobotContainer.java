@@ -10,8 +10,6 @@ package frc.robot;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -32,7 +30,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -106,7 +103,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
-            
+
         vision =
             new Vision(
                 drive::addVisionMeasurement,
@@ -190,21 +187,21 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-//     // Auto aim command example; code from AKit template.
-//     @SuppressWarnings("resource")
-//     PIDController aimController = new PIDController(0.2, 0.0, 0.0);
-//     aimController.enableContinuousInput(-Math.PI, Math.PI);
-//     controller
-//         .button(1)
-//         .whileTrue(
-//             Commands.startRun(
-//                 () -> {
-//                   aimController.reset();
-//                 },
-//                 () -> {
-//                   drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
-//                 },
-//                 drive));
+    //     // Auto aim command example; code from AKit template.
+    //     @SuppressWarnings("resource")
+    //     PIDController aimController = new PIDController(0.2, 0.0, 0.0);
+    //     aimController.enableContinuousInput(-Math.PI, Math.PI);
+    //     controller
+    //         .button(1)
+    //         .whileTrue(
+    //             Commands.startRun(
+    //                 () -> {
+    //                   aimController.reset();
+    //                 },
+    //                 () -> {
+    //                   drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
+    //                 },
+    //                 drive));
   }
 
   /**

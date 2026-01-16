@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -27,5 +29,26 @@ public final class Constants {
 
     /** Replaying from a log file. */
     REPLAY
+  }
+
+  public static class ShooterConstants {
+
+    public enum ShooterState {
+      SHOOTING,
+      REVERSE,
+      IDLE
+    }
+
+    public static final boolean attached = true;
+    public static final int id = 50;
+    public static final boolean inverted = false;
+    public static final boolean breakType = false;
+    public static final double gearRatio = 1 / 1;
+
+    public static final Current stallLimit = Units.Amps.of(60);
+    public static final Current supplyLimit = Units.Amps.of(80);
+    public static final double maxForwardOutput = 1;
+    public static final double maxReverseOutput = 0.5;
+
   }
 }
