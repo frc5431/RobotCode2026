@@ -34,7 +34,7 @@ public class Indexer extends CTREMechanism {
             configPIDGains(IndexerConstants.p, IndexerConstants.i, IndexerConstants.d);
             configPeakOutput(IndexerConstants.maxForwardOutput, IndexerConstants.maxReverseOutput);
             configGearRatio(IndexerConstants.gearRatio);
-            configMotorInverted(IntakeConstants.invert);
+            configMotorInverted(IndexerConstants.invert);
         }
     }
 
