@@ -50,7 +50,7 @@ public class Shooter extends CTREMechanism {
     
 
     public Command runShooterCommand(ShooterModes shooterModes) {
-        return new RunCommand(() -> setVelocity(shooterMode.speed), this)
+        return new RunCommand(() -> setVelocity(shooterModes.speed), this)
                 .withName("Shooter.runEnum");
     }
 
