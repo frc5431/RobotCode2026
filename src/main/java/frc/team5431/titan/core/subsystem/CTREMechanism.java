@@ -32,10 +32,12 @@ public abstract class CTREMechanism implements Subsystem {
   public Config config;
 
   /**
-   * Multi-Purpose subsystem class based on 3847 Spectrum's Mechanism class utlizing PID Closed-Loop
+   * Multi-Purpose subsystem class based on 3847 Spectrum's Mechanism class
+   * utlizing PID Closed-Loop
    * and Motion Magic positional or velocity control, WPILib Units, and TorqueFOC
    *
-   * <p>Only use one control method per mechanism, PLEASE!
+   * <p>
+   * Only use one control method per mechanism, PLEASE!
    *
    * @param attached for if the motor is in use
    */
@@ -49,8 +51,7 @@ public abstract class CTREMechanism implements Subsystem {
 
   protected void setConfig(Config config) {
     this.config = config;
-  }
-  ;
+  };
 
   /** Sets the mechanism position of the motor to 0 */
   public void resetPosition() {
@@ -73,13 +74,14 @@ public abstract class CTREMechanism implements Subsystem {
   /**
    * Closed-loop Velocity Motion Magic with torque control (requires Pro)
    *
-   * @param velocity Mesure of Velocity in Terms of Angle; Converted to Rotations/Revolutions Per
-   *     Second
+   * @param velocity Mesure of Velocity in Terms of Angle; Converted to
+   *                 Rotations/Revolutions Per
+   *                 Second
    */
   public void setMMVelocityFOC(AngularVelocity velocity) {
     if (attached) {
-      MotionMagicVelocityTorqueCurrentFOC mm =
-          config.mmVelocityFOC.withVelocity(velocity.in(Units.RevolutionsPerSecond));
+      MotionMagicVelocityTorqueCurrentFOC mm = config.mmVelocityFOC
+          .withVelocity(velocity.in(Units.RevolutionsPerSecond));
       motor.setControl(mm);
     }
   }
@@ -87,12 +89,13 @@ public abstract class CTREMechanism implements Subsystem {
   /**
    * Closed-loop Velocity with torque control (requires Pro)
    *
-   * @param velocity Mesure of Velocity in Terms of Angle; Converted to Rotations Per Second
+   * @param velocity Mesure of Velocity in Terms of Angle; Converted to Rotations
+   *                 Per Second
    */
   public void setVelocityTorqueCurrentFOC(AngularVelocity velocity) {
     if (attached) {
-      VelocityTorqueCurrentFOC output =
-          config.velocityTorqueCurrentFOC.withVelocity(velocity.in(Units.RotationsPerSecond));
+      VelocityTorqueCurrentFOC output = config.velocityTorqueCurrentFOC
+          .withVelocity(velocity.in(Units.RotationsPerSecond));
       motor.setControl(output);
     }
   }
@@ -100,12 +103,12 @@ public abstract class CTREMechanism implements Subsystem {
   /**
    * Closed-loop velocity control with voltage compensation
    *
-   * @param velocity Mesure of Velocity in Terms of Angle; Converted to Rotations Per Second
+   * @param velocity Mesure of Velocity in Terms of Angle; Converted to Rotations
+   *                 Per Second
    */
   public void setVelocity(AngularVelocity velocity) {
     if (attached) {
-      VelocityVoltage output =
-          config.velocityControl.withVelocity(velocity.in(Units.RotationsPerSecond));
+      VelocityVoltage output = config.velocityControl.withVelocity(velocity.in(Units.RotationsPerSecond));
       motor.setControl(output);
     }
   }
@@ -141,8 +144,7 @@ public abstract class CTREMechanism implements Subsystem {
    */
   public void setMMPositionFOC(Angle position) {
     if (attached) {
-      MotionMagicTorqueCurrentFOC mm =
-          config.mmPositionFOC.withPosition(position.in(Units.Rotations));
+      MotionMagicTorqueCurrentFOC mm = config.mmPositionFOC.withPosition(position.in(Units.Rotations));
       motor.setControl(mm);
     }
   }
@@ -175,12 +177,11 @@ public abstract class CTREMechanism implements Subsystem {
    * Closed-loop Position Motion Magic using a slot other than 0
    *
    * @param position rotations
-   * @param slot gains slot
+   * @param slot     gains slot
    */
   public void setMMPosition(Angle position, int slot) {
     if (attached) {
-      MotionMagicVoltage mm =
-          config.mmPositionVoltageSlot.withSlot(slot).withPosition(position.in(Units.Rotations));
+      MotionMagicVoltage mm = config.mmPositionVoltageSlot.withSlot(slot).withPosition(position.in(Units.Rotations));
       motor.setControl(mm);
     }
   }
@@ -232,8 +233,7 @@ public abstract class CTREMechanism implements Subsystem {
     public TalonFXConfiguration talonConfig;
     public double voltageCompSaturation; // 12V by default
 
-    public MotionMagicVelocityTorqueCurrentFOC mmVelocityFOC =
-        new MotionMagicVelocityTorqueCurrentFOC(0);
+    public MotionMagicVelocityTorqueCurrentFOC mmVelocityFOC = new MotionMagicVelocityTorqueCurrentFOC(0);
     public MotionMagicTorqueCurrentFOC mmPositionFOC = new MotionMagicTorqueCurrentFOC(0);
     public MotionMagicVelocityVoltage mmVelocityVoltage = new MotionMagicVelocityVoltage(0);
     public MotionMagicVoltage mmPositionVoltage = new MotionMagicVoltage(0);
@@ -243,8 +243,8 @@ public abstract class CTREMechanism implements Subsystem {
     public PositionVoltage positionVoltage = new PositionVoltage(0);
     public PositionTorqueCurrentFOC positionFOC = new PositionTorqueCurrentFOC(0);
     public VelocityTorqueCurrentFOC velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0);
-    public DutyCycleOut percentOutput =
-        new DutyCycleOut(0); // Percent Output control using percentage of supply voltage //Should
+    public DutyCycleOut percentOutput = new DutyCycleOut(0); // Percent Output control using percentage of supply
+                                                             // voltage //Should
     // normally use VoltageOut
 
     public Config(String title, int id, String canbus) {
@@ -270,12 +270,23 @@ public abstract class CTREMechanism implements Subsystem {
       this.voltageCompSaturation = voltageCompSaturation.in(Units.Volts);
     }
 
+    public void configClockwise_Positive() {
+      talonConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    }
+
     public void configCounterClockwise_Positive() {
       talonConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     }
 
-    public void configClockwise_Positive() {
-      talonConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    /**
+     * @param isInverted Inverts the motor if needed
+     */
+    public void configMotorInverted(boolean isInverted) {
+      if (isInverted) {
+        talonConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      } else {
+        talonConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+      }
     }
 
     public void configSupplyCurrentLimit(Current supplyLimit, boolean enabled) {
@@ -323,8 +334,7 @@ public abstract class CTREMechanism implements Subsystem {
     // Configure optional motion magic velocity parameters
     public void configMotionMagicVelocity(double acceleration, double feedforward) {
       mmVelocityFOC = mmVelocityFOC.withAcceleration(acceleration).withFeedForward(feedforward);
-      mmVelocityVoltage =
-          mmVelocityVoltage.withAcceleration(acceleration).withFeedForward(feedforward);
+      mmVelocityVoltage = mmVelocityVoltage.withAcceleration(acceleration).withFeedForward(feedforward);
     }
 
     // Configure optional motion magic position parameters
@@ -335,13 +345,12 @@ public abstract class CTREMechanism implements Subsystem {
 
     /**
      * @param cruiseVelocity defines the passive running velocity of the motor, rps
-     * @param acceleration acceleration in rps
-     * @param jerk will slow down curve, rps
+     * @param acceleration   acceleration in rps
+     * @param jerk           will slow down curve, rps
      */
     public void configMotionMagic(
         AngularVelocity cruiseVelocity, double acceleration, double jerk) {
-      talonConfig.MotionMagic.MotionMagicCruiseVelocity =
-          cruiseVelocity.in(Units.RotationsPerSecond);
+      talonConfig.MotionMagic.MotionMagicCruiseVelocity = cruiseVelocity.in(Units.RotationsPerSecond);
       talonConfig.MotionMagic.MotionMagicAcceleration = acceleration;
       talonConfig.MotionMagic.MotionMagicJerk = jerk;
     }
@@ -422,8 +431,7 @@ public abstract class CTREMechanism implements Subsystem {
     }
 
     public void configGravityType(int slot, boolean isArm) {
-      GravityTypeValue gravityType =
-          isArm ? GravityTypeValue.Arm_Cosine : GravityTypeValue.Elevator_Static;
+      GravityTypeValue gravityType = isArm ? GravityTypeValue.Arm_Cosine : GravityTypeValue.Elevator_Static;
       if (slot == 0) {
         talonConfig.Slot0.GravityType = gravityType;
       } else if (slot == 1) {

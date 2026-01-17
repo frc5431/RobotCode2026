@@ -28,6 +28,7 @@ public class Intake extends CTREMechanism {
           IntakeConstants.maxReverseRotation.in(Rotation), IntakeConstants.useRMaxRotation);
       configForwardSoftLimit(
           IntakeConstants.maxFowardRotation.in(Rotation), IntakeConstants.useFMaxRotation);
+      configMotorInverted(IntakeConstants.invert);
     }
   }
 
