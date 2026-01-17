@@ -49,10 +49,36 @@ public final class Constants {
     public static final boolean breakType = false;
     public static final double gearRatio = 1 / 1;
 
+    public static final double p = 1;
+    public static final double i = 0;
+    public static final double d = 0;
+    // public static final double maxIAccum = 2 * i; //CTRE Doesn't have one? Might Add later
+
     public static final Current stallLimit = Units.Amps.of(60);
     public static final Current supplyLimit = Units.Amps.of(80);
     public static final double maxForwardOutput = 1;
     public static final double maxReverseOutput = 0.5;
+
+    public static final AngularVelocity shooterSpeed = Units.RPM.of(4000);
+    public static final AngularVelocity reverseSpeed = Units.RPM.of(-1000); 
+    public static final AngularVelocity idleSpeed = Units.RPM.of(0);
+
+    public enum ShooterModes {
+            SHOOTER(shooterSpeed, 1.0),
+            REVERSE(reverseSpeed, -0.5),
+            IDLE(idleSpeed, 0.0);
+
+            public AngularVelocity speed;
+            public double output;
+
+            ShooterModes(AngularVelocity speed, double output) {
+                this.speed = speed;
+                this.output = output;
+            }
+
+        }
+
+
   }
 
   public static final class IntakeConstants {
