@@ -7,11 +7,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Current;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -53,7 +53,6 @@ public final class Constants {
     public static final Current supplyLimit = Units.Amps.of(80);
     public static final double maxForwardOutput = 1;
     public static final double maxReverseOutput = 0.5;
-
   }
 
   public static final class IntakeConstants {
