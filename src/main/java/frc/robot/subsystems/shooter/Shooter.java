@@ -1,7 +1,6 @@
 package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
@@ -10,7 +9,7 @@ public class Shooter extends CTREMechanism {
 
   public static class ShooterConfig extends Config {
     public ShooterConfig() {
-      super("Shooter", ShooterConstants.id, Constants.canbus);
+      super("Shooter", ShooterConstants.id, Constants.CANBUS);
 
       configNeutralBrakeMode(ShooterConstants.breakType);
       configStatorCurrentLimit(ShooterConstants.stallLimit, true);
@@ -20,16 +19,7 @@ public class Shooter extends CTREMechanism {
     }
   }
 
-  public Shooter(TalonFX motor, boolean attached) {
-    super(motor, attached);
-
-    this.setConfig();
-  }
-
-  @Override
-  public Config setConfig() {
-    // configure motors/sensors here
-    this.config = new ShooterConfig();
-    return this.config;
+  public Shooter(TalonFX motor, boolean attached, ShooterConfig config) {
+    super(motor, attached, config);
   }
 }

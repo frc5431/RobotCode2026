@@ -1,5 +1,6 @@
 package frc.team5431.titan.core.subsystem;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -39,18 +40,11 @@ public abstract class CTREMechanism implements Subsystem {
    *
    * @param attached for if the motor is in use
    */
-  public CTREMechanism(TalonFX motor, boolean attached) {
+  public CTREMechanism(TalonFX motor, boolean attached, Config config) {
     this.attached = attached;
     this.motor = motor;
-    this.config = setConfig();
-  }
-
-  protected abstract Config setConfig();
-
-  protected void setConfig(Config config) {
     this.config = config;
   }
-  ;
 
   /** Sets the mechanism position of the motor to 0 */
   public void resetPosition() {
@@ -247,7 +241,7 @@ public abstract class CTREMechanism implements Subsystem {
         new DutyCycleOut(0); // Percent Output control using percentage of supply voltage //Should
     // normally use VoltageOut
 
-    public Config(String title, int id, String canbus) {
+    public Config(String title, int id, CANBus canbus) {
       this.title = title;
       this.voltageCompSaturation = 12.0;
       this.id = id;

@@ -42,7 +42,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
-
+  //   private final Intake intake;
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
 
@@ -70,6 +70,9 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOLimelight(camera0Name, drive::getRotation),
                 new VisionIOLimelight(camera1Name, drive::getRotation));
+        // intake =
+        //     new Intake(
+        //         new ModuleIOTalonFX(IntakeConstants.id), true)
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -187,21 +190,21 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    //     // Auto aim command example; code from AKit template.
-    //     @SuppressWarnings("resource")
-    //     PIDController aimController = new PIDController(0.2, 0.0, 0.0);
-    //     aimController.enableContinuousInput(-Math.PI, Math.PI);
-    //     controller
-    //         .button(1)
-    //         .whileTrue(
-    //             Commands.startRun(
-    //                 () -> {
-    //                   aimController.reset();
-    //                 },
-    //                 () -> {
-    //                   drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
-    //                 },
-    //                 drive));
+    // // Auto aim command example; code from AKit template.
+    // @SuppressWarnings("resource")
+    // PIDController aimController = new PIDController(0.2, 0.0, 0.0);
+    // aimController.enableContinuousInput(-Math.PI, Math.PI);
+    // controller
+    // .button(1)
+    // .whileTrue(
+    // Commands.startRun(
+    // () -> {
+    // aimController.reset();
+    // },
+    // () -> {
+    // drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
+    // },
+    // drive));
   }
 
   /**
