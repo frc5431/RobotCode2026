@@ -35,8 +35,8 @@ public class Shooter extends CTREMechanism {
         }
     }
 
-    public Shooter(TalonFX motor, boolean attached) {
-        super(motor, attached);
+    public Shooter(TalonFX motor, boolean attached, ShooterConfig config) {
+        super(motor, attached, config);
         this.attached = attached;
         this.motor = motor;
         this.shooterMode = ShooterModes.IDLE;
@@ -66,12 +66,5 @@ public class Shooter extends CTREMechanism {
 
     public Command runShooterCommand(ShooterModes shooterModes) {
         return new RunCommand(() -> setVelocity(shooterModes.speed), this).withName("Shooter.runEnum");
-    }
-
-    @Override
-    public Config setConfig() {
-        // configure motors/sensors here
-        this.config = new ShooterConfig();
-        return this.config;
     }
 }

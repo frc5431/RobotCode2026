@@ -9,7 +9,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IndexerConstants.IndexerModes;
 import frc.robot.Constants.IndexerConstants.IndexerState;
-import frc.robot.Constants.IntakeConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +23,7 @@ public class Indexer extends CTREMechanism {
 
     public static class IndexerConfig extends Config {
         public IndexerConfig() {
-            super("Indexer", IndexerConstants.id, Constants.canbus);
+            super("Indexer", IndexerConstants.id, Constants.CANBUS);
 
             configNeutralBrakeMode(IndexerConstants.breakType);
             configStatorCurrentLimit(IndexerConstants.stallLimit, true);
@@ -38,8 +37,8 @@ public class Indexer extends CTREMechanism {
         }
     }
 
-    public Indexer(TalonFX motor, boolean attached) {
-        super(motor, attached);
+    public Indexer(TalonFX motor, boolean attached, IndexerConfig config) {
+        super(motor, attached, config);
         this.attached = attached;
         this.motor = motor;
         this.indexerModes = IndexerModes.IDLE;
@@ -69,12 +68,5 @@ public class Indexer extends CTREMechanism {
 
     public Command runIndexerCommand(IndexerModes indexerModes) {
         return new RunCommand(() -> setPercentOutput(indexerModes.output), this).withName("Indexer.runEnum");
-    }
-
-    @Override
-    public Config setConfig() {
-        // configure motors/sensors here
-        this.config = new IndexerConfig();
-        return this.config;
     }
 }
