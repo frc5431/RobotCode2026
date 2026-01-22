@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.IntakeRollerIOConstants.RollerIOModes;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -26,10 +26,16 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.intake.roller.Roller;
+import frc.robot.subsystems.intake.roller.RollerIO;
+import frc.robot.subsystems.intake.roller.RollerIOSim;
+import frc.robot.subsystems.intake.roller.RollerIOSparkFlex;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.team5431.titan.core.joysticks.CommandXboxController;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -42,9 +48,11 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final Roller roller;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController driver = new CommandXboxController(0);
+  private final CommandXboxController operator = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -70,6 +78,10 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOLimelight(camera0Name, drive::getRotation),
                 new VisionIOLimelight(camera1Name, drive::getRotation));
+        roller =
+            new Roller(
+                new RollerIOSparkFlex());
+              
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -109,6 +121,10 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
                 new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
+
+        roller = 
+            new Roller(
+                new RollerIOSim() {});
         break;
 
       default:
@@ -122,7 +138,10 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        roller = new Roller(new RollerIO() {});
+
         break;
+
     }
 
     // Set up auto routines
@@ -144,8 +163,8 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    // Configure the button bindings
-    configureButtonBindings();
+    configureDriverBindings();
+    configureOperatorBindings();
   }
 
   /**
@@ -154,30 +173,30 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
+  private void configureDriverBindings() {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -driver.getLeftY(),
+            () -> -driver.getLeftX(),
+            () -> -driver.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    driver
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -driver.getLeftY(),
+                () -> -driver.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
-    controller
+    // Reset gyro to 0° when B button is pressed
+    driver
         .b()
         .onTrue(
             Commands.runOnce(
@@ -187,23 +206,26 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    //     // Auto aim command example; code from AKit template.
-    //     @SuppressWarnings("resource")
-    //     PIDController aimController = new PIDController(0.2, 0.0, 0.0);
-    //     aimController.enableContinuousInput(-Math.PI, Math.PI);
-    //     controller
-    //         .button(1)
-    //         .whileTrue(
-    //             Commands.startRun(
-    //                 () -> {
-    //                   aimController.reset();
-    //                 },
-    //                 () -> {
-    //                   drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
-    //                 },
-    //                 drive));
+    // // Auto aim command example; code from AKit template.
+    // @SuppressWarnings("resource")
+    // PIDController aimController = new PIDController(0.2, 0.0, 0.0);
+    // aimController.enableContinuousInput(-Math.PI, Math.PI);
+    // controller
+    // .button(1)
+    // .whileTrue(
+    // Commands.startRun(
+    // () -> {
+    // aimController.reset();
+    // },
+    // () -> {
+    // drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
+    // },
+    // drive));
   }
 
+  private void configureOperatorBindings() {
+    operator.a().onTrue(roller.runIntakeCommand(RollerIOModes.INTAKE, true));
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
