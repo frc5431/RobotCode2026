@@ -9,6 +9,8 @@ package frc.robot;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.revrobotics.spark.FeedbackSensor;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -58,7 +60,7 @@ public final class Constants {
     public static final double maxReverseOutput = 0.5;
   }
 
-  public static final class RollerIOConstants {
+  public static final class IntakeRollerIOConstants {
     public static final boolean attached = true;
     public static final boolean useRpm = false;
 
@@ -78,8 +80,10 @@ public final class Constants {
     public static final boolean gravityType = false;
     public static final boolean breakType = false;
 
-    public static final FeedbackSensorSourceValue feedbackSensor =
+    public static final FeedbackSensorSourceValue feedbackSensorCTRE =
         FeedbackSensorSourceValue.FusedCANcoder;
+    public static final FeedbackSensor feedbackSensorREV = 
+        FeedbackSensor.kPrimaryEncoder;
 
     public static final double maxForwardOutput = 0.5;
     public static final double maxReverseOutput = -0.5;
@@ -100,15 +104,16 @@ public final class Constants {
 
     public enum RollerIOModes {
       IDLE(idleSpeed, 0.0),
-      INTAKE(rollerIOSpeed, 0.7),
-      OUTTAKE(outtakeSpeed, -0.4);
+      INTAKE(rollerIOSpeed, 8.4),
+      OUTTAKE(outtakeSpeed, -4.8);
 
       public AngularVelocity speed;
-      public double output;
+      // TODO: Make sure voltage is just output * 12 (for 12V)
+      public double voltage;
 
-      RollerIOModes(AngularVelocity speed, double output) {
+      RollerIOModes(AngularVelocity speed, double voltage) {
         this.speed = speed;
-        this.output = output;
+        this.voltage = voltage;
       }
     }
   }
