@@ -239,7 +239,7 @@ public abstract class CTREMechanism implements Subsystem {
     public PositionTorqueCurrentFOC positionFOC = new PositionTorqueCurrentFOC(0);
     public VelocityTorqueCurrentFOC velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0);
     public DutyCycleOut percentOutput = new DutyCycleOut(0); // Percent Output control using percentage of supply
-                                                             // voltage //Should
+    // voltage //Should
     // normally use VoltageOut
 
     public Config(String title, int id, CANBus canbus) {

@@ -9,15 +9,17 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class RollerIOSim implements RollerIO {
     private DCMotorSim rollerMotorSim;
-    private PIDController rollerController;
+    private PIDController rollerController = new PIDController(ROLLER_KP, 0, ROLLER_KD);
     private boolean rollerClosedLoop = false;
     private double appliedVoltage = 0.0;
-    private double driveFFVolts = 0.0;
+    private double rollerFFVolts = 0.0;
 
     // From ModuleIOSim no clue tbh
-    private static final double DRIVE_KV_ROT = 0.91035; // Same units as TunerConstants: (volt * secs) / rotation
-    private static final double DRIVE_KV = 1.0 / Units.rotationsToRadians(1.0 / DRIVE_KV_ROT);
-    private static final double DRIVE_KS = 0.0;
+    private static final double ROLLER_KV_ROT = 0.91035; // Same units as TunerConstants: (volt * secs) / rotation
+    private static final double ROLLER_KV = 1.0 / Units.rotationsToRadians(1.0 / ROLLER_KV_ROT);
+    private static final double ROLLER_KS = 0.0;
+    private static final double ROLLER_KP = 1.0;
+    private static final double ROLLER_KD = 0.0;
 
 
     public RollerIOSim() {
@@ -31,7 +33,7 @@ public class RollerIOSim implements RollerIO {
     @Override
     public void updateInputs(RollerIOInputs inputs) {
         if (rollerClosedLoop) {
-            appliedVoltage = driveFFVolts + rollerController.calculate(rollerMotorSim.getAngularVelocityRadPerSec());
+            appliedVoltage = rollerFFVolts + rollerController.calculate(rollerMotorSim.getAngularVelocityRadPerSec());
         } else {
             rollerController.reset();
         }
@@ -42,12 +44,13 @@ public class RollerIOSim implements RollerIO {
         inputs.rollerConnected = true;
         inputs.RPM = rollerMotorSim.getAngularVelocityRadPerSec();
         inputs.appliedVoltage = appliedVoltage;
+        inputs.currentAmps = Math.abs(rollerMotorSim.getCurrentDrawAmps());
     }
 
     @Override
     public void setRPM(double RPM) {
         rollerClosedLoop = true;
-        driveFFVolts = DRIVE_KS * Math.signum(RPM) + DRIVE_KV * RPM;
+        rollerFFVolts = ROLLER_KS * Math.signum(RPM) + ROLLER_KV * RPM;
         rollerController.setSetpoint(RPM);
     }
     

@@ -8,52 +8,54 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
-import frc.robot.Constants.IntakeRollerIOConstants;
+import frc.robot.Constants.IntakeRollerConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class RollerIOTalonFX implements RollerIO {
-  private final TalonFX talon = new TalonFX(IntakeRollerIOConstants.id, Constants.CANBUS);
+  private final TalonFX talon = new TalonFX(IntakeRollerConstants.id, Constants.CANBUS);
 
   public static class RollerTalonFXConfig extends CTREMechanism.Config {
     public RollerTalonFXConfig() {
-      super("RollerTalonFX", IntakeRollerIOConstants.id, Constants.CANBUS);
-      configPIDGains(IntakeRollerIOConstants.p, IntakeRollerIOConstants.i, IntakeRollerIOConstants.d);
-      configNeutralBrakeMode(IntakeRollerIOConstants.breakType);
-      configFeedbackSensorSource(IntakeRollerIOConstants.feedbackSensorCTRE);
-      configGearRatio(IntakeRollerIOConstants.gearRatio);
-      configGravityType(IntakeRollerIOConstants.gravityType);
-      configSupplyCurrentLimit(IntakeRollerIOConstants.supplyLimit, IntakeRollerIOConstants.useSupplyLimit);
-      configStatorCurrentLimit(IntakeRollerIOConstants.stallLimit, IntakeRollerIOConstants.useStallLimit);
+      super("RollerTalonFX", IntakeRollerConstants.id, Constants.CANBUS);
+      configPIDGains(IntakeRollerConstants.p, IntakeRollerConstants.i, IntakeRollerConstants.d);
+      configNeutralBrakeMode(IntakeRollerConstants.breakType);
+      configFeedbackSensorSource(IntakeRollerConstants.feedbackSensorCTRE);
+      configGearRatio(IntakeRollerConstants.gearRatio);
+      configGravityType(IntakeRollerConstants.gravityType);
+      configSupplyCurrentLimit(IntakeRollerConstants.supplyLimit, IntakeRollerConstants.useSupplyLimit);
+      configStatorCurrentLimit(IntakeRollerConstants.stallLimit, IntakeRollerConstants.useStallLimit);
       configReverseSoftLimit(
-          IntakeRollerIOConstants.maxReverseRotation.in(Rotation), IntakeRollerIOConstants.useRMaxRotation);
+          IntakeRollerConstants.maxReverseRotation.in(Rotation), IntakeRollerConstants.useRMaxRotation);
       configForwardSoftLimit(
-          IntakeRollerIOConstants.maxFowardRotation.in(Rotation), IntakeRollerIOConstants.useFMaxRotation);
+          IntakeRollerConstants.maxFowardRotation.in(Rotation), IntakeRollerConstants.useFMaxRotation);
     }
   }
 
   private StatusSignal<Voltage> appliedVoltage;
   private StatusSignal<AngularVelocity> rollerRPM;
-  private StatusSignal<Double> rollerOutput;
+  private StatusSignal<Current> currentAmps;
 
   private RollerTalonFXConfig config;
 
   public RollerIOTalonFX(TalonFX talon) {
     appliedVoltage = talon.getMotorVoltage();
     rollerRPM = talon.getVelocity();
-    rollerOutput = talon.getClosedLoopOutput();
+    currentAmps = talon.getStatorCurrent();
     config.applyTalonConfig(talon);
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, rollerOutput, rollerRPM);
+    BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, rollerRPM);
   }
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
-    BaseStatusSignal.refreshAll(appliedVoltage, rollerOutput, rollerRPM);
+    BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, rollerRPM);
 
     inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
     inputs.RPM = rollerRPM.getValue().in(RPM);
+    inputs.currentAmps = currentAmps.getValueAsDouble();
   }
 
   @Override

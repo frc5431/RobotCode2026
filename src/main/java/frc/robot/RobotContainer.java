@@ -17,7 +17,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.IntakeRollerIOConstants.RollerIOModes;
+import frc.robot.Constants.IntakePivotConstants.IntakePivotPositions;
+import frc.robot.Constants.IntakeRollerConstants.IntakeRollerModes;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -26,6 +27,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.intake.pivot.Pivot;
+import frc.robot.subsystems.intake.pivot.PivotIO;
+import frc.robot.subsystems.intake.pivot.PivotIOSim;
+import frc.robot.subsystems.intake.pivot.PivotIOSparkFlex;
 import frc.robot.subsystems.intake.roller.Roller;
 import frc.robot.subsystems.intake.roller.RollerIO;
 import frc.robot.subsystems.intake.roller.RollerIOSim;
@@ -49,6 +54,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final Roller roller;
+  private final Pivot pivot;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -78,10 +84,13 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOLimelight(camera0Name, drive::getRotation),
                 new VisionIOLimelight(camera1Name, drive::getRotation));
+
         roller =
             new Roller(
                 new RollerIOSparkFlex());
-              
+        
+        pivot =
+            new Pivot(new PivotIOSparkFlex());
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -125,8 +134,10 @@ public class RobotContainer {
         roller = 
             new Roller(
                 new RollerIOSim() {});
-        break;
 
+        pivot = 
+            new Pivot(new PivotIOSim() {});
+        break;
       default:
         // Replayed robot, disable IO implementations
         drive =
@@ -139,6 +150,7 @@ public class RobotContainer {
 
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         roller = new Roller(new RollerIO() {});
+        pivot = new Pivot(new PivotIO() {});
 
         break;
 
@@ -224,7 +236,9 @@ public class RobotContainer {
   }
 
   private void configureOperatorBindings() {
-    operator.a().onTrue(roller.runIntakeCommand(RollerIOModes.INTAKE, true));
+    operator.a().onTrue(roller.runIntakeCommand(IntakeRollerModes.INTAKE, true));
+    operator.b().onTrue(pivot.runPivotCommand(IntakePivotPositions.FEED));
+    operator.y().onTrue(pivot.runPivotCommand(IntakePivotPositions.STOW));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
