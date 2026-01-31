@@ -224,7 +224,6 @@ public abstract class CTREMechanism implements Subsystem {
 
   public static class Config {
     public String title;
-    public int id;
     public TalonFXConfiguration talonConfig;
     public double voltageCompSaturation; // 12V by default
 
@@ -242,10 +241,9 @@ public abstract class CTREMechanism implements Subsystem {
     // voltage //Should
     // normally use VoltageOut
 
-    public Config(String title, int id, CANBus canbus) {
+    public Config(String title, CANBus canbus) {
       this.title = title;
       this.voltageCompSaturation = 12.0;
-      this.id = id;
       talonConfig = new TalonFXConfiguration();
 
       /* Put default config settings for all mechanisms here */
@@ -284,14 +282,14 @@ public abstract class CTREMechanism implements Subsystem {
       }
     }
 
-    public void configSupplyCurrentLimit(Current supplyLimit, boolean enabled) {
+    public void configSupplyCurrentLimit(Current supplyLimit) {
       talonConfig.CurrentLimits.SupplyCurrentLimit = supplyLimit.in(Units.Amps);
-      talonConfig.CurrentLimits.SupplyCurrentLimitEnable = enabled;
+      talonConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     }
 
-    public void configStatorCurrentLimit(Current statorLimit, boolean enabled) {
+    public void configStatorCurrentLimit(Current statorLimit) {
       talonConfig.CurrentLimits.StatorCurrentLimit = statorLimit.in(Units.Amps);
-      talonConfig.CurrentLimits.StatorCurrentLimitEnable = enabled;
+      talonConfig.CurrentLimits.StatorCurrentLimitEnable = true;
     }
 
     public void configForwardTorqueCurrentLimit(Current currentLimit) {

@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class PivotIOSim implements PivotIO {
     private DCMotorSim pivotMotorSim;
-    private PIDController pivotContpivot = new PIDController(PIVOT_KP, 0, PIVOT_KD);
     private boolean pivotClosedLoop = false;
     private double appliedVoltage = 0.0;
     private double pivotFFVolts = 0.0;
@@ -21,21 +20,22 @@ public class PivotIOSim implements PivotIO {
     private static final double PIVOT_KP = 1.0;
     private static final double PIVOT_KD = 0.0;
 
+    private PIDController pivotController = new PIDController(PIVOT_KP, 0, PIVOT_KD);
 
     public PivotIOSim() {
         this.pivotMotorSim = new DCMotorSim(
                 LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), .0004, 1.0), DCMotor.getKrakenX60(1));
         
-        // Enable wrapping for turn PID --- TODO: NOT SURE WHAT THIS IS ASK
-        pivotContpivot.enableContinuousInput(-Math.PI, Math.PI);
+                // pivotMotorSim.set
+        pivotController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
     public void updateInputs(PivotIOInputs inputs) {
         if (pivotClosedLoop) {
-            appliedVoltage = pivotFFVolts + pivotContpivot.calculate(pivotMotorSim.getAngularVelocityRadPerSec());
+            appliedVoltage = pivotFFVolts + pivotController.calculate(pivotMotorSim.getAngularVelocityRadPerSec());
         } else {
-            pivotContpivot.reset();
+            pivotController.reset();
         }
 
         pivotMotorSim.setInputVoltage(MathUtil.clamp(appliedVoltage, -12.0, 12.0));
@@ -48,9 +48,9 @@ public class PivotIOSim implements PivotIO {
     }
 
     @Override
-    // TODO
     public void setPosition(double positionAngle) {
-      
+      pivotClosedLoop = true;
+      pivotController.setSetpoint(positionAngle);
     }
     
     public void setAppliedVoltage(double appliedVoltage) {

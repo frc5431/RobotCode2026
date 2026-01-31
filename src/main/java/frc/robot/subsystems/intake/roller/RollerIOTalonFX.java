@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
-import frc.robot.Constants.IntakeRollerConstants;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class RollerIOTalonFX implements RollerIO {
@@ -19,14 +19,13 @@ public class RollerIOTalonFX implements RollerIO {
 
   public static class RollerTalonFXConfig extends CTREMechanism.Config {
     public RollerTalonFXConfig() {
-      super("RollerTalonFX", IntakeRollerConstants.id, Constants.CANBUS);
+      super("RollerTalonFX",Constants.CANBUS);
       configPIDGains(IntakeRollerConstants.p, IntakeRollerConstants.i, IntakeRollerConstants.d);
       configNeutralBrakeMode(IntakeRollerConstants.breakType);
       configFeedbackSensorSource(IntakeRollerConstants.feedbackSensorCTRE);
-      configGearRatio(IntakeRollerConstants.gearRatio);
-      configGravityType(IntakeRollerConstants.gravityType);
-      configSupplyCurrentLimit(IntakeRollerConstants.supplyLimit, IntakeRollerConstants.useSupplyLimit);
-      configStatorCurrentLimit(IntakeRollerConstants.stallLimit, IntakeRollerConstants.useStallLimit);
+      // configGearRatio(IntakeRollerConstants.gearRatio);
+      // configGravityType(IntakeRollerConstants.gravityType);
+      configSupplyCurrentLimit(IntakeRollerConstants.supplyLimit);
       configReverseSoftLimit(
           IntakeRollerConstants.maxReverseRotation.in(Rotation), IntakeRollerConstants.useRMaxRotation);
       configForwardSoftLimit(
@@ -38,7 +37,7 @@ public class RollerIOTalonFX implements RollerIO {
   private StatusSignal<AngularVelocity> rollerRPM;
   private StatusSignal<Current> currentAmps;
 
-  private RollerTalonFXConfig config;
+  private RollerTalonFXConfig config = new RollerTalonFXConfig();
 
   public RollerIOTalonFX(TalonFX talon) {
     appliedVoltage = talon.getMotorVoltage();
@@ -61,11 +60,5 @@ public class RollerIOTalonFX implements RollerIO {
   @Override
   public void setRollerVoltage(double voltage) {
     talon.setVoltage(voltage);
-  }
-
-  @Override
-  public void setRPM(double rpm) {
-    VelocityVoltage output = config.velocityControl.withVelocity(Units.RPM.of(rpm));
-    talon.setControl(output);
   }
 }

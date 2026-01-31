@@ -9,7 +9,7 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkFlex;
 
-import frc.robot.Constants.IntakeRollerConstants;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 
 public class RollerIOSparkFlex implements RollerIO {

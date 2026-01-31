@@ -9,7 +9,7 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkFlex;
 
-import frc.robot.Constants.IntakePivotConstants;
+import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 
 public class PivotIOSparkFlex implements PivotIO {
@@ -21,8 +21,8 @@ public class PivotIOSparkFlex implements PivotIO {
         super("PivotSparkFlex", IntakePivotConstants.id);
         configPIDGains(IntakePivotConstants.p, IntakePivotConstants.i, IntakePivotConstants.d);
         configFeedbackSensorSource(IntakePivotConstants.feedbackSensorREV);
-        // configGear(PivotConstants.gearRat);
-        // configGravity(PivotConstants.gravityType);
+        // configGear(IntakePivotConstants.gearRatio);
+        // configGravity(IntakePivotConstants.gravityType);
         configSmartCurrentLimit(IntakePivotConstants.stallLimit, IntakePivotConstants.supplyLimit);
         configSmartStallCurrentLimit(IntakePivotConstants.stallLimit);
         configReverseSoftLimit(

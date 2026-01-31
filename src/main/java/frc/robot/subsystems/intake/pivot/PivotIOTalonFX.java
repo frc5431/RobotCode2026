@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.Voltage;
 import static edu.wpi.first.units.Units.*;
 
 import frc.robot.Constants;
-import frc.robot.Constants.IntakePivotConstants;
+import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class PivotIOTalonFX implements PivotIO {
@@ -20,14 +20,13 @@ public class PivotIOTalonFX implements PivotIO {
 
   public static class PivotTalonFXConfig extends CTREMechanism.Config {
     public PivotTalonFXConfig() {
-      super("PivotTalonFX", IntakePivotConstants.id, Constants.CANBUS);
+      super("PivotTalonFX", Constants.CANBUS);
       configPIDGains(IntakePivotConstants.p, IntakePivotConstants.i, IntakePivotConstants.d);
       configNeutralBrakeMode(IntakePivotConstants.breakType);
       configFeedbackSensorSource(IntakePivotConstants.feedbackSensorCTRE);
       configGearRatio(IntakePivotConstants.gearRatio);
       configGravityType(IntakePivotConstants.gravityType);
-      configSupplyCurrentLimit(IntakePivotConstants.supplyLimit, IntakePivotConstants.useSupplyLimit);
-      configStatorCurrentLimit(IntakePivotConstants.stallLimit, IntakePivotConstants.useStallLimit);
+      configSupplyCurrentLimit(IntakePivotConstants.supplyLimit);
       configReverseSoftLimit(
           IntakePivotConstants.maxReverseRotation.in(Rotation), IntakePivotConstants.useRMaxRotation);
       configForwardSoftLimit(
@@ -40,7 +39,7 @@ public class PivotIOTalonFX implements PivotIO {
   private StatusSignal<Angle> pivotPosition;
   private StatusSignal<Current> currentAmps;
 
-  private PivotTalonFXConfig config;
+  private PivotTalonFXConfig config = new PivotTalonFXConfig();
 
   public PivotIOTalonFX(TalonFX talon) {
     appliedVoltage = talon.getMotorVoltage();
