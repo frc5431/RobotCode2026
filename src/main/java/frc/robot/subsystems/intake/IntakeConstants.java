@@ -12,9 +12,9 @@ import edu.wpi.first.units.measure.Voltage;
 public  class IntakeConstants {
   
   public enum IntakeMode {
-    STOW(Units.Volts.of(0.0), Units.Rotation.of(0.0)),
-    INTAKE(Units.Volts.of(8.4), Units.Rotation.of(1.5)),
-    OUTTAKE(Units.Volts.of(-4.8), Units.Rotation.of(-1.5));
+    STOW(Units.Volts.of(0.0), Units.Degrees.of(0.0)),
+    INTAKE(Units.Volts.of(8.4), Units.Degrees.of(0)),
+    OUTTAKE(Units.Volts.of(-4.8), Units.Degrees.of(0));
 
     public Voltage voltage;
     public Angle position;

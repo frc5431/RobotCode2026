@@ -41,7 +41,7 @@ public class PivotIOTalonFX implements PivotIO {
 
   private PivotTalonFXConfig config = new PivotTalonFXConfig();
 
-  public PivotIOTalonFX(TalonFX talon) {
+  public PivotIOTalonFX() {
     appliedVoltage = talon.getMotorVoltage();
     pivotPosition = talon.getPosition();
     currentAmps = talon.getStatorCurrent();
@@ -55,7 +55,7 @@ public class PivotIOTalonFX implements PivotIO {
     BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, pivotPosition);
 
     inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
-    inputs.position = pivotPosition.getValue().in(Rotation);
+    inputs.positionAngle = pivotPosition.getValue().in(Rotation);
     inputs.currentAmps = currentAmps.getValueAsDouble();
   }
 

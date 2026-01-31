@@ -53,6 +53,8 @@ public class ShooterConstants {
     // public static final double maxIAccum = 2 * i; //CTRE Doesn't have one? Might
     // Add later
 
+    public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.FusedCANcoder;
+    
     public static final Current stallLimit = Units.Amps.of(60);
     public static final Current supplyLimit = Units.Amps.of(80);
     public static final double maxForwardOutput = 1;

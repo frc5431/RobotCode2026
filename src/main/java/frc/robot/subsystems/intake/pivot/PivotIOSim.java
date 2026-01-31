@@ -42,7 +42,7 @@ public class PivotIOSim implements PivotIO {
         pivotMotorSim.update(0.02);
 
         inputs.pivotConnected = true;
-        inputs.position = pivotMotorSim.getAngularPositionRad();
+        inputs.positionAngle = pivotMotorSim.getAngularPositionRad();
         inputs.appliedVoltage = appliedVoltage;
         inputs.currentAmps = Math.abs(pivotMotorSim.getCurrentDrawAmps());
     }

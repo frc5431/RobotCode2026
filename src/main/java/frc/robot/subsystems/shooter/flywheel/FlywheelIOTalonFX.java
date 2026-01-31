@@ -4,8 +4,10 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -16,8 +18,8 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
-  private final TalonFX followerFX  = new TalonFX(ShooterFlywheelConstants.followerId, Constants.CANBUS);
-  private final TalonFX LeaderFX = new TalonFX(ShooterFlywheelConstants.leaderId, Constants.CANBUS);
+  private final TalonFX follower  = new TalonFX(ShooterFlywheelConstants.followerId, Constants.CANBUS);
+  private final TalonFX leader = new TalonFX(ShooterFlywheelConstants.leaderId, Constants.CANBUS);
 
   public static class FlywheelTalonFXConfig extends CTREMechanism.Config {
     public FlywheelTalonFXConfig() {
@@ -31,33 +33,50 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     }
   }
 
-  private StatusSignal<Voltage> appliedVoltage;
-  private StatusSignal<AngularVelocity> rollerRPM;
-  private StatusSignal<Current> currentAmps;
+  private StatusSignal<Voltage> leaderAppliedVoltage;
+  private StatusSignal<AngularVelocity> leaderFlywheelRPM;
+  private StatusSignal<Current> leaderAmps;
+
+  private StatusSignal<Voltage> followerAppliedVoltage;
+  private StatusSignal<AngularVelocity> followerFlywheelRPM;
+  private StatusSignal<Current> followerAmps;
 
   private FlywheelTalonFXConfig config = new FlywheelTalonFXConfig();
 
-  public FlywheelIOTalonFX(TalonFX talon) {
-    appliedVoltage = talon.getMotorVoltage();
-    rollerRPM = talon.getVelocity();
-    currentAmps = talon.getStatorCurrent();
-    config.applyTalonConfig(talon);
+  public FlywheelIOTalonFX() {
+    leaderAppliedVoltage = leader.getMotorVoltage();
+    leaderFlywheelRPM = leader.getVelocity();
+    leaderAmps = leader.getStatorCurrent();
+    
+    followerAppliedVoltage = follower.getMotorVoltage();
+    followerFlywheelRPM = follower.getVelocity();
+    followerAmps = follower.getStatorCurrent();
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, rollerRPM);
+    config.applyTalonConfig(leader);
+    config.applyTalonConfig(follower);
+    
+    // will need to config whether aligned or inverted later
+    follower.setControl(new Follower(ShooterFlywheelConstants.leaderId, MotorAlignmentValue.Aligned));
+
+    BaseStatusSignal.setUpdateFrequencyForAll(50, leaderAppliedVoltage, leaderAmps, leaderFlywheelRPM, followerAppliedVoltage, followerAmps, followerFlywheelRPM);
   }
 
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {
-    BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, rollerRPM);
+    BaseStatusSignal.refreshAll(leaderAppliedVoltage, leaderAmps, leaderFlywheelRPM, followerAppliedVoltage, followerAmps, followerFlywheelRPM);
 
-    inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
-    inputs.RPM = rollerRPM.getValue().in(RPM);
-    inputs.currentAmps = currentAmps.getValueAsDouble();
+    inputs.leaderAppliedVoltage = leaderAppliedVoltage.getValueAsDouble();
+    inputs.leaderRPM = leaderFlywheelRPM.getValue().in(RPM);
+    inputs.leaderAmps = leaderAmps.getValueAsDouble();
+
+    inputs.followerAppliedVoltage = followerAppliedVoltage.getValueAsDouble();
+    inputs.followerRPM = followerFlywheelRPM.getValue().in(RPM);
+    inputs.followerAmps = followerAmps.getValueAsDouble();
   }
 
   @Override
   public void setRPM(double rpm) {
     VelocityVoltage output = config.velocityControl.withVelocity(Units.RPM.of(rpm));
-    LeaderFX.setControl(output);
+    leader.setControl(output);
   }
 }

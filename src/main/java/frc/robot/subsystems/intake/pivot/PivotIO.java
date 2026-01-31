@@ -8,7 +8,7 @@ public interface PivotIO {
   public static class PivotIOInputs {
     public boolean pivotConnected = false;
     public double appliedVoltage = 0.0;
-    public double position = 0.0;
+    public double positionAngle = 0.0;
     public double currentAmps = 0.0;
   }
 

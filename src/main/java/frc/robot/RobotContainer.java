@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -35,13 +33,15 @@ import frc.robot.subsystems.intake.pivot.PivotIOSparkFlex;
 import frc.robot.subsystems.intake.roller.RollerIO;
 import frc.robot.subsystems.intake.roller.RollerIOSim;
 import frc.robot.subsystems.intake.roller.RollerIOSparkFlex;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.angler.AnglerIO;
+import frc.robot.subsystems.shooter.angler.AnglerIOSim;
+import frc.robot.subsystems.shooter.angler.AnglerIOTalonFX;
+import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
+import frc.robot.subsystems.shooter.flywheel.FlywheelIOSim;
+import frc.robot.subsystems.shooter.flywheel.FlywheelIOTalonFX;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -55,6 +55,7 @@ public class RobotContainer {
   private final Drive drive;
 //   private final Vision vision;
   private final Intake intake;
+  private final Shooter shooter;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -86,6 +87,7 @@ public class RobotContainer {
         //         new VisionIOLimelight(camera1Name, drive::getRotation));
 
         intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
+        shooter = new Shooter(new AnglerIOTalonFX(), new FlywheelIOTalonFX());
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -128,6 +130,8 @@ public class RobotContainer {
 
         intake = 
             new Intake(new RollerIOSim(), new PivotIOSim());
+        shooter = 
+              new Shooter(new AnglerIOSim(), new FlywheelIOSim());
         break;
       default:
         // Replayed robot, disable IO implementations
@@ -141,6 +145,8 @@ public class RobotContainer {
 
         // vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         intake = new Intake(new RollerIO() {}, new PivotIO() {});
+        shooter = new Shooter(new AnglerIO() {}, new FlywheelIO() {});
+
         break;
 
     }

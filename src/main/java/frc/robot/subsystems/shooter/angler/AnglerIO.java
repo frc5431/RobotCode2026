@@ -14,6 +14,7 @@ public interface AnglerIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(AnglerIOInputs inputs) {}
 
-  /** Run the motor to the specified rotation per minute. */
-  public default void setRPM(double rpm) {}
+  /** Run the motor to the specified position. */
+  public default void setPosition(double positionAngle) {
+  }
 }

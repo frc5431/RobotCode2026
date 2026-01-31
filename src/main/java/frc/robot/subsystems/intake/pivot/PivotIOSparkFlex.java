@@ -38,7 +38,7 @@ public class PivotIOSparkFlex implements PivotIO {
 
     @Override
     public void updateInputs(PivotIOInputs inputs) {
-        ifOk(sparkFlex, encoder::getPosition, (value) -> inputs.position = value);
+        ifOk(sparkFlex, encoder::getPosition, (value) -> inputs.positionAngle = value);
         ifOk(sparkFlex, sparkFlex::getBusVoltage, (value) -> inputs.appliedVoltage = value);
         ifOk(sparkFlex, sparkFlex::getOutputCurrent, (value) -> inputs.currentAmps = value);
     }

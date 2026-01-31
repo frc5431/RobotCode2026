@@ -4,9 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -39,7 +37,7 @@ public class RollerIOTalonFX implements RollerIO {
 
   private RollerTalonFXConfig config = new RollerTalonFXConfig();
 
-  public RollerIOTalonFX(TalonFX talon) {
+  public RollerIOTalonFX() {
     appliedVoltage = talon.getMotorVoltage();
     rollerRPM = talon.getVelocity();
     currentAmps = talon.getStatorCurrent();
