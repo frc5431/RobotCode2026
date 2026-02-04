@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -39,6 +40,10 @@ public class PivotIOTalonFX implements PivotIO {
   private StatusSignal<Angle> pivotPosition;
   private StatusSignal<Current> currentAmps;
 
+  // No clue what this means copied from ModuleIO
+  private final Debouncer pivotConnectedDebounce =
+      new Debouncer(0.5, Debouncer.DebounceType.kFalling);
+
   private PivotTalonFXConfig config = new PivotTalonFXConfig();
 
   public PivotIOTalonFX() {
@@ -52,8 +57,10 @@ public class PivotIOTalonFX implements PivotIO {
 
   @Override
   public void updateInputs(PivotIOInputs inputs) {
-    BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, pivotPosition);
+    var pivotStatus = BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, pivotPosition);
 
+    inputs.pivotConnected = pivotConnectedDebounce.calculate(pivotStatus.isOK());
+    
     inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
     inputs.positionAngle = pivotPosition.getValue().in(Rotation);
     inputs.currentAmps = currentAmps.getValueAsDouble();

@@ -7,6 +7,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -34,6 +35,10 @@ public class AnglerIOTalonFX implements AnglerIO {
   private StatusSignal<Angle> pivotPosition;
   private StatusSignal<Current> currentAmps;
 
+  // No clue stole from ModuleIO
+  private final Debouncer anglerConnectedDebounce =
+      new Debouncer(0.5, Debouncer.DebounceType.kFalling);
+
   private PivotTalonFXConfig config = new PivotTalonFXConfig();
 
   public AnglerIOTalonFX() {
@@ -48,7 +53,9 @@ public class AnglerIOTalonFX implements AnglerIO {
 
   @Override
   public void updateInputs(AnglerIOInputs inputs) {
-    BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, pivotPosition);
+    var anglerStatus = BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, pivotPosition);
+
+    inputs.anglerConnected = anglerConnectedDebounce.calculate(anglerStatus.isOK());
 
     inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
     inputs.positionAngle = pivotPosition.getValue().in(Rotation);

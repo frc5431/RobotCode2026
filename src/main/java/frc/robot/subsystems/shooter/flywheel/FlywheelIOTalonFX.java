@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -41,7 +42,11 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private StatusSignal<AngularVelocity> followerFlywheelRPM;
   private StatusSignal<Current> followerAmps;
 
-  private FlywheelTalonFXConfig config = new FlywheelTalonFXConfig();
+  // No clue stole from ModuleIO
+  private final Debouncer flywheelConnectedDebounce =
+      new Debouncer(0.5, Debouncer.DebounceType.kFalling);
+
+      private FlywheelTalonFXConfig config = new FlywheelTalonFXConfig();
 
   public FlywheelIOTalonFX() {
     leaderAppliedVoltage = leader.getMotorVoltage();
@@ -63,7 +68,9 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {
-    BaseStatusSignal.refreshAll(leaderAppliedVoltage, leaderAmps, leaderFlywheelRPM, followerAppliedVoltage, followerAmps, followerFlywheelRPM);
+    var flywheelStatus =  BaseStatusSignal.refreshAll(leaderAppliedVoltage, leaderAmps, leaderFlywheelRPM, followerAppliedVoltage, followerAmps, followerFlywheelRPM);
+
+    inputs.flywheelConnected = flywheelConnectedDebounce.calculate(flywheelStatus.isOK());
 
     inputs.leaderAppliedVoltage = leaderAppliedVoltage.getValueAsDouble();
     inputs.leaderRPM = leaderFlywheelRPM.getValue().in(RPM);

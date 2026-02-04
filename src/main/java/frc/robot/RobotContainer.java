@@ -25,6 +25,10 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.hopper.Carpet;
+import frc.robot.subsystems.hopper.CarpetIO;
+import frc.robot.subsystems.hopper.CarpetIOSim;
+import frc.robot.subsystems.hopper.CarpetIOSparkFlex;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.robot.subsystems.intake.pivot.PivotIO;
@@ -56,6 +60,7 @@ public class RobotContainer {
 //   private final Vision vision;
   private final Intake intake;
   private final Shooter shooter;
+  private final Carpet carpet;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -88,6 +93,7 @@ public class RobotContainer {
 
         intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
         shooter = new Shooter(new AnglerIOTalonFX(), new FlywheelIOTalonFX());
+        carpet = new Carpet(new CarpetIOSparkFlex());
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -132,6 +138,8 @@ public class RobotContainer {
             new Intake(new RollerIOSim(), new PivotIOSim());
         shooter = 
               new Shooter(new AnglerIOSim(), new FlywheelIOSim());
+        carpet = 
+              new Carpet(new CarpetIOSim());
         break;
       default:
         // Replayed robot, disable IO implementations
@@ -146,7 +154,7 @@ public class RobotContainer {
         // vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         intake = new Intake(new RollerIO() {}, new PivotIO() {});
         shooter = new Shooter(new AnglerIO() {}, new FlywheelIO() {});
-
+        carpet = new Carpet(new CarpetIO() {});
         break;
 
     }
@@ -193,18 +201,18 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
 
-    // Lock to 0° when A button is held
-    driver
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX(),
-                () -> Rotation2d.kZero));
+    // // Lock to 0° when A button is held
+    // driver
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> -driver.getLeftY(),
+    //             () -> -driver.getLeftX(),
+    //             () -> Rotation2d.kZero));
 
-    // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // // Switch to X pattern when X button is pressed
+    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
     driver

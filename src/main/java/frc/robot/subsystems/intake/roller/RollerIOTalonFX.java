@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -35,6 +37,10 @@ public class RollerIOTalonFX implements RollerIO {
   private StatusSignal<AngularVelocity> rollerRPM;
   private StatusSignal<Current> currentAmps;
 
+  // No clue what this means copied from ModuleIO
+  private final Debouncer rollerConnectedDebounce =
+      new Debouncer(0.5, Debouncer.DebounceType.kFalling);
+
   private RollerTalonFXConfig config = new RollerTalonFXConfig();
 
   public RollerIOTalonFX() {
@@ -48,8 +54,9 @@ public class RollerIOTalonFX implements RollerIO {
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
-    BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, rollerRPM);
+    var rollerStatus = BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, rollerRPM);
 
+    inputs.rollerConnected = rollerConnectedDebounce.calculate(rollerStatus.isOK());
     inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
     inputs.RPM = rollerRPM.getValue().in(RPM);
     inputs.currentAmps = currentAmps.getValueAsDouble();
