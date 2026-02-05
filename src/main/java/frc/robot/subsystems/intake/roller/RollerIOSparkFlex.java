@@ -13,7 +13,7 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 
 public class RollerIOSparkFlex implements RollerIO {
-    private final SparkFlex sparkFlex = new SparkFlex(0, null);
+    private final SparkFlex sparkFlex = new SparkFlex(IntakeRollerConstants.id, null);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
     public static class RollerIOSparkFlexConfig extends REVMechanism.Config {
         public RollerIOSparkFlexConfig() {

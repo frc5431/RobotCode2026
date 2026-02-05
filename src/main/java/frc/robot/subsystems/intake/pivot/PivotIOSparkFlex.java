@@ -13,7 +13,7 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 
 public class PivotIOSparkFlex implements PivotIO {
-    private final SparkFlex sparkFlex = new SparkFlex(0, null);
+    private final SparkFlex sparkFlex = new SparkFlex(IntakePivotConstants.id, null);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
 
     public static class PivotSparkFlexConfig extends REVMechanism.Config {

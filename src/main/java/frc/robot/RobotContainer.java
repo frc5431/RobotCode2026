@@ -19,6 +19,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOSparkFlex;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -61,6 +65,7 @@ public class RobotContainer {
   private final Intake intake;
   private final Shooter shooter;
   private final Carpet carpet;
+  private final Climber climber;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -94,6 +99,7 @@ public class RobotContainer {
         intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
         shooter = new Shooter(new AnglerIOTalonFX(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOSparkFlex());
+        climber = new Climber(new ClimberIOSparkFlex());
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -140,6 +146,8 @@ public class RobotContainer {
               new Shooter(new AnglerIOSim(), new FlywheelIOSim());
         carpet = 
               new Carpet(new CarpetIOSim());
+        climber = 
+              new Climber(new ClimberIOSim());
         break;
       default:
         // Replayed robot, disable IO implementations
@@ -155,6 +163,7 @@ public class RobotContainer {
         intake = new Intake(new RollerIO() {}, new PivotIO() {});
         shooter = new Shooter(new AnglerIO() {}, new FlywheelIO() {});
         carpet = new Carpet(new CarpetIO() {});
+        climber = new Climber(new ClimberIO() {});
         break;
 
     }

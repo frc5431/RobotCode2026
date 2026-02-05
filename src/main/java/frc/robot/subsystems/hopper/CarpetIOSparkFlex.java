@@ -3,8 +3,6 @@ package frc.robot.subsystems.hopper;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkFlex;
 
 import static frc.robot.util.SparkUtil.*;
@@ -13,7 +11,7 @@ import frc.robot.subsystems.hopper.CarpetConstants.CarpetRollerConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 
 public class CarpetIOSparkFlex extends CarpetIOTalonFX {
-    private final SparkFlex sparkFlex = new SparkFlex(0, null);
+    private final SparkFlex sparkFlex = new SparkFlex(CarpetRollerConstants.id, null);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
 
     public static class CarpetIOSparkFlexConfig extends REVMechanism.Config {
