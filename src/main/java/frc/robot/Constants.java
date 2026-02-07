@@ -8,14 +8,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -39,48 +31,6 @@ public final class Constants {
 
     /** Replaying from a log file. */
     REPLAY
-  }
-  public static class IndexerConstants {
-
-    public enum IndexerState {
-      INDEXER,
-      REVERSE,
-      IDLE
-    }
-
-    public static final boolean attached = true;
-
-    public static final int id = -1;
-
-    public static final double p = 1;
-    public static final double i = 0;
-    public static final double d = 0;
-
-    public static final boolean invert = false;
-    public static final boolean breakType = false;
-    public static final double gearRatio = 1 / 1;
-
-
-    public static final Current stallLimit = Units.Amps.of(60);
-    public static final Current supplyLimit = Units.Amps.of(80);
-    public static final double maxForwardOutput = 0.5;
-    public static final double maxReverseOutput = -0.5;
-
-    public static final double indexerSpeed = 0.5;
-    public static final double reverseSpeed = -0.5;
-    public static final double idleSpeed = 0.0;
-
-    public enum IndexerModes {
-      INDEXER(indexerSpeed),
-      REVERSE(reverseSpeed),
-      IDLE(idleSpeed);
-
-      public double output;
-
-      IndexerModes(double output) {
-        this.output = output;
-      }
-    }
   }
 
 
