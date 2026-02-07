@@ -45,6 +45,7 @@ public class RollerIOSim implements RollerIO {
         inputs.RPM = rollerMotorSim.getAngularVelocityRadPerSec();
         inputs.appliedVoltage = appliedVoltage;
         inputs.currentAmps = Math.abs(rollerMotorSim.getCurrentDrawAmps());
+        
     }
 
     @Override
@@ -54,7 +55,8 @@ public class RollerIOSim implements RollerIO {
         rollerController.setSetpoint(RPM);
     }
     
-    public void setAppliedVoltage(double appliedVoltage) {
-        this.appliedVoltage = MathUtil.clamp(appliedVoltage, -12.0, 12.0);
+    @Override
+    public void setRollerVoltage(double voltage) {
+        this.appliedVoltage = MathUtil.clamp(voltage, -12.0, 12.0);
     }
 }

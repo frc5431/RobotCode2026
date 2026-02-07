@@ -27,6 +27,7 @@ public class AnglerIOTalonFX implements AnglerIO {
       configFeedbackSensorSource(ShooterAnglerConstants.feedbackSensorCTRE);
       configGearRatio(ShooterAnglerConstants.gearRatio);
       configSupplyCurrentLimit(ShooterAnglerConstants.supplyLimit);
+      configForwardSoftLimit(voltageCompSaturation, false);
     }
   }
 

@@ -252,8 +252,8 @@ public class RobotContainer {
   }
 
   private void configureOperatorBindings() {
-    operator.a().onTrue(intake.runIntakeCommand(IntakeMode.STOW));
-    operator.b().onTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
+    operator.a().whileTrue(intake.runIntakeCommand(IntakeMode.STOW));
+    operator.b().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

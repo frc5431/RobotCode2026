@@ -30,7 +30,7 @@ public class ClimberConstants {
   public static final double d = 0;
   public static final double maxIAccum = 0.2;
 
-  public static final double gearRatio = 1 / 1;
+  public static final double gearRatio = (42.0 / 11.0) * (42.0 / 18.0);
 
   public static final boolean invert = false;
   public static final boolean gravityType = false;

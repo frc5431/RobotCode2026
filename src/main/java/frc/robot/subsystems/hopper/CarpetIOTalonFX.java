@@ -26,10 +26,6 @@ public class CarpetIOTalonFX implements CarpetIO {
       // configGearRatio(CarpetRoller.gearRatio);
       // configGravityType(CarpetRoller.gravityType);
       configSupplyCurrentLimit(CarpetRollerConstants.supplyLimit);
-      configReverseSoftLimit(
-          CarpetRollerConstants.maxReverseRotation.in(Rotation), CarpetRollerConstants.useRMaxRotation);
-      configForwardSoftLimit(
-          CarpetRollerConstants.maxFowardRotation.in(Rotation), CarpetRollerConstants.useFMaxRotation);
     }
   }
 

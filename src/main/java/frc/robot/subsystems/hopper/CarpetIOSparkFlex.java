@@ -23,10 +23,6 @@ public class CarpetIOSparkFlex extends CarpetIOTalonFX {
         // configGravity(CarpetIOConstants.gravityType);
         configSmartCurrentLimit(CarpetRollerConstants.stallLimit, CarpetRollerConstants.supplyLimit);
         configSmartStallCurrentLimit(CarpetRollerConstants.stallLimit);
-        configReverseSoftLimit(
-            CarpetRollerConstants.maxReverseRotation, CarpetRollerConstants.useRMaxRotation);
-        configForwardSoftLimit(
-          CarpetRollerConstants.maxFowardRotation, CarpetRollerConstants.useFMaxRotation);
         }
     } 
 

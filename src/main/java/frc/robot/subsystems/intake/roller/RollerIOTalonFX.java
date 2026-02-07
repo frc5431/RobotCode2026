@@ -26,10 +26,6 @@ public class RollerIOTalonFX implements RollerIO {
       // configGearRatio(IntakeRollerConstants.gearRatio);
       // configGravityType(IntakeRollerConstants.gravityType);
       configSupplyCurrentLimit(IntakeRollerConstants.supplyLimit);
-      configReverseSoftLimit(
-          IntakeRollerConstants.maxReverseRotation.in(Rotation), IntakeRollerConstants.useRMaxRotation);
-      configForwardSoftLimit(
-          IntakeRollerConstants.maxFowardRotation.in(Rotation), IntakeRollerConstants.useFMaxRotation);
     }
   }
 

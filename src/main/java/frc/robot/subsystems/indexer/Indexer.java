@@ -24,11 +24,8 @@ public class Indexer extends CTREMechanism {
     public static class IndexerConfig extends Config {
         public IndexerConfig() {
             super("Indexer", Constants.CANBUS);
-
             configNeutralBrakeMode(IndexerConstants.breakType);
             configStatorCurrentLimit(IndexerConstants.stallLimit);
-            configForwardSoftLimit(IndexerConstants.maxForwardOutput, true);
-            configReverseSoftLimit(IndexerConstants.maxReverseOutput, true);
             configPIDGains(IndexerConstants.p, IndexerConstants.i, IndexerConstants.d);
             configPeakOutput(IndexerConstants.maxForwardOutput, IndexerConstants.maxReverseOutput);
             configGearRatio(IndexerConstants.gearRatio);

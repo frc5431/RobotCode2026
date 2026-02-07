@@ -13,8 +13,8 @@ public  class IntakeConstants {
   
   public enum IntakeMode {
     STOW(Units.Volts.of(0.0), Units.Degrees.of(0.0)),
-    INTAKE(Units.Volts.of(8.4), Units.Degrees.of(0)),
-    OUTTAKE(Units.Volts.of(-4.8), Units.Degrees.of(0));
+    INTAKE(Units.Volts.of(8.4), Units.Degrees.of(300)),
+    OUTTAKE(Units.Volts.of(-4.8), Units.Degrees.of(300));
 
     public Voltage voltage;
     public Angle position;
@@ -26,6 +26,19 @@ public  class IntakeConstants {
   }
   
   public static final class IntakeRollerConstants {
+
+    public enum IntakeRollerModes {
+      IDLE(Units.Volts.of(0.0)),
+      INTAKE(Units.Volts.of(8.4)),
+      OUTTAKE(Units.Volts.of(-4.8));
+
+      public Voltage voltage;
+
+      IntakeRollerModes(Voltage voltage) {
+        this.voltage = voltage;
+      }
+    }
+
     public static final boolean attached = true;
 
     public static final int id = -1;
@@ -55,6 +68,18 @@ public  class IntakeConstants {
   }
 
   public static final class IntakePivotConstants {
+
+    public enum IntakePivotModes {
+      STOW(Units.Degrees.of(0.0)),
+      INTAKE(Units.Degrees.of(300));
+
+      public Angle position;
+
+      IntakePivotModes(Angle position) {
+        this.position = position;
+      }
+    }
+
     public static final boolean attached = true;
 
     public static final int id = -1;

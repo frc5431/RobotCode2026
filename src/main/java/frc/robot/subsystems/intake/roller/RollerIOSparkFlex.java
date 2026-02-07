@@ -24,10 +24,6 @@ public class RollerIOSparkFlex implements RollerIO {
         // configGravity(RollerIOConstants.gravityType);
         configSmartCurrentLimit(IntakeRollerConstants.stallLimit, IntakeRollerConstants.supplyLimit);
         configSmartStallCurrentLimit(IntakeRollerConstants.stallLimit);
-        configReverseSoftLimit(
-            IntakeRollerConstants.maxReverseRotation, IntakeRollerConstants.useRMaxRotation);
-        configForwardSoftLimit(
-          IntakeRollerConstants.maxFowardRotation, IntakeRollerConstants.useFMaxRotation);
         }
     } 
 
@@ -40,6 +36,8 @@ public class RollerIOSparkFlex implements RollerIO {
         ifOk(sparkFlex, encoder::getVelocity, (value) -> inputs.RPM = value);
         ifOk(sparkFlex, sparkFlex::getBusVoltage, (value) -> inputs.appliedVoltage = value);
         ifOk(sparkFlex, sparkFlex::getOutputCurrent, (value) -> inputs.currentAmps = value);
+
+        // figure out 
     }
 
     @Override
