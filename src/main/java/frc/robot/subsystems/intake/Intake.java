@@ -7,9 +7,6 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
-import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants;
-import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants.IntakePivotModes;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants.IntakeRollerModes;
 import frc.robot.subsystems.intake.pivot.PivotIO;
 import frc.robot.subsystems.intake.pivot.PivotIOInputsAutoLogged;
 import frc.robot.subsystems.intake.roller.RollerIO;
@@ -21,42 +18,48 @@ public class Intake extends SubsystemBase {
   private final RollerIOInputsAutoLogged rollerInputs = new RollerIOInputsAutoLogged();
   private final PivotIOInputsAutoLogged pivotInputs = new PivotIOInputsAutoLogged();
   
-  private IntakeRollerModes rollerMode;
-  private IntakePivotModes pivotMode;
+  private IntakeMode intakeMode;
+  // private IntakePivotModes pivotMode;
   
 
   public Intake(RollerIO rollerIO, PivotIO pivotIO) {
     this.rollerIO = rollerIO;
     this.pivotIO = pivotIO;
-    this.rollerMode = IntakeRollerModes.IDLE;
-    this.pivotMode = IntakePivotModes.STOW;
+    this.intakeMode = IntakeMode.STOW;
   }
   
   @Override
   public void periodic() {
     rollerIO.updateInputs(rollerInputs);
     Logger.processInputs("Intake/Roller", rollerInputs);
-    Logger.recordOutput("Intake/Roller/Mode", rollerMode);
 
     pivotIO.updateInputs(pivotInputs);
     Logger.processInputs("Intake/Pivot", pivotInputs);
-    Logger.recordOutput("Intake/Pivot/Mode", pivotMode);
+    
+    Logger.recordOutput("Intake/Mode", intakeMode);
   }
 
-  public void runRollerEnum(IntakeRollerModes rollerMode) {
-    this.rollerMode = rollerMode;
-      rollerIO.setRollerVoltage(rollerMode.voltage.baseUnitMagnitude());
+  public void runIntakeEnum(IntakeMode intakeMode) {
+    this.intakeMode = intakeMode;
+    rollerIO.setRollerVoltage(intakeMode.voltage.baseUnitMagnitude());
+    pivotIO.setPosition(intakeMode.position.magnitude());
   }
 
-  public void runPivotEnum(IntakePivotModes pivotMode) {
-    this.pivotMode = pivotMode;
-    pivotIO.setPosition(pivotMode.position.magnitude());
-  }
-
-  public Command runIntakeCommand(IntakePivotModes pivotMode, IntakeRollerModes rollerMode) {
+  public Command runIntakeeCommand(IntakeMode intakeMode) {
     return new RunCommand(() -> {
-      this.runRollerEnum(rollerMode);
-      this.runPivotEnum(pivotMode);
-    }, this).withName("Intake.runIntakeEnum" + rollerMode.toString());
+      this.runIntakeEnum(intakeMode);
+    }, this).withName("Intake.runIntakeeCommand" + intakeMode.toString());
   }
+
+  // public Command runPivotCommand(IntakeMode intakeMode) {
+  //   return new RunCommand(() -> {
+  //     this.runPivotEnum(intakeMode);
+  //   }, this).withName("Intake.runPivotCommand" + intakeMode.toString());
+  // }
+
+  // public Command runRollerCommand(IntakeMode rollerMode) {
+  //   return new RunCommand(() -> {
+  //     this.runRollerEnum(rollerMode);
+  //   }, this).withName("Intake.runRollerCommand" + rollerMode.toString());
+  // }
 }

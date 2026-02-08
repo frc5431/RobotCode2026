@@ -96,10 +96,10 @@ public class RobotContainer {
         //         new VisionIOLimelight(camera0Name, drive::getRotation),
         //         new VisionIOLimelight(camera1Name, drive::getRotation));
 
-        intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
-        shooter = new Shooter(new AnglerIOTalonFX(), new FlywheelIOTalonFX());
-        carpet = new Carpet(new CarpetIOSparkFlex());
-        climber = new Climber(new ClimberIOSparkFlex());
+        intake = new Intake(new RollerIOSim(), new PivotIOSim());
+        shooter = new Shooter(new AnglerIOSim(), new FlywheelIOSim());
+        carpet = new Carpet(new CarpetIOSim());
+        climber = new Climber(new ClimberIOSim());
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -252,8 +252,13 @@ public class RobotContainer {
   }
 
   private void configureOperatorBindings() {
-    operator.a().whileTrue(intake.runIntakeCommand(IntakeMode.STOW));
-    operator.b().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
+    // Default Commands
+    intake.setDefaultCommand(intake.runIntakeeCommand(IntakeMode.OUT_IDLE));
+
+
+
+    operator.a().whileTrue(intake.runIntakeeCommand(IntakeMode.INTAKE));
+    operator.b().whileTrue(intake.runIntakeeCommand(IntakeMode.OUTTAKE));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

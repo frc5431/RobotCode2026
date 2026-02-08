@@ -12,7 +12,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
-import frc.robot.subsystems.intake.pivot.PivotIO.PivotIOInputs;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterAnglerConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 

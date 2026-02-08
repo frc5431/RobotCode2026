@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.hopper.CarpetConstants.CarpetModes;
 import frc.robot.subsystems.hopper.CarpetIO.CarpetIOInputs;
-import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 
 public class Carpet extends SubsystemBase {
   private final CarpetIO carpetIO;
