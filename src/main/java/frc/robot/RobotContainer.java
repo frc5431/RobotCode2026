@@ -7,33 +7,47 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.IntakeRollerIOConstants.RollerIOModes;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOSparkFlex;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.intake.roller.Roller;
+import frc.robot.subsystems.hopper.Carpet;
+import frc.robot.subsystems.hopper.CarpetIO;
+import frc.robot.subsystems.hopper.CarpetIOSim;
+import frc.robot.subsystems.hopper.CarpetIOSparkFlex;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
+import frc.robot.subsystems.intake.pivot.PivotIO;
+import frc.robot.subsystems.intake.pivot.PivotIOSim;
+import frc.robot.subsystems.intake.pivot.PivotIOSparkFlex;
 import frc.robot.subsystems.intake.roller.RollerIO;
 import frc.robot.subsystems.intake.roller.RollerIOSim;
 import frc.robot.subsystems.intake.roller.RollerIOSparkFlex;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.angler.AnglerIO;
+import frc.robot.subsystems.shooter.angler.AnglerIOSim;
+import frc.robot.subsystems.shooter.angler.AnglerIOTalonFX;
+import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
+import frc.robot.subsystems.shooter.flywheel.FlywheelIOSim;
+import frc.robot.subsystems.shooter.flywheel.FlywheelIOTalonFX;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -47,8 +61,11 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Vision vision;
-  private final Roller roller;
+//   private final Vision vision;
+  private final Intake intake;
+  private final Shooter shooter;
+  private final Carpet carpet;
+  private final Climber climber;
 
   // Controller
   private final CommandXboxController driver = new CommandXboxController(0);
@@ -73,15 +90,16 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
         // Real robot, instantiate hardware IO implementations
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOLimelight(camera0Name, drive::getRotation),
-                new VisionIOLimelight(camera1Name, drive::getRotation));
-        roller =
-            new Roller(
-                new RollerIOSparkFlex());
-              
+        // vision =
+        //     new Vision(
+        //         drive::addVisionMeasurement,
+        //         new VisionIOLimelight(camera0Name, drive::getRotation),
+        //         new VisionIOLimelight(camera1Name, drive::getRotation));
+
+        intake = new Intake(new RollerIOSim(), new PivotIOSim());
+        shooter = new Shooter(new AnglerIOSim(), new FlywheelIOSim());
+        carpet = new Carpet(new CarpetIOSim());
+        climber = new Climber(new ClimberIOSim());
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -116,17 +134,21 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
 
-        vision =
-            new Vision(
-                drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
-                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
+        // vision =
+        //     new Vision(
+        //         drive::addVisionMeasurement,
+        //         new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
+        //         new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
 
-        roller = 
-            new Roller(
-                new RollerIOSim() {});
+        intake = 
+            new Intake(new RollerIOSim(), new PivotIOSim());
+        shooter = 
+              new Shooter(new AnglerIOSim(), new FlywheelIOSim());
+        carpet = 
+              new Carpet(new CarpetIOSim());
+        climber = 
+              new Climber(new ClimberIOSim());
         break;
-
       default:
         // Replayed robot, disable IO implementations
         drive =
@@ -137,9 +159,11 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
 
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        roller = new Roller(new RollerIO() {});
-
+        // vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        intake = new Intake(new RollerIO() {}, new PivotIO() {});
+        shooter = new Shooter(new AnglerIO() {}, new FlywheelIO() {});
+        carpet = new Carpet(new CarpetIO() {});
+        climber = new Climber(new ClimberIO() {});
         break;
 
     }
@@ -165,6 +189,10 @@ public class RobotContainer {
 
     configureDriverBindings();
     configureOperatorBindings();
+    
+
+    SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
+
   }
 
   /**
@@ -182,18 +210,18 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
 
-    // Lock to 0° when A button is held
-    driver
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX(),
-                () -> Rotation2d.kZero));
+    // // Lock to 0° when A button is held
+    // driver
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> -driver.getLeftY(),
+    //             () -> -driver.getLeftX(),
+    //             () -> Rotation2d.kZero));
 
-    // Switch to X pattern when X button is pressed
-    driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // // Switch to X pattern when X button is pressed
+    // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
     driver
@@ -224,7 +252,13 @@ public class RobotContainer {
   }
 
   private void configureOperatorBindings() {
-    operator.a().onTrue(roller.runIntakeCommand(RollerIOModes.INTAKE, true));
+    // Default Commands
+    intake.setDefaultCommand(intake.runIntakeeCommand(IntakeMode.OUT_IDLE));
+
+
+
+    operator.a().whileTrue(intake.runIntakeeCommand(IntakeMode.INTAKE));
+    operator.b().whileTrue(intake.runIntakeeCommand(IntakeMode.OUTTAKE));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

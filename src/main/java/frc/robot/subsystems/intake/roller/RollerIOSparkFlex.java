@@ -9,25 +9,21 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkFlex;
 
-import frc.robot.Constants.IntakeRollerIOConstants;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 
 public class RollerIOSparkFlex implements RollerIO {
-    private final SparkFlex sparkFlex = new SparkFlex(0, null);
+    private final SparkFlex sparkFlex = new SparkFlex(IntakeRollerConstants.id, null);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
     public static class RollerIOSparkFlexConfig extends REVMechanism.Config {
         public RollerIOSparkFlexConfig() {
-        super("RollerSparkFlex", IntakeRollerIOConstants.id);
-        configPIDGains(IntakeRollerIOConstants.p, IntakeRollerIOConstants.i, IntakeRollerIOConstants.d);
-        configFeedbackSensorSource(IntakeRollerIOConstants.feedbackSensorREV);
+        super("RollerSparkFlex", IntakeRollerConstants.id);
+        configPIDGains(IntakeRollerConstants.p, IntakeRollerConstants.i, IntakeRollerConstants.d);
+        configFeedbackSensorSource(IntakeRollerConstants.feedbackSensorREV);
         // configGear(RollerIOConstants.gearRatio);
         // configGravity(RollerIOConstants.gravityType);
-        configSmartCurrentLimit(IntakeRollerIOConstants.stallLimit, IntakeRollerIOConstants.supplyLimit);
-        configSmartStallCurrentLimit(IntakeRollerIOConstants.stallLimit);
-        configReverseSoftLimit(
-            IntakeRollerIOConstants.maxReverseRotation, IntakeRollerIOConstants.useRMaxRotation);
-        configForwardSoftLimit(
-          IntakeRollerIOConstants.maxFowardRotation, IntakeRollerIOConstants.useFMaxRotation);
+        configSmartCurrentLimit(IntakeRollerConstants.stallLimit, IntakeRollerConstants.supplyLimit);
+        configSmartStallCurrentLimit(IntakeRollerConstants.stallLimit);
         }
     } 
 
@@ -39,6 +35,9 @@ public class RollerIOSparkFlex implements RollerIO {
     public void updateInputs(RollerIOInputs inputs) {
         ifOk(sparkFlex, encoder::getVelocity, (value) -> inputs.RPM = value);
         ifOk(sparkFlex, sparkFlex::getBusVoltage, (value) -> inputs.appliedVoltage = value);
+        ifOk(sparkFlex, sparkFlex::getOutputCurrent, (value) -> inputs.currentAmps = value);
+
+        // figure out 
     }
 
     @Override
