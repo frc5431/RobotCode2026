@@ -2,7 +2,10 @@ package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
 import frc.robot.subsystems.shooter.angler.AnglerIO;
 import frc.robot.subsystems.shooter.angler.AnglerIOInputsAutoLogged;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
@@ -14,11 +17,13 @@ public class Shooter extends SubsystemBase {
 
   private final AnglerIOInputsAutoLogged anglerInputs = new AnglerIOInputsAutoLogged();
   private final FlywheelIOInputsAutoLogged flywheelInputs = new FlywheelIOInputsAutoLogged();
-    
+  
+  private ShooterModes shooterMode;
 
   public Shooter(AnglerIO anglerIO, FlywheelIO flywheelIO) {
     this.anglerIO = anglerIO;
     this.flywheelIO = flywheelIO;
+    this.shooterMode = ShooterModes.IDLE;
   }
   
   @Override
@@ -28,23 +33,19 @@ public class Shooter extends SubsystemBase {
     
     flywheelIO.updateInputs(flywheelInputs);
     Logger.processInputs("Shooter/Flywheel", flywheelInputs);
-    // Logger.recordOutput("Intake/Mode", mode);
+
+    Logger.recordOutput("Shooter/Mode", shooterMode);
   }
 
-  // public void runFlywheelEnum(IntakeMode intakeMode) {
-  //   this.mode = intakeMode;
-  //     flywheelIO.setRPM(mode.voltage.baseUnitMagnitude());
-  // }
+  public void runShooterEnum(ShooterModes mode) {
+    this.shooterMode = mode;
+    flywheelIO.setRPM(mode.speed.baseUnitMagnitude());
+    anglerIO.setPosition(mode.angle.magnitude());
+  }
 
-  // public void runAnglerEnum(IntakeMode intakeMode) {
-  //   this.mode = intakeMode;
-  //   anglerIO.setPosition(mode.position.magnitude());
-  // }
-
-  // public Command runIntakeCommand(IntakeMode intakeMode) {
-  //   return new RunCommand(() -> {
-  //     this.runFlywheelEnum(intakeMode);
-  //     this.runAnglerEnum(intakeMode);
-  //   }, this).withName("Shooter.runIntakeEnum");
-  // }
+  public Command runShooterCommand(ShooterModes mode) {
+    return new RunCommand(() -> {
+      this.runShooterEnum(mode);
+    }, this).withName("Shooter.runShooterEnum" + mode.toString());
+  }
 }

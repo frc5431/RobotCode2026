@@ -9,21 +9,25 @@ import edu.wpi.first.units.measure.Current;
 
 public class ShooterConstants {
 
-  // public enum ShooterModes {
-  //   SHOOT( Units.RPM.of(2000)),
-  //   IDLE( Units.RPM.of(0));
+  public enum ShooterModes {
+    SHOOT_FAR( Units.RPM.of(200), Units.Degree.of(30)),
+    SHOOT_CLOSE(Units.RPM.of(150), Units.Degree.of(60)),
+    IDLE( Units.RPM.of(0), Units.Degree.of(0.0));
 
-  //   public AngularVelocity speed;
+    public AngularVelocity speed;
+    public Angle angle;
 
-  //   ShooterModes(AngularVelocity speed) {
-  //     this.speed = speed;
-  //   }
-  // }
+    ShooterModes(AngularVelocity speed, Angle angle) {
+      this.speed = speed;
+      this.angle = angle;
+    }
+  }
 
   public static class ShooterFlywheelConstants {
     public static final boolean attached = true;
-    public static final int followerId = 50;
-    public static final int leaderId = 50;
+    public static final int leaderId = 13;
+    public static final int followerId = 14;
+
     public static final boolean inverted = false;
     public static final boolean breakType = false;
     public static final double gearRatio = 1 / 1;
@@ -43,10 +47,10 @@ public class ShooterConstants {
   
   public static class ShooterAnglerConstants {
     public static final boolean attached = true;
-    public static final int id = 50;
+    public static final int id = 15;
     public static final boolean inverted = false;
     public static final boolean breakType = false;
-    public static final double gearRatio = 3.0 / 1;
+    public static final double gearRatio = 1 / 1;
 
     public static final double p = 1;
     public static final double i = 0;

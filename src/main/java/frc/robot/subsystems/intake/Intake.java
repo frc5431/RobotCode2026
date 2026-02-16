@@ -45,21 +45,22 @@ public class Intake extends SubsystemBase {
     pivotIO.setPosition(intakeMode.position.magnitude());
   }
 
-  public Command runIntakeeCommand(IntakeMode intakeMode) {
+  public Command runIntakeCommand(IntakeMode intakeMode) {
     return new RunCommand(() -> {
       this.runIntakeEnum(intakeMode);
-    }, this).withName("Intake.runIntakeeCommand" + intakeMode.toString());
+    }, this).withName("Intake.runIntakeCommand" + intakeMode.toString());
   }
 
-  // public Command runPivotCommand(IntakeMode intakeMode) {
-  //   return new RunCommand(() -> {
-  //     this.runPivotEnum(intakeMode);
-  //   }, this).withName("Intake.runPivotCommand" + intakeMode.toString());
-  // }
+  public Command stop() {
+    // return new RunCommand(() -> {
+    //   this.pivotIO.setPivotVoltage(0);
+    //   this.pivotIO.setPivotVoltage(0);
+    // }, this).withName("Intake.stopAll");
+    
+    return run(() -> {
+      rollerIO.setRollerVoltage(0);
+      pivotIO.setPivotVoltage(0);
+    }).withName("Intake.Stop");
 
-  // public Command runRollerCommand(IntakeMode rollerMode) {
-  //   return new RunCommand(() -> {
-  //     this.runRollerEnum(rollerMode);
-  //   }, this).withName("Intake.runRollerCommand" + rollerMode.toString());
-  // }
+  }
 }

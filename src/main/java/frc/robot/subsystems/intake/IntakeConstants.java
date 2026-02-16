@@ -15,8 +15,8 @@ public  class IntakeConstants {
 
     STOW(Units.Volts.of(0.0), Units.Degrees.of(0.0)),
     OUT_IDLE(Units.Volts.of(0.0), Units.Degrees.of(180.0)),
-    INTAKE(Units.Volts.of(8.4), Units.Degrees.of(0.0)),
-    OUTTAKE(Units.Volts.of(-4.8), Units.Degrees.of(180.0));
+    INTAKE(Units.Volts.of(5.4), Units.Degrees.of(0.0)),
+    OUTTAKE(Units.Volts.of(-2.8), Units.Degrees.of(180.0));
 
     public Voltage voltage;
     public Angle position;
@@ -71,7 +71,7 @@ public  class IntakeConstants {
 
     public static final boolean invert = false;
     public static final boolean gravityType = false;
-    public static final boolean breakType = false;
+    public static final boolean breakType = true;
 
     public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.FusedCANcoder;
     public static final FeedbackSensor feedbackSensorREV = FeedbackSensor.kAbsoluteEncoder;

@@ -12,7 +12,8 @@ import edu.wpi.first.units.measure.Voltage;
 public class CarpetConstants {
   public enum CarpetModes {
     IDLE(Units.Volts.of(0.0)),
-    INTAKE(Units.Volts.of(8.4));
+    INTAKE(Units.Volts.of(5.4)),
+    OUTTAKE(Units.Volts.of(-2.8));
 
     public Voltage voltage;
     
