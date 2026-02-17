@@ -8,12 +8,13 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 
 public class RollerIOSparkFlex implements RollerIO {
-    private final SparkFlex sparkFlex = new SparkFlex(IntakeRollerConstants.id, null);
+    private final SparkFlex sparkFlex = new SparkFlex(IntakeRollerConstants.id, MotorType.kBrushless);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
     public static class RollerIOSparkFlexConfig extends REVMechanism.Config {
         public RollerIOSparkFlexConfig() {

@@ -31,7 +31,7 @@ public  class IntakeConstants {
 
     public static final boolean attached = true;
 
-    public static final int id = -1;
+    public static final int id = 19;
 
     PIDConstants pidConstants = new PIDConstants(1, 0, 0);
     public static final double p = 1;
@@ -60,7 +60,7 @@ public  class IntakeConstants {
   public static final class IntakePivotConstants {
     public static final boolean attached = true;
 
-    public static final int id = -1;
+    public static final int id = 18;
 
     public static final double p = 1;
     public static final double i = 0;
