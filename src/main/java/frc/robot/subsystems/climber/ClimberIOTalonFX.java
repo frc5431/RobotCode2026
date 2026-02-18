@@ -15,11 +15,11 @@ import frc.robot.Constants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class ClimberIOTalonFX implements ClimberIO {
-  private final TalonFX talon = new TalonFX(ClimberConstants.id, Constants.CANBUS);
+  private final TalonFX talon = new TalonFX(ClimberConstants.id, Constants.CANIVORE_CANBUS);
 
   public static class ClimberTalonFXConfig extends CTREMechanism.Config {
     public ClimberTalonFXConfig() {
-      super("ClimberTalonFX", Constants.CANBUS);
+      super("ClimberTalonFX", Constants.CANIVORE_CANBUS);
       configPIDGains(ClimberConstants.p, ClimberConstants.i, ClimberConstants.d);
       configNeutralBrakeMode(ClimberConstants.breakType);
       configFeedbackSensorSource(ClimberConstants.feedbackSensorCTRE);

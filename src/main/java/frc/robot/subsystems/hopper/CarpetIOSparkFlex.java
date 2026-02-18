@@ -1,5 +1,6 @@
 package frc.robot.subsystems.hopper;
 
+import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -10,8 +11,9 @@ import static frc.robot.util.SparkUtil.*;
 import frc.robot.subsystems.hopper.CarpetConstants.CarpetRollerConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 
-public class CarpetIOSparkFlex extends CarpetIOTalonFX {
-    private final SparkFlex sparkFlex = new SparkFlex(CarpetRollerConstants.id, null);
+public class CarpetIOSparkFlex implements CarpetIO {
+    // Neo Vortex
+    private final SparkFlex sparkFlex = new SparkFlex(CarpetRollerConstants.id, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
 
     public static class CarpetIOSparkFlexConfig extends REVMechanism.Config {

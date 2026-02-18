@@ -19,12 +19,12 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
-  private final TalonFX follower  = new TalonFX(ShooterFlywheelConstants.followerId, Constants.CANBUS);
-  private final TalonFX leader = new TalonFX(ShooterFlywheelConstants.leaderId, Constants.CANBUS);
+  private final TalonFX follower  = new TalonFX(ShooterFlywheelConstants.followerId, Constants.CANIVORE_CANBUS);
+  private final TalonFX leader = new TalonFX(ShooterFlywheelConstants.leaderId, Constants.CANIVORE_CANBUS);
 
   public static class FlywheelTalonFXConfig extends CTREMechanism.Config {
     public FlywheelTalonFXConfig() {
-      super("FlywheelTalonFX", Constants.CANBUS);
+      super("FlywheelTalonFX", Constants.CANIVORE_CANBUS);
       configNeutralBrakeMode(ShooterFlywheelConstants.breakType);
       configFeedbackSensorSource(ShooterFlywheelConstants.feedbackSensorCTRE);
       configNeutralBrakeMode(ShooterFlywheelConstants.breakType);

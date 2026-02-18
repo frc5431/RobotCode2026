@@ -16,11 +16,11 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterAnglerConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class AnglerIOTalonFX implements AnglerIO {
-  private final TalonFX talon = new TalonFX(ShooterAnglerConstants.id, Constants.CANBUS);
+  private final TalonFX talon = new TalonFX(ShooterAnglerConstants.id, Constants.CANIVORE_CANBUS);
 
   public static class PivotTalonFXConfig extends CTREMechanism.Config {
     public PivotTalonFXConfig() {
-      super("AnglerTalonFX", Constants.CANBUS);
+      super("AnglerTalonFX", Constants.CANIVORE_CANBUS);
       configPIDGains(ShooterAnglerConstants.p, ShooterAnglerConstants.i, ShooterAnglerConstants.d);
       configNeutralBrakeMode(ShooterAnglerConstants.breakType);
       configFeedbackSensorSource(ShooterAnglerConstants.feedbackSensorCTRE);

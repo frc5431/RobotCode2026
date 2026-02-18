@@ -15,11 +15,11 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class RollerIOTalonFX implements RollerIO {
-  private final TalonFX talon = new TalonFX(IntakeRollerConstants.id, Constants.CANBUS);
+  private final TalonFX talon = new TalonFX(IntakeRollerConstants.id, Constants.RIO_CANBUS);
 
   public static class RollerTalonFXConfig extends CTREMechanism.Config {
     public RollerTalonFXConfig() {
-      super("RollerTalonFX",Constants.CANBUS);
+      super("RollerTalonFX", Constants.RIO_CANBUS);
       configPIDGains(IntakeRollerConstants.p, IntakeRollerConstants.i, IntakeRollerConstants.d);
       configNeutralBrakeMode(IntakeRollerConstants.breakType);
       configFeedbackSensorSource(IntakeRollerConstants.feedbackSensorCTRE);

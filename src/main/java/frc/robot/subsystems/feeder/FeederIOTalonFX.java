@@ -14,11 +14,11 @@ import frc.robot.Constants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class FeederIOTalonFX implements FeederIO {
-    private final TalonFX talon = new TalonFX(FeederConstants.id, Constants.CANBUS);
+    private final TalonFX talon = new TalonFX(FeederConstants.id, Constants.RIO_CANBUS);
 
     public static class FeederIOTalonFXConfig extends CTREMechanism.Config {
         public FeederIOTalonFXConfig() {
-            super("Feeder", Constants.CANBUS);
+            super("Feeder", Constants.RIO_CANBUS);
 
             configNeutralBrakeMode(FeederConstants.breakType);
             configStatorCurrentLimit(FeederConstants.stallLimit);
