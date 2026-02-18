@@ -10,8 +10,8 @@ import edu.wpi.first.units.measure.Current;
 public class ShooterConstants {
 
   public enum ShooterModes {
-    SHOOT_FAR( Units.RPM.of(200), Units.Degree.of(30)),
-    SHOOT_CLOSE(Units.RPM.of(150), Units.Degree.of(60)),
+    SHOOT_FAR( Units.RPM.of(500), Units.Degree.of(30)),
+    SHOOT_CLOSE(Units.RPM.of(400), Units.Degree.of(60)),
     IDLE( Units.RPM.of(0), Units.Degree.of(0.0));
 
     public AngularVelocity speed;

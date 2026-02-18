@@ -61,7 +61,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     config.applyTalonConfig(follower);
     
     // will need to config whether aligned or inverted later
-    follower.setControl(new Follower(ShooterFlywheelConstants.leaderId, MotorAlignmentValue.Aligned));
+    follower.setControl(new Follower(ShooterFlywheelConstants.leaderId, MotorAlignmentValue.Opposed));
 
     BaseStatusSignal.setUpdateFrequencyForAll(50, leaderAppliedVoltage, leaderAmps, leaderFlywheelRPM, followerAppliedVoltage, followerAmps, followerFlywheelRPM);
   }
@@ -83,7 +83,12 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void setRPM(double rpm) {
-    VelocityVoltage output = config.velocityControl.withVelocity(Units.RPM.of(rpm));
-    leader.setControl(output);
+    // VelocityVoltage output = config.velocityControl.withVelocity(Units.RPM.of(rpm));
+    // leader.setControl(output);
+    // FIX RPM WHY NO WORK? rn its hardcoded voltage
+    if (rpm <= 0) {
+      leader.setVoltage(0);
+    }
+    leader.setVoltage(5);
   }
 }

@@ -48,4 +48,11 @@ public class Shooter extends SubsystemBase {
       this.runShooterEnum(mode);
     }, this).withName("Shooter.runShooterEnum" + mode.toString());
   }
+
+  public Command stop() {
+    return run(() -> {
+      flywheelIO.setRPM(0);
+    }).withName("Intake.Stop");
+
+  }
 }

@@ -35,6 +35,7 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOSim;
 import frc.robot.subsystems.feeder.FeederIOSparkFlex;
+import frc.robot.subsystems.feeder.FeederConstants.FeederModes;
 import frc.robot.subsystems.hopper.Carpet;
 import frc.robot.subsystems.hopper.CarpetIO;
 import frc.robot.subsystems.hopper.CarpetIOSim;
@@ -106,8 +107,8 @@ public class RobotContainer {
         //         new VisionIOLimelight(camera0Name, drive::getRotation),
         //         new VisionIOLimelight(camera1Name, drive::getRotation));
 
-        intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
-        shooter = new Shooter(new AnglerIOTalonFX(), new FlywheelIOTalonFX());
+        intake = new Intake(new RollerIOSparkFlex(), new PivotIOSim());
+        shooter = new Shooter(new AnglerIOSim(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOSparkFlex());
         climber = new Climber(new ClimberIOSim());
         feeder = new Feeder(new FeederIOSparkFlex());
@@ -225,6 +226,9 @@ public class RobotContainer {
 
     
     intake.setDefaultCommand(intake.stop());
+    carpet.setDefaultCommand(carpet.runCarpetCommand(CarpetModes.IDLE));
+    feeder.setDefaultCommand(feeder.runFeederCommand(FeederModes.IDLE));
+    shooter.setDefaultCommand(shooter.stop());
     // shooter.setDefaultCommand();
     // // Lock to 0° when A button is held
     // driver
@@ -254,6 +258,7 @@ public class RobotContainer {
     driver.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
     driver.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
     driver.x().onTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
+    driver.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
     
 
     // // Auto aim command example; code from AKit template.

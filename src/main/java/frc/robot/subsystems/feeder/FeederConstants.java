@@ -30,19 +30,19 @@ public class FeederConstants {
   public static final double maxForwardOutput = 0.5;
   public static final double maxReverseOutput = -0.5;
 
-  public static final double FeederSpeed = 0.5;
-  public static final double reverseSpeed = -0.5;
-  public static final double idleSpeed = 0.0;
+  // public static final double FeederSpeed = 0.5;
+  // public static final double reverseSpeed = -0.5;
+  // public static final double idleSpeed = 0.0;
 
   public enum FeederModes {
-    FEEDER(FeederSpeed),
-    REVERSE(reverseSpeed),
-    IDLE(idleSpeed);
+    FEEDER(8),
+    REVERSE(-6),
+    IDLE(0);
 
     public double output;
 
-    FeederModes(double output) {
-      this.output = output;
+    FeederModes(double voltage) {
+      this.output = voltage;
     }
   }
 }

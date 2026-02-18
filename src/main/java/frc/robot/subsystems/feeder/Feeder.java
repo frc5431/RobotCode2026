@@ -56,7 +56,7 @@ public class Feeder extends SubsystemBase {
 
     public void runFeederEnum(FeederModes feederMode) {
         this.feederMode = feederMode;
-        feederIO.setPercentOutput(feederMode.output);
+        feederIO.setFeederVoltage(feederMode.output);
     }
 
     public Command runFeederCommand(FeederModes feederMode) {
