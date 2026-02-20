@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooter.flywheel;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.ejml.dense.block.VectorOps_DDRB;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
@@ -41,7 +43,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private StatusSignal<Voltage> followerAppliedVoltage;
   private StatusSignal<AngularVelocity> followerFlywheelRPM;
   private StatusSignal<Current> followerAmps;
-
+  public static VelocityVoltage plotOutput;
   // No clue stole from ModuleIO
   private final Debouncer flywheelConnectedDebounce =
       new Debouncer(0.5, Debouncer.DebounceType.kFalling);
@@ -83,12 +85,15 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void setRPM(double rpm) {
-    // VelocityVoltage output = config.velocityControl.withVelocity(Units.RPM.of(rpm));
-    // leader.setControl(output);
+    VelocityVoltage output = config.velocityControl.withVelocity(Units.RPM.of(rpm));
+    leader.setControl(new VelocityVoltage(Units.RPM.of(rpm)));
+    plotOutput = output;
     // FIX RPM WHY NO WORK? rn its hardcoded voltage
-    if (rpm <= 0) {
-      leader.setVoltage(0);
-    }
-    leader.setVoltage(5);
+    // if (rpm == 0 || rpm < 0) {
+    //   leader.setVoltage(0);
+    // }
+    // else {
+    //    leader.setVoltage(5);
+    // }
   }
 }

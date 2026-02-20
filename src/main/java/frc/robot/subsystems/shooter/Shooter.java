@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,6 +11,7 @@ import frc.robot.subsystems.shooter.angler.AnglerIO;
 import frc.robot.subsystems.shooter.angler.AnglerIOInputsAutoLogged;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOInputsAutoLogged;
+import frc.robot.subsystems.shooter.flywheel.FlywheelIOTalonFX;
 
 public class Shooter extends SubsystemBase {
   private final AnglerIO anglerIO;
@@ -35,6 +37,9 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter/Flywheel", flywheelInputs);
 
     Logger.recordOutput("Shooter/Mode", shooterMode);
+    // System.out.println("***********************");
+    // System.out.println(FlywheelIOTalonFX.plotOutput);
+    // System.out.println("***********************");
   }
 
   public void runShooterEnum(ShooterModes mode) {
@@ -50,9 +55,9 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command stop() {
-    return run(() -> {
+    return new RunCommand(() -> {
       flywheelIO.setRPM(0);
-    }).withName("Intake.Stop");
+    }, this).withName("Intake.Stop");
 
-  }
+  } 
 }

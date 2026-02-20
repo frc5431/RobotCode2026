@@ -27,16 +27,16 @@ public class FeederConstants {
 
   public static final Current stallLimit = Units.Amps.of(60);
   public static final Current supplyLimit = Units.Amps.of(80);
-  public static final double maxForwardOutput = 0.5;
-  public static final double maxReverseOutput = -0.5;
+  public static final double maxForwardOutput = 1;
+  public static final double maxReverseOutput = -1;
 
   // public static final double FeederSpeed = 0.5;
   // public static final double reverseSpeed = -0.5;
   // public static final double idleSpeed = 0.0;
 
   public enum FeederModes {
-    FEEDER(8),
-    REVERSE(-6),
+    FEEDER(5),
+    REVERSE(-5),
     IDLE(0);
 
     public double output;
