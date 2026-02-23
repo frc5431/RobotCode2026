@@ -85,15 +85,15 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void setRPM(double rpm) {
-    VelocityVoltage output = config.velocityControl.withVelocity(Units.RPM.of(rpm));
-    leader.setControl(new VelocityVoltage(Units.RPM.of(rpm)));
-    plotOutput = output;
+    VelocityVoltage output = config.velocityControl.withVelocity(Units.RotationsPerSecond.of(rpm / 60));
+    leader.setControl(output);
+    // plotOutput = output;
     // FIX RPM WHY NO WORK? rn its hardcoded voltage
     // if (rpm == 0 || rpm < 0) {
     //   leader.setVoltage(0);
     // }
     // else {
-    //    leader.setVoltage(5);
+    //    leader.setVoltage(5.5);
     // }
   }
 }

@@ -35,7 +35,7 @@ public class FeederConstants {
   // public static final double idleSpeed = 0.0;
 
   public enum FeederModes {
-    FEEDER(5),
+    FEEDER(12),
     REVERSE(-5),
     IDLE(0);
 

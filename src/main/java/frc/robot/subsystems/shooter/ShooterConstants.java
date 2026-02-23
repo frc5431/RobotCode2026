@@ -32,7 +32,7 @@ public class ShooterConstants {
     public static final boolean breakType = false;
     public static final double gearRatio = 1 / 1;
 
-    public static final double p = 5;
+    public static final double p = 3;
     public static final double i = 0;
     public static final double d = 0;
     // public static final double maxIAccum = 2 * i; //CTRE Doesn't have one? Might
