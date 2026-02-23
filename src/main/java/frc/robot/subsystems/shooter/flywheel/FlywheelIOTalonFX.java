@@ -7,11 +7,13 @@ import org.ejml.dense.block.VectorOps_DDRB;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.units.Unit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -85,9 +87,9 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void setRPM(double rpm) {
-    VelocityVoltage output = config.velocityControl.withVelocity(Units.RotationsPerSecond.of(rpm / 60));
-    leader.setControl(output);
-    // plotOutput = output;
+    VelocityVoltage output = config.velocityControl.withVelocity(Units.RPM.of(rpm));
+    leader.setControl(new VelocityDutyCycle(Units.RPM.of(rpm)));
+    plotOutput = output;
     // FIX RPM WHY NO WORK? rn its hardcoded voltage
     // if (rpm == 0 || rpm < 0) {
     //   leader.setVoltage(0);
