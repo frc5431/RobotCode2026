@@ -36,7 +36,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
       configPIDGains(ShooterFlywheelConstants.p, ShooterFlywheelConstants.i, ShooterFlywheelConstants.d);
       configGearRatio(ShooterFlywheelConstants.gearRatio);
       configMotorInverted(ShooterFlywheelConstants.inverted);
-      configFeedForwardGains(0.2, 0.12, 0, 0);
+      configFeedForwardGains(0.35, 0.12, 0, 0);
     }
   }
 
@@ -98,13 +98,13 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   @Override
   public void setRPM(double rpm) {
     AngularVelocity rps = Units.RotationsPerSecond.of(rpm / 60);
-    double rps2 = 40;
+    AngularVelocity rps2 = RotationsPerSecond.of(4800 / 60);
     // VelocityVoltage output = config.velocityControl.withVelocity(rps);
-    VelocityVoltage velocityOuput = new VelocityVoltage(0).withVelocity(rps2);
+    VelocityVoltage velocityOuput = new VelocityVoltage(rps2).withSlot(0);
     leader.setControl(velocityOuput);
 
     plotOutput = velocityOuput;
-    plotrps = rps2;
+    // plotrps = rps2;
 
     
 
