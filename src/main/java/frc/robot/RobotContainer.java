@@ -254,11 +254,11 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
-    driver.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
-    driver.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, false));
-    driver.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
-    driver.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
-    driver.x().onTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
+    // driver.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
+    // driver.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, false));
+    // driver.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
+    // driver.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
+    // driver.x().onTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
     driver.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
     driver.b().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
     
