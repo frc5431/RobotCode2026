@@ -25,7 +25,8 @@ public class FeederConstants {
   public static final boolean breakType = false;
   public static final double gearRatio = 1 / 1;
 
-  public static final Current stallLimit = Units.Amps.of(60);
+  // stall is current at 0 rpm, supply is current at runnign speed. Stator is current throguh "motor widning" whatever that means.
+  public static final Current stallLimit = Units.Amps.of(90);
   public static final Current supplyLimit = Units.Amps.of(80);
   public static final double maxForwardOutput = 1;
   public static final double maxReverseOutput = -1;

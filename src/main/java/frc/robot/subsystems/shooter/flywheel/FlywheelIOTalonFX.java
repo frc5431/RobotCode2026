@@ -18,6 +18,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
@@ -35,6 +36,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
       configPIDGains(ShooterFlywheelConstants.p, ShooterFlywheelConstants.i, ShooterFlywheelConstants.d);
       configGearRatio(ShooterFlywheelConstants.gearRatio);
       configMotorInverted(ShooterFlywheelConstants.inverted);
+      configFeedForwardGains(0.2, 0.12, 0, 0);
     }
   }
 
@@ -46,6 +48,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private StatusSignal<AngularVelocity> followerFlywheelRPM;
   private StatusSignal<Current> followerAmps;
   public static VelocityVoltage plotOutput;
+  public static double plotrps;
   // No clue stole from ModuleIO
   private final Debouncer flywheelConnectedDebounce =
       new Debouncer(0.5, Debouncer.DebounceType.kFalling);
@@ -61,6 +64,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     followerFlywheelRPM = follower.getVelocity();
     followerAmps = follower.getStatorCurrent();
 
+    // config.talonConfig.Slot0.k;
     config.applyTalonConfig(leader);
     config.applyTalonConfig(follower);
     
@@ -83,13 +87,32 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     inputs.followerAppliedVoltage = followerAppliedVoltage.getValueAsDouble();
     inputs.followerRPM = followerFlywheelRPM.getValue().in(RPM);
     inputs.followerAmps = followerAmps.getValueAsDouble();
+
+    if (plotrps > 0 && plotOutput.Velocity > 0) {
+          SmartDashboard.putNumber("FlyhweelRPS", plotrps);
+    SmartDashboard.putNumber("FlyhweelOutputVelocity", plotOutput.Velocity);
+    }
+    
   }
 
   @Override
   public void setRPM(double rpm) {
-    VelocityVoltage output = config.velocityControl.withVelocity(Units.RPM.of(rpm));
-    leader.setControl(new VelocityDutyCycle(Units.RPM.of(rpm)));
-    plotOutput = output;
+    AngularVelocity rps = Units.RotationsPerSecond.of(rpm / 60);
+    double rps2 = 40;
+    // VelocityVoltage output = config.velocityControl.withVelocity(rps);
+    VelocityVoltage velocityOuput = new VelocityVoltage(0).withVelocity(rps2);
+    leader.setControl(velocityOuput);
+
+    plotOutput = velocityOuput;
+    plotrps = rps2;
+
+    
+
+    System.out.println("******************");
+    System.out.println(rps2);
+    System.out.println("******************");
+    System.out.println(velocityOuput);
+    System.out.println("******************");
     // FIX RPM WHY NO WORK? rn its hardcoded voltage
     // if (rpm == 0 || rpm < 0) {
     //   leader.setVoltage(0);

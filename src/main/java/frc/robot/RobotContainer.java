@@ -111,7 +111,7 @@ public class RobotContainer {
         shooter = new Shooter(new AnglerIOSim(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOSparkFlex());
         climber = new Climber(new ClimberIOSim());
-        feeder = new Feeder(new FeederIOSparkFlex());
+        feeder = new Feeder(new FeederIOSim());
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -260,6 +260,7 @@ public class RobotContainer {
     driver.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
     driver.x().onTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
     driver.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
+    driver.b().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
     
 
     // // Auto aim command example; code from AKit template.
