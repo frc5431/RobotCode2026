@@ -67,4 +67,9 @@ public class AnglerIOTalonFX implements AnglerIO {
     PositionVoltage mm = config.positionVoltage.withPosition(positionAngle);
       talon.setControl(mm);
   }
+
+  @Override
+  public void setVoltage(double voltage) {
+    talon.setVoltage(voltage);
+  }
 }

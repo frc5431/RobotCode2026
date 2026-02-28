@@ -79,8 +79,7 @@ public class RobotContainer {
   private final Feeder feeder;
 
   // Controller
-  private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandXboxController operator = new CommandXboxController(1);
+  private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -220,9 +219,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX()));
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
 
     
     intake.setDefaultCommand(intake.stop());
@@ -245,7 +244,7 @@ public class RobotContainer {
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    driver
+    controller
         .y()
         .onTrue(
             Commands.runOnce(
@@ -254,12 +253,12 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
-    driver.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
-    driver.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, false));
-    driver.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
-    driver.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
-    driver.x().onTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
-    driver.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
+    controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
+    controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, false));
+    controller.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
+    controller.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
+    controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
+    controller.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
     
 
     // // Auto aim command example; code from AKit template.

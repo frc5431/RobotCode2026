@@ -62,6 +62,7 @@ public class ShooterConstants {
     
     public static final Current stallLimit = Units.Amps.of(60);
     public static final Current supplyLimit = Units.Amps.of(80);
+    public static final Current homingCurrent = Units.Amps.of(50);
     // public static final double maxForwardOutput = 1;
     // public static final double maxReverseOutput = 0.5;
 

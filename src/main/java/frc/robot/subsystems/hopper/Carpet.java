@@ -35,7 +35,7 @@ public class Carpet extends SubsystemBase {
   public Command runCarpetCommand(CarpetModes carpetMode) {
     return new RunCommand(() -> {
       this.runRollerEnum(carpetMode);
-    }, this).withName("Carpet.runCarpetEnum");
+    }, this).withName("Carpet.runCarpetEnum" + carpetMode.toString());
   }
 
 }

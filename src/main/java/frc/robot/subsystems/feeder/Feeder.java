@@ -36,6 +36,6 @@ public class Feeder extends SubsystemBase {
     }
 
     public Command runFeederCommand(FeederModes feederMode) {
-        return new RunCommand(() -> runFeederEnum(feederMode), this).withName("Feeder.runEnum");
+        return new RunCommand(() -> runFeederEnum(feederMode), this).withName("Feeder.runEnum" + feederMode.toString());
     }
 }

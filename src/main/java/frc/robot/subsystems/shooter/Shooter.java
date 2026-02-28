@@ -4,8 +4,11 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterAnglerConstants;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
 import frc.robot.subsystems.shooter.angler.AnglerIO;
 import frc.robot.subsystems.shooter.angler.AnglerIOInputsAutoLogged;
@@ -60,4 +63,16 @@ public class Shooter extends SubsystemBase {
     }, this).withName("Intake.Stop");
 
   } 
+
+  public Command setZero() {
+    return new SequentialCommandGroup(
+      new RunCommand(() -> {
+        anglerIO.setVoltage(-2);
+      }, this).until(
+        () -> anglerInputs.currentAmps > ShooterAnglerConstants.homingCurrent.baseUnitMagnitude()
+      ).withTimeout(2),
+      new RunCommand(
+        () -> anglerIO.setPosition(0), this)
+    );
+  }
 }
