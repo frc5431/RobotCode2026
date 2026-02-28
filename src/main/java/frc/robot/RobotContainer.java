@@ -110,7 +110,7 @@ public class RobotContainer {
         shooter = new Shooter(new AnglerIOSim(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOSparkFlex());
         climber = new Climber(new ClimberIOSim());
-        feeder = new Feeder(new FeederIOSim());
+        feeder = new Feeder(new FeederIOSparkFlex());
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -253,22 +253,12 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
-<<<<<<< HEAD
     controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
     controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, false));
     controller.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
     controller.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
     controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
     controller.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
-=======
-    // driver.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
-    // driver.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, false));
-    // driver.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
-    // driver.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
-    // driver.x().onTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
-    driver.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
-    driver.b().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
->>>>>>> 56d63832b660a17fc6f2b71c74de01406aa63796
     
 
     // // Auto aim command example; code from AKit template.
