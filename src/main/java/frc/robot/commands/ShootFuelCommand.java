@@ -18,7 +18,7 @@ public class ShootFuelCommand extends SequentialCommandGroup {
         feeder.runFeederCommand(FeederModes.REVERSE),
         new WaitCommand(0.5)),
       new ParallelCommandGroup(
-        new InhaleCommand(intake, carpet, feeder, true).withName("ShootFuelCommand.Inhale")),
+        new InhaleCommand(intake, carpet, feeder,true, true).withName("ShootFuelCommand.Inhale")),
         shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withName("ShootFuelCommand.Shoot")
       );
       

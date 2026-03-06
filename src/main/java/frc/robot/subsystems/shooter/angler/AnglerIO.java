@@ -20,4 +20,5 @@ public interface AnglerIO {
   /** Run the motor to the specified voltage. */
   public default void setVoltage(double voltage) {}
 
+  public default void setZero() {}
 }

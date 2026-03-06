@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooter.flywheel;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public interface FlywheelIO {
   @AutoLog
   public static class FlywheelIOInputs {
@@ -19,5 +21,5 @@ public interface FlywheelIO {
   public default void updateInputs(FlywheelIOInputs inputs) {}
 
   /** Run the motor to the specified rotation per minute. */
-  public default void setRPM(double rpm) {}
+  public default void setRPM(AngularVelocity rpm) {}
 }

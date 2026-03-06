@@ -8,7 +8,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
@@ -58,9 +59,9 @@ public class FlywheelIOSim implements FlywheelIO {
     }
 
     @Override
-    public void setRPM(double rpm) {
+    public void setRPM(AngularVelocity rpm) {
 
-      if (rpm == 0) {
+      if (rpm.in(Units.RPM) == 0) {
         flywheelClosedLoop = false;
         appliedVoltage = 0.0;
         return;
@@ -68,7 +69,7 @@ public class FlywheelIOSim implements FlywheelIO {
 
       flywheelClosedLoop = true;
 
-      double setpointRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(rpm);
+      double setpointRadPerSec = rpm.in(Units.RadiansPerSecond);
 
       flywheelFFVolts = FLYWHEEL_KS * Math.signum(setpointRadPerSec)
           + FLYWHEEL_KV * setpointRadPerSec;

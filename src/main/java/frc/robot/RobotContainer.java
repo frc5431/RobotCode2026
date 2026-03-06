@@ -8,6 +8,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -107,7 +109,7 @@ public class RobotContainer {
         //         new VisionIOLimelight(camera1Name, drive::getRotation));
 
         intake = new Intake(new RollerIOSparkFlex(), new PivotIOSim());
-        shooter = new Shooter(new AnglerIOSim(), new FlywheelIOTalonFX());
+        shooter = new Shooter(new AnglerIOTalonFX(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOSparkFlex());
         climber = new Climber(new ClimberIOSim());
         feeder = new Feeder(new FeederIOSparkFlex());
@@ -202,7 +204,7 @@ public class RobotContainer {
 
     configureDriverBindings();
     configureOperatorBindings();
-    
+    registerCommands();
 
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
 
@@ -253,13 +255,15 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
-    controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
-    controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, false));
+    controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
+    controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true, false));
+
     controller.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
     controller.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
     controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
     controller.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
-    
+    controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
+
 
     // // Auto aim command example; code from AKit template.
     // @SuppressWarnings("resource")
@@ -281,6 +285,10 @@ public class RobotContainer {
   private void configureOperatorBindings() {
     // operator.a().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
     // operator.b().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
+  }                         
+
+  private void registerCommands() {
+    NamedCommands.registerCommand("ShootClose", shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -289,5 +297,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void teleopInit() {
+    CommandScheduler.getInstance().schedule(shooter.homing());
   }
 }

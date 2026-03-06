@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter.flywheel;
 import static edu.wpi.first.units.Units.*;
 
 import org.ejml.dense.block.VectorOps_DDRB;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -86,7 +87,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     pid.setP(ShooterFlywheelConstants.testp.get());
     pid.setI(ShooterFlywheelConstants.testi.get());
     pid.setD(ShooterFlywheelConstants.testd.get());
-
+ 
 
     var flywheelStatus = BaseStatusSignal.refreshAll(leaderAppliedVoltage, leaderAmps, leaderFlywheelRPM,
         followerAppliedVoltage, followerAmps, followerFlywheelRPM);
@@ -111,21 +112,33 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   }
 
   @Override
-  public void setRPM(double rpm){
-    double rps = rpm / 60.0;
-    AngularVelocity currentRPS = leader.getVelocity().getValue();
-    double pidOutput = pid.calculate(currentRPS.in(Units.RotationsPerSecond), rps);
+  public void setRPM(AngularVelocity rpm){
+    Logger.recordOutput("/Shooter/DesiredRPM", rpm);
+    Logger.recordOutput("/Shooter/Voltage", leader.getMotorVoltage().getValueAsDouble());
+    AngularVelocity currentRPM = leader.getVelocity().getValue();
+    double pidOutput = pid.calculate(currentRPM.in(Units.RPM), rpm.in(Units.RPM));
 
-    double voltage = pidOutput + ShooterFlywheelConstants.testkS.get() + ShooterFlywheelConstants.testkV.get() * rps;
+    double voltage = pidOutput + ShooterFlywheelConstants.kS + ShooterFlywheelConstants.testkV.get() * rpm.in(Units.RPM);
 
     voltage = Math.max(Math.min(voltage, 12), -12);
 
     leader.setVoltage(voltage);
 
-    System.out.println("******************");
-    System.out.println(leader.getVelocity().getValue());
-    System.out.println("******************");
+    if(rpm.in(Units.RotationsPerSecond) > 0){
+    leader.setVoltage(voltage);
+    }
+    else {
+      leader.set(0);
+    }
 
+    // System.out.println("******************");
+    // System.out.println(ShooterFlywheelConstants.testp.getAsDouble());
+    // System.out.println("******************");
+    // if (rpm == 0 || rpm < 0) {
+    //   leader.setVoltage(0);
+    // } else {
+    //   leader.setVoltage(5);
+    // }
   }
 
   public void setRPMbck(double rpm) {
@@ -146,11 +159,11 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     // System.out.println(velocityOuput);
     // System.out.println("******************");
     // FIX RPM WHY NO WORK? rn its hardcoded voltage
-    // if (rpm == 0 || rpm < 0) {
-    //   leader.setVoltage(0);
-    // } else {
-    //   leader.setVoltage(8);
-    // }
+    if (rpm == 0 || rpm < 0) {
+      leader.setVoltage(0);
+    } else {
+      leader.setVoltage(5);
+    }
 
   }
 }
