@@ -1,6 +1,8 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterAnglerConstants;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
 import frc.robot.subsystems.shooter.angler.AnglerIO;
 import frc.robot.subsystems.shooter.angler.AnglerIOInputsAutoLogged;
@@ -49,6 +52,7 @@ public class Shooter extends SubsystemBase {
     Logger.processInputs("Shooter/Flywheel", flywheelInputs);
 
     Logger.recordOutput("Shooter/Mode", shooterMode);
+    Logger.recordOutput("Shooter/Zeroed", zeroed);
     // System.out.println("***********************");
     // System.out.println(FlywheelIOTalonFX.plotOutput);
     // System.out.println("***********************");
@@ -84,21 +88,26 @@ public class Shooter extends SubsystemBase {
   public InstantCommand setZero() {
     return new InstantCommand(() -> anglerIO.setZero(), this);
   }
+
+  public Command tune() {
+    return new RunCommand(() -> {
+      flywheelIO.setRPM(AngularVelocity.ofRelativeUnits(ShooterFlywheelConstants.tuneDesiredSpeed.get(), RPM));
+      anglerIO.setPosition(ShooterAnglerConstants.tuneDesiredPosition.get());
+    }, this);
+  }
   
   public Command homing() {
     return new SequentialCommandGroup(
       new RunCommand(() -> {
         zeroed = false;
-        anglerIO.setVoltage(-2);
+        anglerIO.setVoltage(-1);
       }, this).until(
         () -> anglerInputs.currentAmps > ShooterAnglerConstants.homingCurrent.baseUnitMagnitude()
       ).withTimeout(2),
-      new ParallelCommandGroup(
-        new RunCommand(() -> {
-          zeroed = true;
-          anglerIO.setVoltage(0);
-        }), null),
-        setZero()
+      new RunCommand(() -> {
+        zeroed = true;
+        anglerIO.setZero();
+      })
       );
   }
 }

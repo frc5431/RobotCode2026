@@ -262,8 +262,8 @@ public class RobotContainer {
     controller.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
     controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
     controller.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
-    controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
-
+    // controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
+    controller.b().whileTrue(shooter.tune());
 
     // // Auto aim command example; code from AKit template.
     // @SuppressWarnings("resource")
@@ -300,6 +300,8 @@ public class RobotContainer {
   }
 
   public void teleopInit() {
-    CommandScheduler.getInstance().schedule(shooter.homing());
-  }
+    if (!shooter.isZeroed()) {
+        CommandScheduler.getInstance().schedule(shooter.homing());
+    }
+    }
 }

@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -84,14 +85,28 @@ public class AnglerIOTalonFX implements AnglerIO {
     Logger.recordOutput("/ShooterAngler/DesiredAngle", positionAngle);
     Logger.recordOutput("/ShooterAngler/Voltage", talon.getMotorVoltage().getValueAsDouble());
     Angle currentAngle = talon.getPosition().getValue();
-    double pidOutput = pid.calculate(currentAngle.in(Units.Radian), positionAngle);
+    double angleDifference = positionAngle - currentAngle.in(Radians);
+    double voltage = 0;
+    if (angleDifference > 0.05) {
+        voltage = ShooterAnglerConstants.anglerP.get();
+    } else if (angleDifference < -0.05) {
+      voltage = -ShooterAnglerConstants.anglerD.get();
+    } else {
+      voltage = ShooterAnglerConstants.anglerkS.get();
+    }
+    // if (currentAngle.in(Rotations) > positionAngle) {
 
-    double voltage = pidOutput + ShooterAnglerConstants.anglerkS.get() + ShooterAnglerConstants.anglerkV.get() * positionAngle;
+    // }
+    // double pidOutput = pid.calculate(currentAngle.in(Units.Rotations), positionAngle);
+
+    // double voltage = pidOutput + ShooterAnglerConstants.anglerkS.get() + ShooterAnglerConstants.anglerkV.get() * positionAngle;
 
     voltage = Math.max(Math.min(voltage, 12), -12);
 
-    System.out.println(voltage);
-    talon.setVoltage( ShooterAnglerConstants.anglerkV.get());
+    // System.out.println(voltage);
+    // talon.setVoltage( ShooterAnglerConstants.anglerkV.get());
+
+    talon.setVoltage(voltage);
 
     // if(positionAngle > 0){
     // talon.setVoltage(voltage);
@@ -109,7 +124,8 @@ public class AnglerIOTalonFX implements AnglerIO {
 
   @Override
   public void setZero() {
-    talon.setPosition(0);
-      
+    talon.setControl(new NeutralOut());
+    talon.setPosition(0.0);
+    talon.getPosition().waitForUpdate(0.1);   
   }
 }

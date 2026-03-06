@@ -12,9 +12,9 @@ import edu.wpi.first.units.measure.Current;
 public class ShooterConstants {
 
   public enum ShooterModes {
-    SHOOT_FAR(Units.RPM.of(5000), Units.Radians.of(.6)),
-    SHOOT_CLOSE(Units.RPM.of(2500), Units.Radians.of(.5)),
-    IDLE(Units.RPM.of(0), Units.Degree.of(-.15));
+    SHOOT_FAR(Units.RPM.of(0), Units.Rotations.of(.75)),
+    SHOOT_CLOSE(Units.RPM.of(0), Units.Rotations.of(.1)),
+    IDLE(Units.RPM.of(0), Units.Degree.of(0));
 
     public AngularVelocity speed;
     public Angle angle;
@@ -43,6 +43,8 @@ public class ShooterConstants {
     public static final LoggedNetworkNumber testd = new LoggedNetworkNumber("/Tuning/Shooter/D", 0);
     public static final LoggedNetworkNumber testkS = new LoggedNetworkNumber("/Tuning/Shooter/kS", 0);
     public static final LoggedNetworkNumber testkV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0);
+    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/desiredSpeed", 0);
+
 
     public static final double kS = 0;
     public static final double kV = 0.001000; //feedforward
@@ -69,11 +71,11 @@ public class ShooterConstants {
     // public static final double maxIAccum = 2 * i; //CTRE Doesn't have one? Might
     // Add later
 
-    public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.FusedCANcoder;
+    public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.RotorSensor;
 
     public static final Current stallLimit = Units.Amps.of(60);
     public static final Current supplyLimit = Units.Amps.of(80);
-    public static final Current homingCurrent = Units.Amps.of(50);
+    public static final Current homingCurrent = Units.Amps.of(35);
     // public static final double maxForwardOutput = 1;
     // public static final double maxReverseOutput = 0.5;
 
@@ -83,6 +85,7 @@ public class ShooterConstants {
     public static final LoggedNetworkNumber anglerD = new LoggedNetworkNumber("/Tuning/Angler/D", 0);
     public static final LoggedNetworkNumber anglerkS = new LoggedNetworkNumber("/Tuning/Angler/kS", 0);
     public static final LoggedNetworkNumber anglerkV = new LoggedNetworkNumber("/Tuning/Angler/kV", 0);
+    public static final LoggedNetworkNumber tuneDesiredPosition = new LoggedNetworkNumber("/Tuning/Angler/desiredPosition", 0);
 
     public  static final boolean tunePID = true;
 

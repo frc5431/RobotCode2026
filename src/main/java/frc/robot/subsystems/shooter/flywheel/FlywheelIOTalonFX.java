@@ -118,7 +118,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     AngularVelocity currentRPM = leader.getVelocity().getValue();
     double pidOutput = pid.calculate(currentRPM.in(Units.RPM), rpm.in(Units.RPM));
 
-    double voltage = pidOutput + ShooterFlywheelConstants.kS + ShooterFlywheelConstants.testkV.get() * rpm.in(Units.RPM);
+    double voltage = pidOutput + ShooterFlywheelConstants.testkS.get() + ShooterFlywheelConstants.testkV.get() * rpm.in(Units.RPM);
 
     voltage = Math.max(Math.min(voltage, 12), -12);
 
