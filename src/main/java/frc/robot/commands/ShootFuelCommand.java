@@ -14,9 +14,9 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
 public class ShootFuelCommand extends SequentialCommandGroup {
   public ShootFuelCommand(Intake intake, Carpet carpet, Feeder feeder, Shooter shooter) {
     addCommands(
-      new ParallelRaceGroup(
-        feeder.runFeederCommand(FeederModes.REVERSE),
-        new WaitCommand(0.5)),
+      // new ParallelRaceGroup(
+      //   feeder.runFeederCommand(FeederModes.REVERSE),
+      //   new WaitCommand(0.5)),
       new ParallelCommandGroup(
         new InhaleCommand(intake, carpet, feeder,true, true).withName("ShootFuelCommand.Inhale")),
         shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withName("ShootFuelCommand.Shoot")

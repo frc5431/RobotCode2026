@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake.pivot;
+ package frc.robot.subsystems.intake.pivot;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -22,7 +22,6 @@ public class PivotIOTalonFX implements PivotIO {
   public static class PivotTalonFXConfig extends CTREMechanism.Config {
     public PivotTalonFXConfig() {
       super("PivotTalonFX", Constants.RIO_CANBUS);
-      configPIDGains(IntakePivotConstants.p, IntakePivotConstants.i, IntakePivotConstants.d);
       configNeutralBrakeMode(IntakePivotConstants.breakType);
       configFeedbackSensorSource(IntakePivotConstants.feedbackSensorCTRE);
       configGearRatio(IntakePivotConstants.gearRatio);

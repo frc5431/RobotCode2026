@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 
+import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -12,9 +13,10 @@ import edu.wpi.first.units.measure.Current;
 public class ShooterConstants {
 
   public enum ShooterModes {
-    SHOOT_FAR(Units.RPM.of(0), Units.Rotations.of(.75)),
-    SHOOT_CLOSE(Units.RPM.of(0), Units.Rotations.of(.1)),
-    IDLE(Units.RPM.of(0), Units.Degree.of(0));
+    SHOOT_FAR(Units.RPM.of(3500), Units.Rotations.of(.75)),
+    SHOOT_CLOSE(Units.RPM.of(2500), Units.Rotations.of(.1)),
+    IDLE(Units.RPM.of(0), Units.Degree.of(0)),
+    REVERSE(Units.RPM.of(-500), Units.Degree.of(0));
 
     public AngularVelocity speed;
     public Angle angle;
@@ -38,16 +40,16 @@ public class ShooterConstants {
     public static final double i = 0;
     public static final double d = 0;
 
-    public static LoggedNetworkNumber testp = new LoggedNetworkNumber("/Tuning/Shooter/P", 002000);
+    public static LoggedNetworkNumber testp = new LoggedNetworkNumber("/Tuning/Shooter/P", 0.003);
     public static final LoggedNetworkNumber testi = new LoggedNetworkNumber("/Tuning/Shooter/I", 0);
-    public static final LoggedNetworkNumber testd = new LoggedNetworkNumber("/Tuning/Shooter/D", 0);
-    public static final LoggedNetworkNumber testkS = new LoggedNetworkNumber("/Tuning/Shooter/kS", 0);
-    public static final LoggedNetworkNumber testkV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0);
-    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/desiredSpeed", 0);
-
+    public static final LoggedNetworkNumber testd = new LoggedNetworkNumber("/Tuning/Shooter/D", 0.00002);
+    public static final LoggedNetworkNumber testkS = new LoggedNetworkNumber("/Tuning/Shooter/kS", 0.375);
+    public static final LoggedNetworkNumber testkV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0.0021);
+    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/desiredSpeed",
+        0);
 
     public static final double kS = 0;
-    public static final double kV = 0.001000; //feedforward
+    public static final double kV = 0.001000; // feedforward
     // public static final double maxIAccum = 2 * i; //CTRE Doesn't have one? Might
     // Add later
 
@@ -62,7 +64,7 @@ public class ShooterConstants {
     public static final boolean attached = true;
     public static final int id = 53;
     public static final boolean inverted = false;
-    public static final boolean breakType = false;
+    public static final boolean breakType = true;
     public static final double gearRatio = 1 / 1;
 
     public static final double p = 1;
@@ -79,15 +81,17 @@ public class ShooterConstants {
     // public static final double maxForwardOutput = 1;
     // public static final double maxReverseOutput = 0.5;
 
-    
     public static LoggedNetworkNumber anglerP = new LoggedNetworkNumber("/Tuning/Angler/P", .002000);
     public static final LoggedNetworkNumber anglerI = new LoggedNetworkNumber("/Tuning/Angler/I", 0);
     public static final LoggedNetworkNumber anglerD = new LoggedNetworkNumber("/Tuning/Angler/D", 0);
     public static final LoggedNetworkNumber anglerkS = new LoggedNetworkNumber("/Tuning/Angler/kS", 0);
     public static final LoggedNetworkNumber anglerkV = new LoggedNetworkNumber("/Tuning/Angler/kV", 0);
-    public static final LoggedNetworkNumber tuneDesiredPosition = new LoggedNetworkNumber("/Tuning/Angler/desiredPosition", 0);
+    public static final LoggedNetworkNumber tuneDesiredPosition = new LoggedNetworkNumber(
+        "/Tuning/Angler/desiredPosition", 0);
 
-    public  static final boolean tunePID = true;
+    public static final boolean tunePID = true;
+
+    public static final BangBangController bangBangController = new BangBangController();
 
     public static final Angle maxReverseRotation = Units.Rotation.of(-0.1);
     public static final Angle maxFowardRotation = Units.Rotation.of(2);

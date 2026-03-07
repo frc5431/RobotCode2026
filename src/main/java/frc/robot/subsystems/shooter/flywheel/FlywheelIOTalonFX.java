@@ -110,6 +110,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     SmartDashboard.putNumber("Flywheel RPM", leader.getVelocity().getValue().in(Units.RPM));
 
   }
+  
 
   @Override
   public void setRPM(AngularVelocity rpm){

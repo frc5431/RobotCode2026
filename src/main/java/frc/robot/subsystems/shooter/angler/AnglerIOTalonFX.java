@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.Units;
@@ -24,7 +25,8 @@ import frc.team5431.titan.core.subsystem.CTREMechanism;
 public class AnglerIOTalonFX implements AnglerIO {
   private final TalonFX talon = new TalonFX(ShooterAnglerConstants.id, Constants.CANIVORE_CANBUS);
 
-  public final PIDController pid = new PIDController(ShooterAnglerConstants.anglerP.get(), ShooterAnglerConstants.anglerI.get(), ShooterAnglerConstants.anglerD.get());
+  public final PIDController pid = new PIDController(ShooterAnglerConstants.anglerP.get(),
+      ShooterAnglerConstants.anglerI.get(), ShooterAnglerConstants.anglerD.get());
 
   public static class PivotTalonFXConfig extends CTREMechanism.Config {
     public PivotTalonFXConfig() {
@@ -38,14 +40,12 @@ public class AnglerIOTalonFX implements AnglerIO {
     }
   }
 
-  
   private StatusSignal<Voltage> appliedVoltage;
   private StatusSignal<Angle> pivotPosition;
   private StatusSignal<Current> currentAmps;
 
   // No clue stole from ModuleIO
-  private final Debouncer anglerConnectedDebounce =
-      new Debouncer(0.5, Debouncer.DebounceType.kFalling);
+  private final Debouncer anglerConnectedDebounce = new Debouncer(0.5, Debouncer.DebounceType.kFalling);
 
   private PivotTalonFXConfig config = new PivotTalonFXConfig();
 
@@ -78,28 +78,42 @@ public class AnglerIOTalonFX implements AnglerIO {
   }
 
   @Override
-  public void setPosition(double positionAngle) {
+  public void setPosition(double angleSetpoint) {
     // PositionVoltage mm = config.positionVoltage.withPosition(positionAngle);
-    //   talon.setControl(mm);
+    // talon.setControl(mm);
 
-    Logger.recordOutput("/ShooterAngler/DesiredAngle", positionAngle);
+    Logger.recordOutput("/ShooterAngler/DesiredAngle", angleSetpoint);
     Logger.recordOutput("/ShooterAngler/Voltage", talon.getMotorVoltage().getValueAsDouble());
-    Angle currentAngle = talon.getPosition().getValue();
-    double angleDifference = positionAngle - currentAngle.in(Radians);
+    double currentAngle = talon.getPosition().getValueAsDouble();
     double voltage = 0;
-    if (angleDifference > 0.05) {
-        voltage = ShooterAnglerConstants.anglerP.get();
-    } else if (angleDifference < -0.05) {
-      voltage = -ShooterAnglerConstants.anglerD.get();
+
+    ShooterAnglerConstants.bangBangController.setTolerance(0.1);
+
+    if (angleSetpoint > currentAngle) {
+      voltage = ShooterAnglerConstants.bangBangController.calculate(currentAngle, angleSetpoint) * 1;
     } else {
-      voltage = ShooterAnglerConstants.anglerkS.get();
+      voltage = -ShooterAnglerConstants.bangBangController.calculate(-currentAngle, -angleSetpoint) * 1;
     }
+    
+    if(ShooterAnglerConstants.bangBangController.atSetpoint()){
+    voltage = 0;
+  }
+    // if (angleDi][\fference > 0.05) {
+    // voltage = ShooterAnglerConstants.anglerP.get();
+    // } else if (angleDifference < -0.05) {
+    // voltage = -ShooterAnglerConstants.anglerD.get();
+    // } else {
+    // voltage = ShooterAnglerConstants.anglerkS.get();
+    // }
+
     // if (currentAngle.in(Rotations) > positionAngle) {
 
     // }
-    // double pidOutput = pid.calculate(currentAngle.in(Units.Rotations), positionAngle);
+    // double pidOutput = pid.calculate(currentAngle.in(Units.Rotations),
+    // positionAngle);
 
-    // double voltage = pidOutput + ShooterAnglerConstants.anglerkS.get() + ShooterAnglerConstants.anglerkV.get() * positionAngle;
+    // double voltage = pidOutput + ShooterAnglerConstants.anglerkS.get() +
+    // ShooterAnglerConstants.anglerkV.get() * positionAngle;
 
     voltage = Math.max(Math.min(voltage, 12), -12);
 
@@ -112,7 +126,7 @@ public class AnglerIOTalonFX implements AnglerIO {
     // talon.setVoltage(voltage);
     // }
     // else {
-    //   talon.set(0);
+    // talon.set(0);
     // }
 
   }
@@ -126,6 +140,6 @@ public class AnglerIOTalonFX implements AnglerIO {
   public void setZero() {
     talon.setControl(new NeutralOut());
     talon.setPosition(0.0);
-    talon.getPosition().waitForUpdate(0.1);   
+    talon.getPosition().waitForUpdate(0.1);
   }
 }

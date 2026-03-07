@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InhaleCommand;
@@ -232,15 +233,15 @@ public class RobotContainer {
     shooter.setDefaultCommand(shooter.stop());
     // shooter.setDefaultCommand();
     // // Lock to 0° when A button is held
-    // driver
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAtAngle(
-    //             drive,\[]
+    controller
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
     
-    //             () -> -driver.getLeftY(),
-    //             () -> -driver.getLeftX(),
-    //             () -> Rotation2d.kZero));
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> Rotation2d.kZero));
 
     // // Switch to X pattern when X button is pressed
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -260,10 +261,12 @@ public class RobotContainer {
 
     controller.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
     controller.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
-    controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
-    controller.y().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
+    // controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
+    controller.x().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
+    controller.povUp().whileTrue(shooter.runShooterCommand(ShooterModes.REVERSE));
+    controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
     // controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
-    controller.b().whileTrue(shooter.tune());
+    controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
 
     // // Auto aim command example; code from AKit template.
     // @SuppressWarnings("resource")
