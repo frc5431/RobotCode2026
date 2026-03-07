@@ -61,6 +61,9 @@ import frc.robot.subsystems.shooter.angler.AnglerIOTalonFX;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOTalonFX;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -80,6 +83,7 @@ public class RobotContainer {
   private final Carpet carpet;
   private final Climber climber;
   private final Feeder feeder;
+  private final Vision vision;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -109,11 +113,12 @@ public class RobotContainer {
         //         new VisionIOLimelight(camera0Name, drive::getRotation),
         //         new VisionIOLimelight(camera1Name, drive::getRotation));
 
-        intake = new Intake(new RollerIOSparkFlex(), new PivotIOSim());
+        intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
         shooter = new Shooter(new AnglerIOTalonFX(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOSparkFlex());
         climber = new Climber(new ClimberIOSim());
         feeder = new Feeder(new FeederIOSparkFlex());
+        vision = new Vision(drive::addVisionMeasurement, new VisionIOLimelight("limelight", drive::getRotation));
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -163,6 +168,7 @@ public class RobotContainer {
         climber = 
               new Climber(new ClimberIOSim());
         feeder = new Feeder(new FeederIOSim());
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
       default:
         // Replayed robot, disable IO implementations
@@ -180,6 +186,7 @@ public class RobotContainer {
         carpet = new Carpet(new CarpetIO() {});
         climber = new Climber(new ClimberIO() {});
         feeder = new Feeder(new FeederIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
 
     }
@@ -263,10 +270,13 @@ public class RobotContainer {
     controller.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
     // controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
     controller.x().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
-    controller.povUp().whileTrue(shooter.runShooterCommand(ShooterModes.REVERSE));
+    controller.povLeft().whileTrue(shooter.runShooterCommand(ShooterModes.REVERSE));
     controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
     // controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
-    controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
+    // controller.b().whileTrue(intake.runPivotVoltageCommand(-1));
+    // controller.povUp().whileTrue(intake.runPivotVoltageCommand(-5));
+    controller.povDown().whileTrue(intake.runPivotVoltageCommand(1)); //positive means down
+    controller.povUp().whileTrue(intake.runPivotVoltageCommand(-1));
 
     // // Auto aim command example; code from AKit template.
     // @SuppressWarnings("resource")
