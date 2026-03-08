@@ -1,20 +1,13 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Rotations;
-
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,7 +18,6 @@ import frc.robot.subsystems.shooter.angler.AnglerIO;
 import frc.robot.subsystems.shooter.angler.AnglerIOInputsAutoLogged;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOInputsAutoLogged;
-import frc.robot.subsystems.shooter.flywheel.FlywheelIOTalonFX;
 import lombok.Getter;
 
 public class Shooter extends SubsystemBase {
@@ -78,7 +70,7 @@ public class Shooter extends SubsystemBase {
     }, this).withName("Shooter.runAngler" + mode.toString());
   } 
 
-  public Command runShooterCommand(ShooterModes mode) {
+  public Command  runShooterCommand(ShooterModes mode) {
     return new RunCommand(() -> {
       this.runShooterEnum(mode);
     }, this).withName("Shooter.runShooterEnum" + mode.toString());
@@ -117,7 +109,7 @@ public class Shooter extends SubsystemBase {
       }, this).until(
         () -> anglerInputs.currentAmps > ShooterAnglerConstants.homingCurrent.baseUnitMagnitude()
       ).withTimeout(2),
-      new RunCommand(() -> {
+      Commands.runOnce(() -> {
         zeroed = true;
         anglerIO.setZero();
       })

@@ -7,10 +7,6 @@ public class ShooterMath {
     private static InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
     private static InterpolatingDoubleTreeMap speedMap = new InterpolatingDoubleTreeMap();
 
-    static {
-
-    }
-    
     public static double calculateHoodPosition(double distanceToHub) {
         return hoodMap.get(distanceToHub);
     }

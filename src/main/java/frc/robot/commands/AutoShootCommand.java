@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederConstants.FeederModes;
@@ -15,7 +14,6 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterMath;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterAnglerConstants;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
 
 public class AutoShootCommand extends Command {
 

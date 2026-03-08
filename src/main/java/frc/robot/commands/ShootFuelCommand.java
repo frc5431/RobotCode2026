@@ -1,30 +1,25 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
+
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.FeederConstants.FeederModes;
-import frc.robot.subsystems.hopper.Carpet;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
 
 public class ShootFuelCommand extends SequentialCommandGroup {
-  public ShootFuelCommand(Intake intake, Carpet carpet, Feeder feeder, Shooter shooter) {
+  public ShootFuelCommand(Feeder feeder, Shooter shooter, ShooterModes shooterModes) {
     addCommands(
-      // new ParallelRaceGroup(
-      //   feeder.runFeederCommand(FeederModes.REVERSE),
-      //   new WaitCommand(0.5)),
+      // shooter.runShooterCommand(shooterModes).withName("ShootFuelCommand.Shoot")).until(() -> MathUtil.isNear(shooterModes.speed.magnitude(), shooter.getSpeed(), shooterModes.speed.magnitude() * 0.05),
       new ParallelCommandGroup(
-        new InhaleCommand(intake, carpet, feeder,true, true).withName("ShootFuelCommand.Inhale")),
-        shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withName("ShootFuelCommand.Shoot")
-      );
+        feeder.runFeederCommand(FeederModes.FEEDER).withName("FeederCommand.Feed"),
+        shooter.runShooterCommand(shooterModes).withName("ShootFuelCommand.Shoot")
+    ));
       
-    addRequirements(intake, carpet, feeder, shooter);
+    addRequirements(feeder, shooter);
   }
+
+  //TODO: once shooter hits rpm run feeder
 }

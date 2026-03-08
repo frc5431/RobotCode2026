@@ -97,6 +97,7 @@ public class ShooterConstants {
     public static final Angle maxFowardRotation = Units.Rotation.of(2);
 
     public static final double tolerance = 0.1;
-
+    public static LoggedNetworkNumber tunableTolerance = new LoggedNetworkNumber("/Tuning/Angler/tolerance", .1);
+    public static LoggedNetworkNumber tunableBangPerentage = new LoggedNetworkNumber("/Tuning/Angler/bangPercentage", 1);
   }
 }

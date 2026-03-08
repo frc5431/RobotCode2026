@@ -1,7 +1,5 @@
 package frc.robot.subsystems.feeder;
 
-import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
-
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Current;
 

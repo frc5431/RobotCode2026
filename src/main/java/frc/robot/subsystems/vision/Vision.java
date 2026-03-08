@@ -19,6 +19,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.vision.VisionIO.PoseObservation;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import java.util.LinkedList;
 import java.util.List;
@@ -91,8 +92,9 @@ public class Vision extends SubsystemBase {
       }
 
       // Loop over pose observations
-      for (var observation : inputs[cameraIndex].poseObservations) {
+      for (PoseObservation observation : inputs[cameraIndex].poseObservations) {
         // Check whether to reject pose
+        
         boolean rejectPose =
             observation.tagCount() == 0 // Must have at least one tag
                 || (observation.tagCount() == 1
@@ -106,6 +108,9 @@ public class Vision extends SubsystemBase {
                 || observation.pose().getY() < 0.0
                 || observation.pose().getY() > aprilTagLayout.getFieldWidth();
 
+        if (PoseObservationType.MEGATAG_2.equals(observation.type())) {
+          rejectPose = true;
+        }
         // Add pose to log
         robotPoses.add(observation.pose());
         if (rejectPose) {

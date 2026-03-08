@@ -7,15 +7,11 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
@@ -88,6 +84,7 @@ public class AnglerIOTalonFX implements AnglerIO {
     double voltage = 0;
 
     ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tolerance);
+    //  ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tunableTolerance.getAsDouble());
 
     if (angleSetpoint > currentAngle) {
       voltage = ShooterAnglerConstants.bangBangController.calculate(currentAngle, angleSetpoint) * 1;

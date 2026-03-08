@@ -1,7 +1,5 @@
 package frc.robot.subsystems.shooter.flywheel;
 
-import com.ctre.phoenix6.controls.VelocityVoltage;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.numbers.N1;
@@ -10,7 +8,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class FlywheelIOSim implements FlywheelIO {
