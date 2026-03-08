@@ -9,6 +9,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -104,7 +106,11 @@ public class Robot extends LoggedRobot {
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
-      CommandScheduler.getInstance().schedule(autonomousCommand);
+      CommandScheduler.getInstance().schedule(
+        Commands.sequence(
+          robotContainer.getHomingCommand(),
+          autonomousCommand.asProxy()
+        ));
     }
   }
 

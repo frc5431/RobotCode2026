@@ -1,0 +1,102 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.4075222222222226,
+        "y": 5.545388888888888
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.939788888888889,
+        "y": 4.814555555555555
+      },
+      "isLocked": false,
+      "linkedName": "TopTrenchStart"
+    },
+    {
+      "anchor": {
+        "x": 0.533,
+        "y": 5.051
+      },
+      "prevControl": {
+        "x": 0.533,
+        "y": 4.762340810322713
+      },
+      "nextControl": {
+        "x": 0.533,
+        "y": 5.339659189677287
+      },
+      "isLocked": false,
+      "linkedName": "DepotBottom"
+    },
+    {
+      "anchor": {
+        "x": 0.533,
+        "y": 6.5
+      },
+      "prevControl": {
+        "x": 0.533,
+        "y": 6.096986380542398
+      },
+      "nextControl": {
+        "x": 0.533,
+        "y": 6.903013619457602
+      },
+      "isLocked": false,
+      "linkedName": "DepotTop"
+    },
+    {
+      "anchor": {
+        "x": 2.3958487874465044,
+        "y": 5.684679029957205
+      },
+      "prevControl": {
+        "x": 1.3958487874465044,
+        "y": 5.684679029957205
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TopMidShoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6597510373443868,
+      "rotationDegrees": -20.0
+    },
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "deployIntake",
+      "waypointRelativePos": 0.36029776674937175,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 270.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 91.23197740263973
+  },
+  "reversed": false,
+  "folder": "AA",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -51.170175095029535
+  },
+  "useDefaultConstraints": true
+}

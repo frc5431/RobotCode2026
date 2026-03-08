@@ -41,7 +41,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.FieldConstants;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -154,6 +156,7 @@ public class Drive extends SubsystemBase {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
+    Logger.recordOutput("Drive/HubDistance", distFromHub());
     for (var module : modules) {
       module.periodic();
     }
@@ -356,4 +359,12 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
   }
+
+  public double distFromHub() {
+    Translation2d hub = FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(this.getPose().getTranslation());
+    Translation2d hubAdjusted = AllianceFlipUtil.apply(hub);
+    Translation2d translateDiff = hubAdjusted.minus(this.getPose().getTranslation());
+    return Math.sqrt(Math.pow(translateDiff.getX(), 2) + Math.pow(translateDiff.getY(), 2));
+  }
+
 }

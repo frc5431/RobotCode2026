@@ -87,7 +87,7 @@ public class AnglerIOTalonFX implements AnglerIO {
     double currentAngle = talon.getPosition().getValueAsDouble();
     double voltage = 0;
 
-    ShooterAnglerConstants.bangBangController.setTolerance(0.1);
+    ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tolerance);
 
     if (angleSetpoint > currentAngle) {
       voltage = ShooterAnglerConstants.bangBangController.calculate(currentAngle, angleSetpoint) * 1;

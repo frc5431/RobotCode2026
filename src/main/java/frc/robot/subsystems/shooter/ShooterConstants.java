@@ -96,5 +96,7 @@ public class ShooterConstants {
     public static final Angle maxReverseRotation = Units.Rotation.of(-0.1);
     public static final Angle maxFowardRotation = Units.Rotation.of(2);
 
+    public static final double tolerance = 0.1;
+
   }
 }

@@ -22,4 +22,6 @@ public interface FlywheelIO {
 
   /** Run the motor to the specified rotation per minute. */
   public default void setRPM(AngularVelocity rpm) {}
+
+  public default void setVoltage(double voltage) {}
 }

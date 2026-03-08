@@ -12,6 +12,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,9 +22,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InhaleCommand;
 import frc.robot.commands.ShootFuelCommand;
+import frc.robot.commands.UnjamCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -64,7 +68,13 @@ import frc.robot.subsystems.shooter.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.util.AllianceFlipUtil;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
+import java.util.Set;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -91,6 +101,8 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -240,43 +252,55 @@ public class RobotContainer {
     shooter.setDefaultCommand(shooter.stop());
     // shooter.setDefaultCommand();
     // // Lock to 0° when A button is held
-    controller
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
+    // controller
+    //     .a()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
     
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> Rotation2d.kZero));
+    //             () -> -controller.getLeftY(),
+    //             () -> -controller.getLeftX(),
+    //             () -> Rotation2d.kZero));
 
     // // Switch to X pattern when X button is pressed
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
-        .y()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    // controller
+    //     .y()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+    //                 drive)
+    //             .ignoringDisable(true));
+    controller.y().whileTrue(
+      DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), this::getAngleToGameElement)
+    );
+    controller.x().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
+    //  controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
+    controller.a().whileTrue(Commands.defer(() -> {
+      return new AutoShootCommand(intake, carpet, feeder, shooter, drive);
+    }, Set.of(intake, carpet, feeder, shooter)));
+
     controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
     controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, feeder, true, false));
-
-    controller.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUT_IDLE));
+    controller.rightBumper().onTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
     controller.leftBumper().onTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
+
     // controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
-    controller.x().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
-    controller.povLeft().whileTrue(shooter.runShooterCommand(ShooterModes.REVERSE));
-    controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
     // controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
     // controller.b().whileTrue(intake.runPivotVoltageCommand(-1));
     // controller.povUp().whileTrue(intake.runPivotVoltageCommand(-5));
+    controller.povUp().whileTrue(intake.runPivotVoltageCommand(-3));
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(1)); //positive means down
-    controller.povUp().whileTrue(intake.runPivotVoltageCommand(-1));
+
+    controller.start().whileTrue(new UnjamCommand(feeder, shooter));
+
+
+    // upclimb is left dpad, downclimb is right dpad
+
 
     // // Auto aim command example; code from AKit template.
     // @SuppressWarnings("resource")
@@ -302,6 +326,16 @@ public class RobotContainer {
 
   private void registerCommands() {
     NamedCommands.registerCommand("ShootClose", shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
+
+    // NamedCommands.registerCommand("AutoShoot", );
+    NamedCommands.registerCommand("AutoShoot", Commands.defer(
+      () -> {return new AutoShootCommand(intake, carpet, feeder, shooter, drive);}, Set.of(intake, carpet, feeder, shooter)));
+
+    NamedCommands.registerCommand("AutoAlign", DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, this::getAngleToGameElement));
+
+    NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
+
+    NamedCommands.registerCommand("deployIntake", intake.runIntakeCommand(IntakeMode.OUT_IDLE).withTimeout(2));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -317,4 +351,20 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(shooter.homing());
     }
     }
+
+  public Rotation2d getAngleToGameElement() {
+    Translation2d hubPose = FieldConstants.Hub.innerCenterPoint.toTranslation2d();
+    Translation2d hubPoseAdj = AllianceFlipUtil.apply(hubPose);
+    
+    Pose2d robotPose = drive.getPose();
+    Transform2d shooterTransform = new Transform2d(Inches.of(-10.824), Inches.of(8.125), Rotation2d.kZero);
+    Pose2d shooterPose = robotPose.transformBy(shooterTransform);
+
+    Translation2d diff = hubPoseAdj.minus(shooterPose.getTranslation());
+    return diff.getAngle();
+  }
+
+  public Command getHomingCommand() {
+    return shooter.homing();
+  }
 }

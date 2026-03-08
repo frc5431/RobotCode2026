@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.Units;
@@ -64,6 +66,11 @@ public class Shooter extends SubsystemBase {
     anglerIO.setPosition(mode.angle.magnitude());
   }
 
+  public void runShooterCustom(double rpm, double position) {
+    flywheelIO.setRPM(Units.RPM.of(rpm));
+    anglerIO.setPosition(position);
+  }
+
   public Command runAngler(ShooterModes mode) {
     return new RunCommand(() -> {
       // this.runShooterEnum(mode);
@@ -75,6 +82,12 @@ public class Shooter extends SubsystemBase {
     return new RunCommand(() -> {
       this.runShooterEnum(mode);
     }, this).withName("Shooter.runShooterEnum" + mode.toString());
+  }
+
+  public Command runShooterVoltageCommand(double voltage){
+    return new RunCommand(()-> {
+      flywheelIO.setVoltage(voltage);
+    });
   }
 
   public Command stop() {
@@ -110,4 +123,13 @@ public class Shooter extends SubsystemBase {
       })
       );
   }
+
+  public double getPosition() {
+    return anglerInputs.positionAngle;
+  }
+
+  public double getSpeed() {
+    return flywheelInputs.leaderRPM;
+  }
+
 }

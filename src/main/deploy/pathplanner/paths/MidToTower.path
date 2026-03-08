@@ -3,35 +3,42 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4291726105563479,
-        "y": 0.6903566333808839
+        "x": 3.5473894436519258,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.429172610556348,
-        "y": 0.6903566333808842
+        "x": 3.0139148641319236,
+        "y": 4.0
       },
       "isLocked": false,
-      "linkedName": "Outpost"
+      "linkedName": "MidStart"
     },
     {
       "anchor": {
-        "x": 2.3453777777777782,
-        "y": 4.054488888888889
+        "x": 1.8912410841654772,
+        "y": 3.795634807417975
       },
       "prevControl": {
-        "x": 1.3453777777777782,
-        "y": 4.054488888888889
+        "x": 2.3379528555486515,
+        "y": 3.795634807417975
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Mid"
+      "linkedName": "TowerShoot"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "deployIntake",
+      "waypointRelativePos": 0.3349088453747421,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -45,10 +52,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "AA",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

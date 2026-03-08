@@ -142,29 +142,9 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     // }
   }
 
-  public void setRPMbck(double rpm) {
-    // AngularVelcity rps = Units.RotationsPerSecond.of(rpm / 60);
-    // AngularVelocity rps2 = RotationsPerSecond.of(4800 / 60);
-    // // VelocityVoltage output = config.velocityControl.withVelocity(rps);
-    // VelocityVoltage velocityOuput = new
-    // VelocityVoltage(rps2).withSlot(0).withFeedForward(5);
-    // leader.setControl(velocityOuput);
+  @Override
+  public void setVoltage(double voltage) {
 
-    // plotOutput = velocityOuput;
-    // plotrps = rps2;
-
-
-    // System.out.println("******************");
-    // System.out.println(rps2);
-    // System.out.println("******************");
-    // System.out.println(velocityOuput);
-    // System.out.println("******************");
-    // FIX RPM WHY NO WORK? rn its hardcoded voltage
-    if (rpm == 0 || rpm < 0) {
-      leader.setVoltage(0);
-    } else {
-      leader.setVoltage(5);
-    }
-
+     leader.setVoltage(voltage);
   }
 }
