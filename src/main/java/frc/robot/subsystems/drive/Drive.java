@@ -364,7 +364,7 @@ public class Drive extends SubsystemBase {
     Translation2d hub = FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(this.getPose().getTranslation());
     Translation2d hubAdjusted = AllianceFlipUtil.apply(hub);
     Translation2d translateDiff = hubAdjusted.minus(this.getPose().getTranslation());
-    return Math.sqrt(Math.pow(translateDiff.getX(), 2) + Math.pow(translateDiff.getY(), 2));
+    return translateDiff.getNorm();
   }
 
 }

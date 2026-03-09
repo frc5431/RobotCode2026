@@ -27,6 +27,7 @@ import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InhaleCommand;
 import frc.robot.commands.ShootFuelCommand;
+import frc.robot.commands.ShootFuelCommandAuto;
 import frc.robot.commands.UnjamCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
@@ -74,6 +75,7 @@ import static edu.wpi.first.units.Units.Inches;
 
 import java.util.Set;
 
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -124,7 +126,7 @@ public class RobotContainer {
         //         new VisionIOLimelight(camera1Name, drive::getRotation));
 
         intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
-        shooter = new Shooter(new AnglerIOTalonFX(), new FlywheelIOTalonFX());
+        shooter = new Shooter(new AnglerIOSim(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOSparkFlex());
         climber = new Climber(new ClimberIOSim());
         feeder = new Feeder(new FeederIOSparkFlex());
@@ -222,7 +224,6 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     configureDriverBindings();
-    configureOperatorBindings();
 
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
     RobotController.setBrownoutVoltage(6);
@@ -279,8 +280,8 @@ public class RobotContainer {
      //TODO: ready to test
       controller.y().whileTrue(
       new ParallelCommandGroup(
-        DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), this::getAngleToGameElement),
-        new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_CLOSE)
+        DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle()),
+        new ShootFuelCommandAuto(feeder, shooter, () -> getTranslationToGameElement().getNorm())
       )
     );
 
@@ -302,9 +303,17 @@ public class RobotContainer {
     // controller.povUp().whileTrue(intake.runPivotVoltageCommand(-5)
     // controller.x().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
     // controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
+
+
     controller.povUp().whileTrue(intake.runPivotVoltageCommand(-3));
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
+
+
+    // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
+    // controller.povLeft().onTrue(shooter.runAngler(ShooterModes.IDLE));
     // controller.povRight().whileTrue(shooter.tune());
+        // controller.rightBumper().whileTrue(feeder.runFeederCommand(FeederModes.FEEDER));
+
     controller.start().whileTrue(new UnjamCommand(feeder, shooter));
 
     // controller.x().whileTrue(shooter.tune());
@@ -330,11 +339,6 @@ public class RobotContainer {
     // drive));
   }
 
-  private void configureOperatorBindings() {
-    // operator.a().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
-    // operator.b().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
-  }                         
-
   private void registerCommands() {
     NamedCommands.registerCommand("ShootClose", Commands.parallel(
       new InhaleCommand(intake, carpet, true),
@@ -352,7 +356,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("AutoShoot", Commands.defer(
       () -> {return new AutoShootCommand(intake, carpet, feeder, shooter, drive);}, Set.of(intake, carpet, feeder, shooter)));
 
-    NamedCommands.registerCommand("AutoAlign", DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, this::getAngleToGameElement));
+    NamedCommands.registerCommand("AutoAlign", DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle()));
 
     NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
 
@@ -375,7 +379,7 @@ public class RobotContainer {
     }
     }
 
-  public Rotation2d getAngleToGameElement() {
+  public Translation2d getTranslationToGameElement() {
     Translation2d hubPose = FieldConstants.Hub.innerCenterPoint.toTranslation2d();
     Translation2d hubPoseAdj = AllianceFlipUtil.apply(hubPose);
     
@@ -384,7 +388,9 @@ public class RobotContainer {
     Pose2d shooterPose = robotPose.transformBy(shooterTransform);
 
     Translation2d diff = hubPoseAdj.minus(shooterPose.getTranslation());
-    return diff.getAngle();
+    Logger.recordOutput("/Measurements/DistToHUb", diff.getNorm());
+    Logger.recordOutput("/Measurements/AngleToHub", diff.getAngle());
+    return diff;
   }
 
   public Command getHomingCommand() {

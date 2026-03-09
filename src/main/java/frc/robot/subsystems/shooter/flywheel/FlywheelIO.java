@@ -15,6 +15,8 @@ public interface FlywheelIO {
     public double followerAppliedVoltage = 0.0;
     public double followerRPM = 0.0;
     public double followerAmps = 0.0;
+
+    public double setpointRPM = 0.0;
   }
 
   /** Updates the set of loggable inputs. */

@@ -21,12 +21,6 @@
           "data": {
             "name": "ShootClose"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": null
-          }
         }
       ]
     }

@@ -98,6 +98,8 @@ public class ShooterConstants {
 
     public static final double tolerance = 0.1;
     public static LoggedNetworkNumber tunableTolerance = new LoggedNetworkNumber("/Tuning/Angler/tolerance", .1);
-    public static LoggedNetworkNumber tunableBangPerentage = new LoggedNetworkNumber("/Tuning/Angler/bangPercentage", 1);
+    public static LoggedNetworkNumber bangBangForwardVoltage = new LoggedNetworkNumber("/Tuning/Angler/bangBangForwardVoltage", 1);
+    public static LoggedNetworkNumber bangBangReversedVoltage = new LoggedNetworkNumber("/Tuning/Angler/bangBangReversedVoltage", 1);
+    public static LoggedNetworkNumber bangBangAngle = new LoggedNetworkNumber("/Tuning/Angler/bangBangAngle", 1);
   }
 }

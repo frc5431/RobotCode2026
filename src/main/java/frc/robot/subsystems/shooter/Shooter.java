@@ -1,8 +1,13 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RPM;
+
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,6 +26,9 @@ import frc.robot.subsystems.shooter.flywheel.FlywheelIOInputsAutoLogged;
 import lombok.Getter;
 
 public class Shooter extends SubsystemBase {
+  /*
+   * 
+   */
   private final AnglerIO anglerIO;
   private final FlywheelIO flywheelIO;
 
@@ -28,6 +36,7 @@ public class Shooter extends SubsystemBase {
   private final FlywheelIOInputsAutoLogged flywheelInputs = new FlywheelIOInputsAutoLogged();
   
   private ShooterModes shooterMode;
+  private static InterpolatingDoubleTreeMap speedMap = new InterpolatingDoubleTreeMap();
 
   @Getter private boolean zeroed = false;
 
@@ -35,6 +44,8 @@ public class Shooter extends SubsystemBase {
     this.anglerIO = anglerIO;
     this.flywheelIO = flywheelIO;
     this.shooterMode = ShooterModes.IDLE;
+    speedMap.put(10.1, 2500.0);
+    speedMap.put(10.8, 3000.0);
   }
   
   @Override
@@ -61,6 +72,28 @@ public class Shooter extends SubsystemBase {
   public void runShooterCustom(double rpm, double position) {
     flywheelIO.setRPM(Units.RPM.of(rpm));
     anglerIO.setPosition(position);
+  }
+
+  // public Command runShootAuto(double dist) {
+  //   return new RunCommand(() -> flywheelIO.setRPM(Units.RPM.of(speedMap.get(dist))), this);
+  // }
+
+  public Command runShootAuto(double dist) {
+    return new RunCommand(() -> runShootAutotest(dist), this);
+  }
+
+   public void runShootAutotest(double dist) {
+    System.out.println("((((((((((()))))))))))");
+    System.out.println(dist);
+    System.out.println(speedMap.get(dist));
+    System.out.println(speedMap.get(10.1));
+    System.out.println(speedMap.get(10.8));
+    System.out.println("((((((((((()))))))))))");
+    flywheelIO.setRPM(Units.RPM.of(speedMap.get(dist)));
+  }
+
+  public BooleanSupplier atSetpoint() {
+    return () -> MathUtil.isNear(flywheelInputs.setpointRPM, flywheelInputs.leaderRPM, flywheelInputs.setpointRPM * 0.10);
   }
 
   public Command runAngler(ShooterModes mode) {

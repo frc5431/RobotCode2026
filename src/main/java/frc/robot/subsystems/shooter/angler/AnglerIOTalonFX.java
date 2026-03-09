@@ -78,6 +78,9 @@ public class AnglerIOTalonFX implements AnglerIO {
     // PositionVoltage mm = config.positionVoltage.withPosition(positionAngle);
     // talon.setControl(mm);
 
+    // far is 0.75, near is 1
+    // angleSetpoint = ShooterAnglerConstants.bangBangAngle.getAsDouble();
+
     Logger.recordOutput("/ShooterAngler/DesiredAngle", angleSetpoint);
     Logger.recordOutput("/ShooterAngler/Voltage", talon.getMotorVoltage().getValueAsDouble());
     double currentAngle = talon.getPosition().getValueAsDouble();
@@ -88,8 +91,10 @@ public class AnglerIOTalonFX implements AnglerIO {
 
     if (angleSetpoint > currentAngle) {
       voltage = ShooterAnglerConstants.bangBangController.calculate(currentAngle, angleSetpoint) * 1;
+      // voltage = ShooterAnglerConstants.bangBangController.calculate(currentAngle, angleSetpoint) * ShooterAnglerConstants.bangBangForwardVoltage.getAsDouble();
     } else {
       voltage = -ShooterAnglerConstants.bangBangController.calculate(-currentAngle, -angleSetpoint) * 1;
+      // voltage = -ShooterAnglerConstants.bangBangController.calculate(-currentAngle, -angleSetpoint) * ShooterAnglerConstants.bangBangReversedVoltage.getAsDouble();
     }
     
     if(ShooterAnglerConstants.bangBangController.atSetpoint()){

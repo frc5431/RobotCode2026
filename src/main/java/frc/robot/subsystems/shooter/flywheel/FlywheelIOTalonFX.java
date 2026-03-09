@@ -49,6 +49,8 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private StatusSignal<Current> followerAmps;
   public static VelocityVoltage plotOutput;
   public static double plotrps;
+
+  public double setpointRPM = 0.0;
   // No clue stole from ModuleIO
   private final Debouncer flywheelConnectedDebounce = new Debouncer(0.5, Debouncer.DebounceType.kFalling);
 
@@ -97,6 +99,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     inputs.followerRPM = followerFlywheelRPM.getValue().in(RPM);
     inputs.followerAmps = followerAmps.getValueAsDouble();
 
+    inputs.setpointRPM = setpointRPM;
     if (plotrps > 0 && plotOutput.Velocity > 0) {
       SmartDashboard.putNumber("FlyhweelRPS", plotrps);
       SmartDashboard.putNumber("FlyhweelOutputVelocity", plotOutput.Velocity);
@@ -109,7 +112,8 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void setRPM(AngularVelocity rpm){
-    Logger.recordOutput("/Shooter/DesiredRPM", rpm);
+    setpointRPM = rpm.in(Units.RPM);
+    
     Logger.recordOutput("/Shooter/Voltage", leader.getMotorVoltage().getValueAsDouble());
     AngularVelocity currentRPM = leader.getVelocity().getValue();
     double pidOutput = pid.calculate(currentRPM.in(Units.RPM), rpm.in(Units.RPM));
@@ -127,6 +131,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
       leader.set(0);
     }
 
+    
     // System.out.println("******************");
     // System.out.println(ShooterFlywheelConstants.testp.getAsDouble());
     // System.out.println("******************");

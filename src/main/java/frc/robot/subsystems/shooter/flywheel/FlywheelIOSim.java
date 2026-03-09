@@ -16,6 +16,7 @@ public class FlywheelIOSim implements FlywheelIO {
     private boolean flywheelClosedLoop = false;
     private double appliedVoltage = 0.0;
     private double flywheelFFVolts = 0.0;
+    private double flywheelSetpoint = 0.0;
 
     // From ModuleIOSim no clue tbh
     private static final double FLYWHEEL_KV_ROT = 0.91035; // Same units as TunerConstants: (volt * secs) / rotation
@@ -53,10 +54,12 @@ public class FlywheelIOSim implements FlywheelIO {
         inputs.followerRPM = flywheelMotorSim.getAngularVelocityRPM();
         inputs.followerAppliedVoltage = appliedVoltage;
         inputs.followerAmps = Math.abs(flywheelMotorSim.getCurrentDrawAmps());
+        inputs.setpointRPM = flywheelSetpoint;
     }
 
     @Override
     public void setRPM(AngularVelocity rpm) {
+      flywheelSetpoint = rpm.magnitude();
 
       if (rpm.in(Units.RPM) == 0) {
         flywheelClosedLoop = false;
