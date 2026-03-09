@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.DriveCommands;
@@ -272,16 +273,16 @@ public class RobotContainer {
     //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
     //                 drive)
     //             .ignoringDisable(true));
-    controller.y().whileTrue(
-      DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), this::getAngleToGameElement)
-    );
-     //TODO: ready to test
-    //   controller.y().whileTrue(
-    //   new ParallelCommandGroup(
-    //     DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), this::getAngleToGameElement),
-    //     new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_CLOSE)
-    //   )
+    // controller.y().whileTrue(
+    //   DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), this::getAngleToGameElement)
     // );
+     //TODO: ready to test
+      controller.y().whileTrue(
+      new ParallelCommandGroup(
+        DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), this::getAngleToGameElement),
+        new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_CLOSE)
+      )
+    );
 
     controller.x().whileTrue(new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_CLOSE));
      controller.a().whileTrue(new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_FAR));
@@ -303,7 +304,7 @@ public class RobotContainer {
     // controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
     controller.povUp().whileTrue(intake.runPivotVoltageCommand(-3));
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
-
+    // controller.povRight().whileTrue(shooter.tune());
     controller.start().whileTrue(new UnjamCommand(feeder, shooter));
 
     // controller.x().whileTrue(shooter.tune());
@@ -355,7 +356,9 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
 
-    NamedCommands.registerCommand("deployIntake", intake.runIntakeCommand(IntakeMode.OUT_IDLE).withTimeout(0.5));
+    NamedCommands.registerCommand("deployIntake", intake.runPivotVoltageCommand(3).withTimeout(0.5));
+
+    NamedCommands.registerCommand("RevShooterClose", shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
