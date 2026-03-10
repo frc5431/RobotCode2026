@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.RPM;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -44,8 +45,13 @@ public class Shooter extends SubsystemBase {
     this.anglerIO = anglerIO;
     this.flywheelIO = flywheelIO;
     this.shooterMode = ShooterModes.IDLE;
-    speedMap.put(10.1, 2500.0);
-    speedMap.put(10.8, 3000.0);
+    speedMap.put(1.9, 2000.0);
+    speedMap.put(2.75, 2500.0);
+    speedMap.put(2.9, 2600.0);
+    speedMap.put(3.1, 2700.0);
+    speedMap.put(3.3, 2800.0);
+    speedMap.put(3.5, 3000.0);
+    speedMap.put(3.8, 3500.0);
   }
   
   @Override
@@ -74,13 +80,13 @@ public class Shooter extends SubsystemBase {
     anglerIO.setPosition(position);
   }
 
-  // public Command runShootAuto(double dist) {
-  //   return new RunCommand(() -> flywheelIO.setRPM(Units.RPM.of(speedMap.get(dist))), this);
-  // }
-
-  public Command runShootAuto(double dist) {
-    return new RunCommand(() -> runShootAutotest(dist), this);
+  public Command runShootAuto(DoubleSupplier dist) {
+    return new RunCommand(() -> flywheelIO.setRPM(Units.RPM.of(speedMap.get(dist.getAsDouble()))), this);
   }
+
+  // public Command runShootAuto(DoubleSupplier dist) {
+  //   return new RunCommand(() -> runShootAutotest(dist.getAsDouble()), this);
+  // }
 
    public void runShootAutotest(double dist) {
     System.out.println("((((((((((()))))))))))");

@@ -13,11 +13,11 @@ import frc.robot.subsystems.shooter.Shooter;
 public class ShootFuelCommandAuto extends SequentialCommandGroup {
   public ShootFuelCommandAuto(Feeder feeder, Shooter shooter, DoubleSupplier dist) {
     addCommands(
-      shooter.runShootAuto(dist.getAsDouble()).withName("ShootFuelCommand.ShootAuto").
+      shooter.runShootAuto(dist).withName("ShootFuelCommand.ShootAuto").
         until(shooter.atSetpoint()).withTimeout(2),
       new ParallelCommandGroup(
         feeder.runFeederCommand(FeederModes.FEEDER).withName("FeederCommand.Feed"),
-       shooter.runShootAuto(dist.getAsDouble()).withName("ShootFuelCommand.ShootAuto")
+       shooter.runShootAuto(dist).withName("ShootFuelCommand.ShootAuto")
     ));  
       
     addRequirements(feeder, shooter);

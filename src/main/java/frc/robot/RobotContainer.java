@@ -286,7 +286,8 @@ public class RobotContainer {
     );
 
     controller.x().whileTrue(new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_CLOSE));
-     controller.a().whileTrue(new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_FAR));
+    controller.a().whileTrue(new ShootFuelCommandAuto(feeder, shooter, () -> getTranslationToGameElement().getNorm()));
+
     // controller.a().whileTrue(Commands.defer(() -> {
     //   return new AutoShootCommand(intake, carpet, feeder, shooter, drive);
     // }, Set.of(intake, carpet, feeder, shooter)));
@@ -294,7 +295,7 @@ public class RobotContainer {
     // controller.y().onTrue(shooter.runAngler(ShooterModes.IDLE));
     controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
     controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, false));
-    controller.rightBumper().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
+    // controller.rightBumper().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
     controller.leftBumper().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
 
     // controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
@@ -311,8 +312,8 @@ public class RobotContainer {
 
     // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
     // controller.povLeft().onTrue(shooter.runAngler(ShooterModes.IDLE));
-    // controller.povRight().whileTrue(shooter.tune());
-        // controller.rightBumper().whileTrue(feeder.runFeederCommand(FeederModes.FEEDER));
+    controller.povRight().whileTrue(shooter.tune());
+        controller.rightBumper().whileTrue(feeder.runFeederCommand(FeederModes.FEEDER));
 
     controller.start().whileTrue(new UnjamCommand(feeder, shooter));
 

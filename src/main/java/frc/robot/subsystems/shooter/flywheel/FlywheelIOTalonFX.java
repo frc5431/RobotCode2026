@@ -37,6 +37,8 @@ public class FlywheelIOTalonFX implements FlywheelIO {
       configGearRatio(ShooterFlywheelConstants.gearRatio);
       configMotorInverted(ShooterFlywheelConstants.inverted);
       configFeedForwardGains(0, 0.35, 0.12, 0, 0);
+      configSupplyCurrentLimit(ShooterFlywheelConstants.supplyLimit);
+      configStatorCurrentLimit(Amps.of(100));
     }
   }
 
