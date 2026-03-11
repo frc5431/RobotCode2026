@@ -6,7 +6,7 @@ public interface PivotIO {
 
   @AutoLog
   public static class PivotIOInputs {
-    public boolean pivotConnected = false;
+    public boolean pivotConnected = true;
     public double appliedVoltage = 0.0;
     public double positionAngle = 0.0;
     public double currentAmps = 0.0;

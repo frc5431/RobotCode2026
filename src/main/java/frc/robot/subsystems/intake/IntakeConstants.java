@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
 import com.revrobotics.spark.FeedbackSensor;
@@ -15,8 +17,8 @@ public  class IntakeConstants {
 
     STOW(Units.Volts.of(0.0), Units.Degrees.of(0.0)),
     OUT_IDLE(Units.Volts.of(0.0), Units.Degrees.of(180.0)),
-    INTAKE(Units.Volts.of(8.4), Units.Degrees.of(0.0)),
-    OUTTAKE(Units.Volts.of(-4.8), Units.Degrees.of(180.0));
+    INTAKE(Units.Volts.of(-3), Units.Degrees.of(0.0)),
+    OUTTAKE(Units.Volts.of(2.8), Units.Degrees.of(180.0));
 
     public Voltage voltage;
     public Angle position;
@@ -31,7 +33,7 @@ public  class IntakeConstants {
 
     public static final boolean attached = true;
 
-    public static final int id = -1;
+    public static final int id = 46;
 
     PIDConstants pidConstants = new PIDConstants(1, 0, 0);
     public static final double p = 1;
@@ -53,25 +55,27 @@ public  class IntakeConstants {
     public static final Angle maxReverseRotation = Units.Rotation.of(-0.1);
     public static final Angle maxFowardRotation = Units.Rotation.of(5);
 
-    public static final Current stallLimit = Units.Amps.of(80);
-    public static final Current supplyLimit = Units.Amps.of(60);
+    public static final Current stallLimit = Units.Amps.of(70);
+    public static final Current supplyLimit = Units.Amps.of(50);
   }
 
   public static final class IntakePivotConstants {
     public static final boolean attached = true;
 
-    public static final int id = -1;
+    public static final int id = 14;
 
-    public static final double p = 1;
-    public static final double i = 0;
-    public static final double d = 0;
+    public static LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Shooter/P", 0.003);
+    public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Shooter/I", 0);
+    public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Shooter/D", 0.00002);
+    public static final LoggedNetworkNumber kS = new LoggedNetworkNumber("/Tuning/Shooter/kS", 0.375);
+    public static final LoggedNetworkNumber kV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0.0021);
     public static final double maxIAccum = 0.2;
 
     public static final double gearRatio = 1 / 1;
 
     public static final boolean invert = false;
     public static final boolean gravityType = false;
-    public static final boolean breakType = false;
+    public static final boolean breakType = true;
 
     public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.FusedCANcoder;
     public static final FeedbackSensor feedbackSensorREV = FeedbackSensor.kAbsoluteEncoder;
@@ -83,5 +87,6 @@ public  class IntakeConstants {
 
     public static final Current stallLimit = Units.Amps.of(80);
     public static final Current supplyLimit = Units.Amps.of(60);
+
   }
 }

@@ -8,36 +8,45 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
 import frc.team5431.titan.core.subsystem.REVMechanism;
 
 public class PivotIOSparkFlex implements PivotIO {
-    private final SparkFlex sparkFlex = new SparkFlex(IntakePivotConstants.id, null);
+    private final SparkFlex sparkFlex = new SparkFlex(IntakePivotConstants.id, MotorType.kBrushless);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
+    public final PIDController pid = new PIDController(ShooterFlywheelConstants.testp.get(), ShooterFlywheelConstants.testi.get(), ShooterFlywheelConstants.testd.get());
+
 
     public static class PivotSparkFlexConfig extends REVMechanism.Config {
         public PivotSparkFlexConfig() {
-        super("PivotSparkFlex", IntakePivotConstants.id);
-        configPIDGains(IntakePivotConstants.p, IntakePivotConstants.i, IntakePivotConstants.d);
-        configFeedbackSensorSource(IntakePivotConstants.feedbackSensorREV);
-        // configGear(IntakePivotConstants.gearRatio);
-        // configGravity(IntakePivotConstants.gravityType);
-        configSmartCurrentLimit(IntakePivotConstants.stallLimit, IntakePivotConstants.supplyLimit);
-        configSmartStallCurrentLimit(IntakePivotConstants.stallLimit);
-        configReverseSoftLimit(
-            IntakePivotConstants.maxReverseRotation, IntakePivotConstants.useRMaxRotation);
-        configForwardSoftLimit(
-          IntakePivotConstants.maxFowardRotation, IntakePivotConstants.useFMaxRotation);
+            super("PivotSparkFlex", IntakePivotConstants.id);
+            configFeedbackSensorSource(IntakePivotConstants.feedbackSensorREV);
+            // configGear(IntakePivotConstants.gearRatio);
+            // configGravity(IntakePivotConstants.gravityType);
+            configSmartCurrentLimit(IntakePivotConstants.stallLimit, IntakePivotConstants.supplyLimit);
+            configSmartStallCurrentLimit(IntakePivotConstants.stallLimit);
+            configReverseSoftLimit(
+                    IntakePivotConstants.maxReverseRotation, IntakePivotConstants.useRMaxRotation);
+            configForwardSoftLimit(
+                    IntakePivotConstants.maxFowardRotation, IntakePivotConstants.useFMaxRotation);
         }
-    } 
+    }
 
     public PivotIOSparkFlex() {
-        sparkFlex.configure(new PivotSparkFlexConfig().sparkConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        sparkFlex.configure(new PivotSparkFlexConfig().sparkConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
     }
 
     @Override
     public void updateInputs(PivotIOInputs inputs) {
+        pid.setP(ShooterFlywheelConstants.testp.get());
+        pid.setI(ShooterFlywheelConstants.testi.get());
+        pid.setD(ShooterFlywheelConstants.testd.get());
+
         ifOk(sparkFlex, encoder::getPosition, (value) -> inputs.positionAngle = value);
         ifOk(sparkFlex, sparkFlex::getBusVoltage, (value) -> inputs.appliedVoltage = value);
         ifOk(sparkFlex, sparkFlex::getOutputCurrent, (value) -> inputs.currentAmps = value);
@@ -51,6 +60,6 @@ public class PivotIOSparkFlex implements PivotIO {
     @Override
     public void setPosition(double positionAngle) {
         sparkFlex.getClosedLoopController().setSetpoint((positionAngle), ControlType.kPosition,
-                    ClosedLoopSlot.kSlot0);
-    }    
+                ClosedLoopSlot.kSlot0);
+    }
 }

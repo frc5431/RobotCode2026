@@ -12,7 +12,8 @@ import edu.wpi.first.units.measure.Voltage;
 public class CarpetConstants {
   public enum CarpetModes {
     IDLE(Units.Volts.of(0.0)),
-    INTAKE(Units.Volts.of(8.4));
+    INTAKE(Units.Volts.of(5.4)), //5.4 
+    OUTTAKE(Units.Volts.of(-4.8));
 
     public Voltage voltage;
     
@@ -24,7 +25,7 @@ public class CarpetConstants {
   public static final class CarpetRollerConstants {
     public static final boolean attached = true;
 
-    public static final int id = -1;
+    public static final int id = 44;
 
     PIDConstants pidConstants = new PIDConstants(1, 0, 0);
     public static final double p = 1;

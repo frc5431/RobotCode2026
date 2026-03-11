@@ -6,6 +6,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.robot.subsystems.intake.pivot.PivotIO;
 import frc.robot.subsystems.intake.pivot.PivotIOInputsAutoLogged;
@@ -45,21 +46,26 @@ public class Intake extends SubsystemBase {
     pivotIO.setPosition(intakeMode.position.magnitude());
   }
 
-  public Command runIntakeeCommand(IntakeMode intakeMode) {
+  public Command runIntakeCommand(IntakeMode intakeMode) {
     return new RunCommand(() -> {
       this.runIntakeEnum(intakeMode);
-    }, this).withName("Intake.runIntakeeCommand" + intakeMode.toString());
+    }, this).withName("Intake.runIntakeCommand" + intakeMode.toString());
   }
 
-  // public Command runPivotCommand(IntakeMode intakeMode) {
-  //   return new RunCommand(() -> {
-  //     this.runPivotEnum(intakeMode);
-  //   }, this).withName("Intake.runPivotCommand" + intakeMode.toString());
-  // }
+  public Command runPivotVoltageCommand(double voltage){
+    return new StartEndCommand(()-> pivotIO.setPivotVoltage(voltage), ()-> pivotIO.setPivotVoltage(0), this);
+  }
 
-  // public Command runRollerCommand(IntakeMode rollerMode) {
-  //   return new RunCommand(() -> {
-  //     this.runRollerEnum(rollerMode);
-  //   }, this).withName("Intake.runRollerCommand" + rollerMode.toString());
-  // }
+  public Command stop() {
+    // return new RunCommand(() -> {
+    //   this.pivotIO.setPivotVoltage(0);
+    //   this.pivotIO.setPivotVoltage(0);
+    // }, this).withName("Intake.stopAll");
+    
+    return run(() -> {
+      rollerIO.setRollerVoltage(0);
+      pivotIO.setPivotVoltage(0);
+    }).withName("Intake.Stop");
+
+  }
 }

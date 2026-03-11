@@ -1,3 +1,4 @@
+
 package frc.robot.subsystems.climber;
 
 import org.littletonrobotics.junction.Logger;
@@ -28,7 +29,7 @@ public class Climber extends SubsystemBase {
 
   public void runClimberEnum(ClimberModes climberMode) {
     this.mode = climberMode;
-      climberIO.setClimberPosition(mode.positionAngle.baseUnitMagnitude());
+    climberIO.setClimberPosition(mode.positionAngle.baseUnitMagnitude());
   }
 
   public Command runCarpetCommand(ClimberModes climberModes) {

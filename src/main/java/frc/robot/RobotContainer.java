@@ -8,31 +8,47 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.InhaleCommand;
+import frc.robot.commands.ShootFuelCommand;
+import frc.robot.commands.ShootFuelCommandAuto;
+import frc.robot.commands.UnjamCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
-import frc.robot.subsystems.climber.ClimberIOSparkFlex;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.FeederIO;
+import frc.robot.subsystems.feeder.FeederIOSim;
+import frc.robot.subsystems.feeder.FeederIOSparkFlex;
+import frc.robot.subsystems.feeder.FeederConstants.FeederModes;
 import frc.robot.subsystems.hopper.Carpet;
 import frc.robot.subsystems.hopper.CarpetIO;
 import frc.robot.subsystems.hopper.CarpetIOSim;
 import frc.robot.subsystems.hopper.CarpetIOSparkFlex;
+import frc.robot.subsystems.hopper.CarpetConstants.CarpetModes;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.robot.subsystems.intake.pivot.PivotIO;
@@ -42,14 +58,24 @@ import frc.robot.subsystems.intake.roller.RollerIO;
 import frc.robot.subsystems.intake.roller.RollerIOSim;
 import frc.robot.subsystems.intake.roller.RollerIOSparkFlex;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
 import frc.robot.subsystems.shooter.angler.AnglerIO;
 import frc.robot.subsystems.shooter.angler.AnglerIOSim;
 import frc.robot.subsystems.shooter.angler.AnglerIOTalonFX;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOTalonFX;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.util.AllianceFlipUtil;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
+import static edu.wpi.first.units.Units.Inches;
+
+import java.util.Set;
+
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -66,14 +92,17 @@ public class RobotContainer {
   private final Shooter shooter;
   private final Carpet carpet;
   private final Climber climber;
+  private final Feeder feeder;
+  private final Vision vision;
 
   // Controller
-  private final CommandXboxController driver = new CommandXboxController(0);
-  private final CommandXboxController operator = new CommandXboxController(1);
+  private final CommandXboxController controller = new CommandXboxController(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     switch (Constants.currentMode) {
@@ -96,10 +125,12 @@ public class RobotContainer {
         //         new VisionIOLimelight(camera0Name, drive::getRotation),
         //         new VisionIOLimelight(camera1Name, drive::getRotation));
 
-        intake = new Intake(new RollerIOSim(), new PivotIOSim());
-        shooter = new Shooter(new AnglerIOSim(), new FlywheelIOSim());
-        carpet = new Carpet(new CarpetIOSim());
+        intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
+        shooter = new Shooter(new AnglerIOSim(), new FlywheelIOTalonFX());
+        carpet = new Carpet(new CarpetIOSparkFlex());
         climber = new Climber(new ClimberIOSim());
+        feeder = new Feeder(new FeederIOSparkFlex());
+        vision = new Vision(drive::addVisionMeasurement, new VisionIOLimelight("limelight", drive::getRotation));
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -148,6 +179,8 @@ public class RobotContainer {
               new Carpet(new CarpetIOSim());
         climber = 
               new Climber(new ClimberIOSim());
+        feeder = new Feeder(new FeederIOSim());
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
       default:
         // Replayed robot, disable IO implementations
@@ -164,9 +197,12 @@ public class RobotContainer {
         shooter = new Shooter(new AnglerIO() {}, new FlywheelIO() {});
         carpet = new Carpet(new CarpetIO() {});
         climber = new Climber(new ClimberIO() {});
+        feeder = new Feeder(new FeederIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
 
     }
+    registerCommands();
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -188,11 +224,9 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     configureDriverBindings();
-    configureOperatorBindings();
-    
 
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
-
+    RobotController.setBrownoutVoltage(6);
   }
 
   /**
@@ -202,37 +236,92 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureDriverBindings() {
-    // Default command, normal field-relative drive
+    // Default Commands
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX()));
+            () -> -controller.getLeftY() * 0.7,
+            () -> -controller.getLeftX() * 0.7,
+            () -> -controller.getRightX()));
 
+    
+    intake.setDefaultCommand(intake.stop());
+    carpet.setDefaultCommand(carpet.runCarpetCommand(CarpetModes.IDLE));
+    feeder.setDefaultCommand(feeder.runFeederCommand(FeederModes.IDLE));
+    shooter.setDefaultCommand(shooter.stop());
+    // shooter.setDefaultCommand();
     // // Lock to 0° when A button is held
-    // driver
+    // controller
     //     .a()
     //     .whileTrue(
     //         DriveCommands.joystickDriveAtAngle(
     //             drive,
-    //             () -> -driver.getLeftY(),
-    //             () -> -driver.getLeftX(),
+    
+    //             () -> -controller.getLeftY(),
+    //             () -> -controller.getLeftX(),
     //             () -> Rotation2d.kZero));
 
     // // Switch to X pattern when X button is pressed
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    driver
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    // controller
+    //     .y()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //                 () ->
+    //                     drive.setPose(
+    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+    //                 drive)
+    //             .ignoringDisable(true));
+    // controller.y().whileTrue(
+    //   DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), this::getAngleToGameElement)
+    // );
+     //TODO: ready to test
+      controller.y().whileTrue(
+      new ParallelCommandGroup(
+        DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle()),
+        new ShootFuelCommandAuto(feeder, shooter, () -> getTranslationToGameElement().getNorm())
+      )
+    );
+
+    controller.x().whileTrue(new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_CLOSE));
+    controller.a().whileTrue(new ShootFuelCommandAuto(feeder, shooter, () -> getTranslationToGameElement().getNorm()));
+
+    // controller.a().whileTrue(Commands.defer(() -> {
+    //   return new AutoShootCommand(intake, carpet, feeder, shooter, drive);
+    // }, Set.of(intake, carpet, feeder, shooter)));
+    // controller.b().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
+    // controller.y().onTrue(shooter.runAngler(ShooterModes.IDLE));
+    controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
+    controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, false));
+    // controller.rightBumper().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
+    controller.leftBumper().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
+
+    // controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
+    // controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
+    // controller.b().whileTrue(intake.runPivotVoltageCommand(-1));
+    // controller.povUp().whileTrue(intake.runPivotVoltageCommand(-5)
+    // controller.x().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
+    // controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
+
+
+    controller.povUp().whileTrue(intake.runPivotVoltageCommand(-3));
+    controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
+
+
+    // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
+    // controller.povLeft().onTrue(shooter.runAngler(ShooterModes.IDLE));
+    controller.povRight().whileTrue(shooter.tune());
+        controller.rightBumper().whileTrue(feeder.runFeederCommand(FeederModes.FEEDER));
+
+    controller.start().whileTrue(new UnjamCommand(feeder, shooter));
+
+    // controller.x().whileTrue(shooter.tune());
+
+
+    // upclimb is left dpad, downclimb is right dpad
+
 
     // // Auto aim command example; code from AKit template.
     // @SuppressWarnings("resource")
@@ -251,14 +340,30 @@ public class RobotContainer {
     // drive));
   }
 
-  private void configureOperatorBindings() {
-    // Default Commands
-    intake.setDefaultCommand(intake.runIntakeeCommand(IntakeMode.OUT_IDLE));
+  private void registerCommands() {
+    NamedCommands.registerCommand("ShootClose", Commands.parallel(
+      new InhaleCommand(intake, carpet, true),
+      new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_CLOSE)
+    ).withTimeout(10));
+    // NamedCommands.registerCommand("DeployIntake");
+    // NamedCommands.registerCommand("ShootCloseJer",  );
+    NamedCommands.registerCommand("ShootFar", Commands.parallel(
+      new InhaleCommand(intake, carpet, true),
+      shooter.runShooterCommand(ShooterModes.SHOOT_FAR)
+    ).withTimeout(10));
 
 
+    // NamedCommands.registerCommand("AutoShoot", );
+    NamedCommands.registerCommand("AutoShoot", Commands.defer(
+      () -> {return new AutoShootCommand(intake, carpet, feeder, shooter, drive);}, Set.of(intake, carpet, feeder, shooter)));
 
-    operator.a().whileTrue(intake.runIntakeeCommand(IntakeMode.INTAKE));
-    operator.b().whileTrue(intake.runIntakeeCommand(IntakeMode.OUTTAKE));
+    NamedCommands.registerCommand("AutoAlign", DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle()));
+
+    NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
+
+    NamedCommands.registerCommand("deployIntake", intake.runPivotVoltageCommand(3).withTimeout(0.5));
+
+    NamedCommands.registerCommand("RevShooterClose", shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -267,5 +372,29 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void teleopInit() {
+    if (!shooter.isZeroed()) {
+        CommandScheduler.getInstance().schedule(shooter.homing());
+    }
+    }
+
+  public Translation2d getTranslationToGameElement() {
+    Translation2d hubPose = FieldConstants.Hub.innerCenterPoint.toTranslation2d();
+    Translation2d hubPoseAdj = AllianceFlipUtil.apply(hubPose);
+    
+    Pose2d robotPose = drive.getPose();
+    Transform2d shooterTransform = new Transform2d(Inches.of(-10.824), Inches.of(8.125), Rotation2d.kZero);
+    Pose2d shooterPose = robotPose.transformBy(shooterTransform);
+
+    Translation2d diff = hubPoseAdj.minus(shooterPose.getTranslation());
+    Logger.recordOutput("/Measurements/DistToHUb", diff.getNorm());
+    Logger.recordOutput("/Measurements/AngleToHub", diff.getAngle());
+    return diff;
+  }
+
+  public Command getHomingCommand() {
+    return shooter.homing();
   }
 }

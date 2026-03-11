@@ -19,7 +19,6 @@ public class FeederIOSparkFlex implements FeederIO {
         super("PivotSparkFlex", FeederConstants.id);
         configPIDGains(FeederConstants.p, FeederConstants.i, FeederConstants.d);
         configSmartCurrentLimit(FeederConstants.stallLimit, FeederConstants.supplyLimit);
-        configSmartStallCurrentLimit(FeederConstants.stallLimit);
         }
     } 
 

@@ -20,7 +20,8 @@ public final class Constants {
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
   // CAN bus that the devices are located on;
-  public static final CANBus CANBUS = new CANBus("canivore", "./logs/example.hoot");
+  public static final CANBus CANIVORE_CANBUS = new CANBus("Canivore", "./logs/example.hoot");
+   public static final CANBus RIO_CANBUS = new CANBus();
 
   public static enum Mode {
     /** Running on a real robot. */

@@ -15,11 +15,11 @@ import frc.robot.subsystems.hopper.CarpetConstants.CarpetRollerConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class CarpetIOTalonFX implements CarpetIO {
-  private final TalonFX talon = new TalonFX(CarpetRollerConstants.id, Constants.CANBUS);
+  private final TalonFX talon = new TalonFX(CarpetRollerConstants.id, Constants.RIO_CANBUS);
 
   public static class CarpetIOTalonFXConfig extends CTREMechanism.Config {
     public CarpetIOTalonFXConfig() {
-      super("RollerTalonFX",Constants.CANBUS);
+      super("RollerTalonFX",Constants.RIO_CANBUS);
       configPIDGains(CarpetRollerConstants.p, CarpetRollerConstants.i, CarpetRollerConstants.d);
       configNeutralBrakeMode(CarpetRollerConstants.breakType);
       configFeedbackSensorSource(CarpetRollerConstants.feedbackSensorCTRE);

@@ -15,6 +15,10 @@ public interface AnglerIO {
   public default void updateInputs(AnglerIOInputs inputs) {}
 
   /** Run the motor to the specified position. */
-  public default void setPosition(double positionAngle) {
-  }
+  public default void setPosition(double positionAngle) {}
+
+  /** Run the motor to the specified voltage. */
+  public default void setVoltage(double voltage) {}
+
+  public default void setZero() {}
 }
