@@ -10,7 +10,9 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -21,8 +23,8 @@ import frc.team5431.titan.core.subsystem.CTREMechanism;
 public class AnglerIOTalonFX implements AnglerIO {
   private final TalonFX talon = new TalonFX(ShooterAnglerConstants.id, Constants.CANIVORE_CANBUS);
 
-  public final PIDController pid = new PIDController(ShooterAnglerConstants.anglerP.get(),
-      ShooterAnglerConstants.anglerI.get(), ShooterAnglerConstants.anglerD.get());
+  public final ProfiledPIDController pid = new ProfiledPIDController(ShooterAnglerConstants.anglerP.get(),
+      ShooterAnglerConstants.anglerI.get(), ShooterAnglerConstants.anglerD.get(), new TrapezoidProfile.Constraints(3.0, 8.0));
 
   public static class PivotTalonFXConfig extends CTREMechanism.Config {
     public PivotTalonFXConfig() {
@@ -39,6 +41,7 @@ public class AnglerIOTalonFX implements AnglerIO {
   private StatusSignal<Voltage> appliedVoltage;
   private StatusSignal<Angle> pivotPosition;
   private StatusSignal<Current> currentAmps;
+  private double angleSetpoint;
 
   // No clue stole from ModuleIO
   private final Debouncer anglerConnectedDebounce = new Debouncer(0.5, Debouncer.DebounceType.kFalling);
@@ -48,7 +51,7 @@ public class AnglerIOTalonFX implements AnglerIO {
   public AnglerIOTalonFX() {
     appliedVoltage = talon.getMotorVoltage();
     pivotPosition = talon.getPosition();
-    currentAmps = talon.getStatorCurrent();
+    currentAmps = talon.getSupplyCurrent();
     config.applyTalonConfig(talon);
 
     BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, pivotPosition);
@@ -71,66 +74,32 @@ public class AnglerIOTalonFX implements AnglerIO {
     inputs.appliedVoltage = appliedVoltage.getValueAsDouble();
     inputs.positionAngle = pivotPosition.getValue().in(Rotation);
     inputs.currentAmps = currentAmps.getValueAsDouble();
+
+    Logger.recordOutput("/Shooter/Angler/DesiredAngle", angleSetpoint);
   }
 
   @Override
   public void setPosition(double angleSetpoint) {
     // PositionVoltage mm = config.positionVoltage.withPosition(positionAngle);
     // talon.setControl(mm);
-
+    this.angleSetpoint = angleSetpoint;
     // far is 0.75, near is 1
     // angleSetpoint = ShooterAnglerConstants.bangBangAngle.getAsDouble();
 
-    Logger.recordOutput("/ShooterAngler/DesiredAngle", angleSetpoint);
-    Logger.recordOutput("/ShooterAngler/Voltage", talon.getMotorVoltage().getValueAsDouble());
+    
     double currentAngle = talon.getPosition().getValueAsDouble();
     double voltage = 0;
 
-    ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tolerance);
-    //  ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tunableTolerance.getAsDouble());
+    // ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tolerance);
+    // ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tunableTolerance.getAsDouble());
 
-    if (angleSetpoint > currentAngle) {
-      voltage = ShooterAnglerConstants.bangBangController.calculate(currentAngle, angleSetpoint) * 1;
-      // voltage = ShooterAnglerConstants.bangBangController.calculate(currentAngle, angleSetpoint) * ShooterAnglerConstants.bangBangForwardVoltage.getAsDouble();
-    } else {
-      voltage = -ShooterAnglerConstants.bangBangController.calculate(-currentAngle, -angleSetpoint) * 1;
-      // voltage = -ShooterAnglerConstants.bangBangController.calculate(-currentAngle, -angleSetpoint) * ShooterAnglerConstants.bangBangReversedVoltage.getAsDouble();
-    }
-    
-    if(ShooterAnglerConstants.bangBangController.atSetpoint()){
-    voltage = 0;
-  }
-    // if (angleDi][\fference > 0.05) {
-    // voltage = ShooterAnglerConstants.anglerP.get();
-    // } else if (angleDifference < -0.05) {
-    // voltage = -ShooterAnglerConstants.anglerD.get();
-    // } else {
-    // voltage = ShooterAnglerConstants.anglerkS.get();
-    // }
-
-    // if (currentAngle.in(Rotations) > positionAngle) {
-
-    // }
-    // double pidOutput = pid.calculate(currentAngle.in(Units.Rotations),
-    // positionAngle);
-
-    // double voltage = pidOutput + ShooterAnglerConstants.anglerkS.get() +
-    // ShooterAnglerConstants.anglerkV.get() * positionAngle;
+    voltage = pid.calculate(currentAngle, angleSetpoint);
 
     voltage = Math.max(Math.min(voltage, 12), -12);
 
-    // System.out.println(voltage);
     // talon.setVoltage( ShooterAnglerConstants.anglerkV.get());
 
     talon.setVoltage(voltage);
-
-    // if(positionAngle > 0){
-    // talon.setVoltage(voltage);
-    // }
-    // else {
-    // talon.set(0);
-    // }
-
   }
 
   @Override

@@ -9,27 +9,25 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkFlexConfig;
 
+import edu.wpi.first.units.Units;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
-import frc.team5431.titan.core.subsystem.REVMechanism;
 
 public class RollerIOSparkFlex implements RollerIO {
     private final SparkFlex sparkFlex = new SparkFlex(IntakeRollerConstants.id, MotorType.kBrushless);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
-    public static class RollerIOSparkFlexConfig extends REVMechanism.Config {
-        public RollerIOSparkFlexConfig() {
-        super("RollerSparkFlex", IntakeRollerConstants.id);
-        configPIDGains(IntakeRollerConstants.p, IntakeRollerConstants.i, IntakeRollerConstants.d);
-        configFeedbackSensorSource(IntakeRollerConstants.feedbackSensorREV);
-        // configGear(RollerIOConstants.gearRatio);
-        // configGravity(RollerIOConstants.gravityType);
-        configSmartCurrentLimit(IntakeRollerConstants.stallLimit, IntakeRollerConstants.supplyLimit);
-        configSmartStallCurrentLimit(IntakeRollerConstants.stallLimit);
-        }
-    } 
+    private final SparkFlexConfig config = new SparkFlexConfig();
 
     public RollerIOSparkFlex() {
-        sparkFlex.configure(new RollerIOSparkFlexConfig().sparkConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // CONFIG
+        config.closedLoop.feedbackSensor(IntakeRollerConstants.feedbackSensorREV);
+        config.smartCurrentLimit(
+        (int) IntakeRollerConstants.stallLimit.in(Units.Amps), (int) IntakeRollerConstants.supplyLimit.in(Units.Amps));
+        config.closedLoop.pid(IntakeRollerConstants.p, IntakeRollerConstants.i, IntakeRollerConstants.d, ClosedLoopSlot.kSlot0);
+        
+        sparkFlex.configure(config, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
     }
 
     @Override

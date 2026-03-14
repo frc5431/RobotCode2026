@@ -202,7 +202,6 @@ public class RobotContainer {
         break;
 
     }
-    registerCommands();
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -224,6 +223,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     configureDriverBindings();
+    registerCommands();
 
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
     RobotController.setBrownoutVoltage(6);
@@ -291,8 +291,7 @@ public class RobotContainer {
     // controller.a().whileTrue(Commands.defer(() -> {
     //   return new AutoShootCommand(intake, carpet, feeder, shooter, drive);
     // }, Set.of(intake, carpet, feeder, shooter)));
-    // controller.b().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
-    // controller.y().onTrue(shooter.runAngler(ShooterModes.IDLE));
+    
     controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
     controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, false));
     // controller.rightBumper().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
@@ -308,10 +307,10 @@ public class RobotContainer {
 
     controller.povUp().whileTrue(intake.runPivotVoltageCommand(-3));
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
-
-
+    
     // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
-    // controller.povLeft().onTrue(shooter.runAngler(ShooterModes.IDLE));
+    controller.povLeft().whileTrue(shooter.runAngler(ShooterModes.IDLE));
+
     controller.povRight().whileTrue(shooter.tune());
         controller.rightBumper().whileTrue(feeder.runFeederCommand(FeederModes.FEEDER));
 

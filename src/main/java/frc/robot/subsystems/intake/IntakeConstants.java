@@ -64,11 +64,11 @@ public  class IntakeConstants {
 
     public static final int id = 14;
 
-    public static LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Shooter/P", 0.003);
-    public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Shooter/I", 0);
-    public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Shooter/D", 0.00002);
-    public static final LoggedNetworkNumber kS = new LoggedNetworkNumber("/Tuning/Shooter/kS", 0.375);
-    public static final LoggedNetworkNumber kV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0.0021);
+    public static double p =.003;
+    public static final double i = 0;
+    public static final double d = 0.00002;
+    public static final double s = 0.375;
+    public static final double v = 0.0021;
     public static final double maxIAccum = 0.2;
 
     public static final double gearRatio = 1 / 1;

@@ -6,34 +6,31 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkFlexConfig;
+
+import edu.wpi.first.units.Units;
+
 import com.revrobotics.spark.SparkFlex;
 
 import static frc.robot.util.SparkUtil.*;
 
-import frc.team5431.titan.core.subsystem.REVMechanism;
-
 public class ClimberIOSparkFlex implements ClimberIO {
   private final SparkFlex sparkFlex = new SparkFlex(ClimberConstants.id, MotorType.kBrushless);
   private final RelativeEncoder encoder = sparkFlex.getEncoder();
-
-  public static class PivotSparkFlexConfig extends REVMechanism.Config {
-    public PivotSparkFlexConfig() {
-      super("PivotSparkFlex", ClimberConstants.id);
-      configPIDGains(ClimberConstants.p, ClimberConstants.i, ClimberConstants.d);
-      configFeedbackSensorSource(ClimberConstants.feedbackSensorREV);
-      // configGear(ClimberConstants.gearRatio);
-      // configGravity(ClimberConstants.gravityType);
-      configSmartCurrentLimit(ClimberConstants.stallLimit, ClimberConstants.supplyLimit);
-      configSmartStallCurrentLimit(ClimberConstants.stallLimit);
-      configReverseSoftLimit(
-          ClimberConstants.maxReverseRotation, ClimberConstants.useRMaxRotation);
-      configForwardSoftLimit(
-        ClimberConstants.maxFowardRotation, ClimberConstants.useFMaxRotation);
-    }
-  } 
+  private final SparkFlexConfig config = new SparkFlexConfig();
 
   public ClimberIOSparkFlex() {
-    sparkFlex.configure(new PivotSparkFlexConfig().sparkConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // CONFIG
+    config.closedLoop.feedbackSensor(ClimberConstants.feedbackSensorREV);
+    config.smartCurrentLimit(
+      (int) ClimberConstants.stallLimit.in(Units.Amps), (int) ClimberConstants.supplyLimit.in(Units.Amps));
+    config.closedLoop.pid(ClimberConstants.p, ClimberConstants.i, ClimberConstants.d, ClosedLoopSlot.kSlot0);
+    config.softLimit.reverseSoftLimit(ClimberConstants.maxReverseRotation.in(Units.Rotations));
+    config.softLimit.reverseSoftLimitEnabled(true);
+    config.softLimit.forwardSoftLimit(ClimberConstants.maxReverseRotation.in(Units.Rotations));
+    config.softLimit.forwardSoftLimitEnabled(true);
+    
+    sparkFlex.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override

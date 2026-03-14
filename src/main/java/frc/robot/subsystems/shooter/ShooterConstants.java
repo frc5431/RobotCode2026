@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.revrobotics.spark.FeedbackSensor;
 
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.units.Units;
@@ -54,7 +55,7 @@ public class ShooterConstants {
     // Add later
 
     public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.RotorSensor;
-
+    public static final FeedbackSensor feedbackSensorREV = FeedbackSensor.kPrimaryEncoder;
     public static final Current stallLimit = Units.Amps.of(60);
     public static final Current supplyLimit = Units.Amps.of(80);
 
@@ -81,7 +82,7 @@ public class ShooterConstants {
     // public static final double maxForwardOutput = 1;
     // public static final double maxReverseOutput = 0.5;
 
-    public static LoggedNetworkNumber anglerP = new LoggedNetworkNumber("/Tuning/Angler/P", .002000);
+    public static LoggedNetworkNumber anglerP = new LoggedNetworkNumber("/Tuning/Angler/P", 1.0);
     public static final LoggedNetworkNumber anglerI = new LoggedNetworkNumber("/Tuning/Angler/I", 0);
     public static final LoggedNetworkNumber anglerD = new LoggedNetworkNumber("/Tuning/Angler/D", 0);
     public static final LoggedNetworkNumber anglerkS = new LoggedNetworkNumber("/Tuning/Angler/kS", 0);

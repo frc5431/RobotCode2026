@@ -44,7 +44,7 @@ public class FeederIOTalonFX implements FeederIO {
     public FeederIOTalonFX() {
         appliedVoltage = talon.getMotorVoltage();
         feederRPM = talon.getVelocity();
-        currentAmps = talon.getStatorCurrent();
+        currentAmps = talon.getSupplyCurrent();
         config.applyTalonConfig(talon);
 
         BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, feederRPM);

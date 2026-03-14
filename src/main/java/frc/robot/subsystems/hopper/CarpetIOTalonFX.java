@@ -42,7 +42,7 @@ public class CarpetIOTalonFX implements CarpetIO {
   public CarpetIOTalonFX() {
     appliedVoltage = talon.getMotorVoltage();
     rollerRPM = talon.getVelocity();
-    currentAmps = talon.getStatorCurrent();
+    currentAmps = talon.getSupplyCurrent();
     config.applyTalonConfig(talon);
     
     BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, rollerRPM);

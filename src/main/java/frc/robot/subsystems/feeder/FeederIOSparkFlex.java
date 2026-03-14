@@ -2,29 +2,28 @@ package frc.robot.subsystems.feeder;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkFlexConfig;
+
+import edu.wpi.first.units.Units;
 
 import static frc.robot.util.SparkUtil.*;
 
-
-import frc.team5431.titan.core.subsystem.REVMechanism;
-
 public class FeederIOSparkFlex implements FeederIO {
     private final SparkFlex sparkFlex = new SparkFlex(FeederConstants.id, MotorType.kBrushless);
-
-
-    public static class FeederSparkFlexConfig extends REVMechanism.Config {
-        public FeederSparkFlexConfig() {
-        super("PivotSparkFlex", FeederConstants.id);
-        configPIDGains(FeederConstants.p, FeederConstants.i, FeederConstants.d);
-        configSmartCurrentLimit(FeederConstants.stallLimit, FeederConstants.supplyLimit);
-        }
-    } 
+    private final SparkFlexConfig config = new SparkFlexConfig();
 
     public FeederIOSparkFlex() {
+        // CONFIG
+        config.closedLoop.feedbackSensor(FeederConstants.feedbackSensorREV);
+        config.smartCurrentLimit(
+          (int) FeederConstants.stallLimit.in(Units.Amps), (int) FeederConstants.supplyLimit.in(Units.Amps));
+        config.closedLoop.pid(FeederConstants.p, FeederConstants.i, FeederConstants.d, ClosedLoopSlot.kSlot0);
         
-        sparkFlex.configure(new FeederSparkFlexConfig().sparkConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        
+        sparkFlex.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override

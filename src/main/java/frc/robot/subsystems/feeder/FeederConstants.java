@@ -1,5 +1,8 @@
 package frc.robot.subsystems.feeder;
 
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.revrobotics.spark.FeedbackSensor;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Current;
 
@@ -28,6 +31,9 @@ public class FeederConstants {
   public static final Current supplyLimit = Units.Amps.of(80);
   public static final double maxForwardOutput = 1;
   public static final double maxReverseOutput = -1;
+
+  public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.RotorSensor;
+  public static final FeedbackSensor feedbackSensorREV = FeedbackSensor.kPrimaryEncoder;
 
   // public static final double FeederSpeed = 0.5;
   // public static final double reverseSpeed = -0.5;
