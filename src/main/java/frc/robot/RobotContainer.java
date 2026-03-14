@@ -304,7 +304,6 @@ public class RobotContainer {
     // controller.x().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
     // controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
 
-
     controller.povUp().whileTrue(intake.runPivotVoltageCommand(-3));
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
     
@@ -361,7 +360,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
 
     NamedCommands.registerCommand("deployIntake", intake.runPivotVoltageCommand(3).withTimeout(0.5));
-
     NamedCommands.registerCommand("RevShooterClose", shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));
   }
   /**
