@@ -16,8 +16,8 @@ public class ShooterConstants {
   public enum ShooterModes {
     SHOOT_FAR(Units.RPM.of(3500), Units.Rotations.of(.75)),
     SHOOT_CLOSE(Units.RPM.of(2500), Units.Rotations.of(.1)),
-    IDLE(Units.RPM.of(0), Units.Degree.of(0)),
-    REVERSE(Units.RPM.of(-500), Units.Degree.of(0));
+    IDLE(Units.RPM.of(0), Units.Rotations.of(0)),
+    REVERSE(Units.RPM.of(-500), Units.Rotations.of(0));
 
     public AngularVelocity speed;
     public Angle angle;

@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
@@ -23,8 +25,12 @@ import frc.team5431.titan.core.subsystem.CTREMechanism;
 public class AnglerIOTalonFX implements AnglerIO {
   private final TalonFX talon = new TalonFX(ShooterAnglerConstants.id, Constants.CANIVORE_CANBUS);
 
-  public final ProfiledPIDController pid = new ProfiledPIDController(ShooterAnglerConstants.anglerP.get(),
-      ShooterAnglerConstants.anglerI.get(), ShooterAnglerConstants.anglerD.get(), new TrapezoidProfile.Constraints(3.0, 8.0));
+  private TrapezoidProfile profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(3.0, 8.0));
+  private TrapezoidProfile.State anglerSetpoint = new TrapezoidProfile.State();
+  private PositionTorqueCurrentFOC anglerRequest = new PositionTorqueCurrentFOC(0);
+
+  // public final ProfiledPIDController pid = new ProfiledPIDController(ShooterAnglerConstants.anglerP.get(),
+  //     ShooterAnglerConstants.anglerI.get(), ShooterAnglerConstants.anglerD.get(), new TrapezoidProfile.Constraints(3.0, 8.0));
 
   public static class PivotTalonFXConfig extends CTREMechanism.Config {
     public PivotTalonFXConfig() {
@@ -41,6 +47,7 @@ public class AnglerIOTalonFX implements AnglerIO {
   private StatusSignal<Voltage> appliedVoltage;
   private StatusSignal<Angle> pivotPosition;
   private StatusSignal<Current> currentAmps;
+  private StatusSignal<AngularVelocity> velocityRPM;
   private double angleSetpoint;
 
   // No clue stole from ModuleIO
@@ -52,20 +59,21 @@ public class AnglerIOTalonFX implements AnglerIO {
     appliedVoltage = talon.getMotorVoltage();
     pivotPosition = talon.getPosition();
     currentAmps = talon.getSupplyCurrent();
+    velocityRPM = talon.getVelocity();
     config.applyTalonConfig(talon);
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, pivotPosition);
+    BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, pivotPosition, velocityRPM);
 
   }
 
   @Override
   public void updateInputs(AnglerIOInputs inputs) {
 
-    if (ShooterAnglerConstants.tunePID) {
-      pid.setP(ShooterAnglerConstants.anglerP.get());
-      pid.setI(ShooterAnglerConstants.anglerI.get());
-      pid.setD(ShooterAnglerConstants.anglerD.get());
-    }
+    // if (ShooterAnglerConstants.tunePID) {
+    //   pid.setP(ShooterAnglerConstants.anglerP.get());
+    //   pid.setI(ShooterAnglerConstants.anglerI.get());
+    //   pid.setD(ShooterAnglerConstants.anglerD.get());
+    // }
 
     var anglerStatus = BaseStatusSignal.refreshAll(appliedVoltage, currentAmps, pivotPosition);
 
@@ -80,26 +88,36 @@ public class AnglerIOTalonFX implements AnglerIO {
 
   @Override
   public void setPosition(double angleSetpoint) {
-    // PositionVoltage mm = config.positionVoltage.withPosition(positionAngle);
-    // talon.setControl(mm);
     this.angleSetpoint = angleSetpoint;
-    // far is 0.75, near is 1
-    // angleSetpoint = ShooterAnglerConstants.bangBangAngle.getAsDouble();
+    TrapezoidProfile.State currentState = new TrapezoidProfile.State(pivotPosition.getValue()
+        .in(Rotation), velocityRPM.getValueAsDouble() / 60.0);
+    TrapezoidProfile.State goalState = new TrapezoidProfile.State(angleSetpoint, 0);
+    anglerSetpoint = profile.calculate(0.02, currentState, goalState);
+
+    anglerRequest.Position = anglerSetpoint.position;
+    anglerRequest.Velocity = anglerSetpoint.velocity;
+    talon.setControl(anglerRequest);
+    
+    // // PositionVoltage mm = config.positionVoltage.withPosition(positionAngle);
+    // // talon.setControl(mm);
+    // this.angleSetpoint = angleSetpoint;
+    // // far is 0.75, near is 1
+    // // angleSetpoint = ShooterAnglerConstants.bangBangAngle.getAsDouble();
 
     
-    double currentAngle = talon.getPosition().getValueAsDouble();
-    double voltage = 0;
+    // double currentAngle = talon.getPosition().getValueAsDouble();
+    // double voltage = 0;
 
-    // ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tolerance);
-    // ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tunableTolerance.getAsDouble());
+    // // ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tolerance);
+    // // ShooterAnglerConstants.bangBangController.setTolerance(ShooterAnglerConstants.tunableTolerance.getAsDouble());
 
-    voltage = pid.calculate(currentAngle, angleSetpoint);
+    // voltage = pid.calculate(currentAngle, angleSetpoint);
 
-    voltage = Math.max(Math.min(voltage, 12), -12);
+    // voltage = Math.max(Math.min(voltage, 12), -12);
 
-    // talon.setVoltage( ShooterAnglerConstants.anglerkV.get());
+    // // talon.setVoltage( ShooterAnglerConstants.anglerkV.get());
 
-    talon.setVoltage(voltage);
+    // talon.setVoltage(voltage);
   }
 
   @Override
