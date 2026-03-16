@@ -14,6 +14,5 @@ public interface ClimberIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ClimberIOInputs inputs) {}
 
-  /** Run the motor to the specified position. */
-  public default void setClimberPosition(double positionAngle) {}
+  public default void setVoltage(double voltage) {}
 }

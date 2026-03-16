@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.DriveCommands;
@@ -33,6 +35,8 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberModes;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -128,7 +132,7 @@ public class RobotContainer {
         intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
         shooter = new Shooter(new AnglerIOSim(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOSparkFlex());
-        climber = new Climber(new ClimberIOSim());
+        climber = new Climber(new ClimberIOTalonFX());
         feeder = new Feeder(new FeederIOSparkFlex());
         vision = new Vision(drive::addVisionMeasurement, new VisionIOLimelight("limelight", drive::getRotation));
         // vision =
@@ -203,6 +207,8 @@ public class RobotContainer {
 
     }
 
+    registerCommands();
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -223,7 +229,6 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     configureDriverBindings();
-    registerCommands();
 
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
     RobotController.setBrownoutVoltage(6);
@@ -249,6 +254,7 @@ public class RobotContainer {
     carpet.setDefaultCommand(carpet.runCarpetCommand(CarpetModes.IDLE));
     feeder.setDefaultCommand(feeder.runFeederCommand(FeederModes.IDLE));
     shooter.setDefaultCommand(shooter.stop());
+    climber.setDefaultCommand(climber.runClimberCommand(ClimberModes.STOW));
     // shooter.setDefaultCommand();
     // // Lock to 0° when A button is held
     // controller
@@ -304,7 +310,7 @@ public class RobotContainer {
     // controller.x().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
     // controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
 
-    controller.povUp().whileTrue(intake.runPivotVoltageCommand(-3));
+    controller.povUp().whileTrue(intake.runPivotVoltageCommand(-5));
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
     
     // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
@@ -314,6 +320,9 @@ public class RobotContainer {
         controller.rightBumper().whileTrue(feeder.runFeederCommand(FeederModes.FEEDER));
 
     controller.start().whileTrue(new UnjamCommand(feeder, shooter));
+
+    controller.b().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB));
+    controller.rightBumper().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB_MINS));
 
     // controller.x().whileTrue(shooter.tune());
 
@@ -352,14 +361,13 @@ public class RobotContainer {
 
 
     // NamedCommands.registerCommand("AutoShoot", );
-    NamedCommands.registerCommand("AutoShoot", Commands.defer(
-      () -> {return new AutoShootCommand(intake, carpet, feeder, shooter, drive);}, Set.of(intake, carpet, feeder, shooter)));
+    NamedCommands.registerCommand("AutoShoot", new ShootFuelCommandAuto(feeder, shooter, () -> getTranslationToGameElement().getNorm()));
 
     NamedCommands.registerCommand("AutoAlign", DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle()));
 
     NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
-
-    NamedCommands.registerCommand("deployIntake", intake.runPivotVoltageCommand(3).withTimeout(0.5));
+    NamedCommands.registerCommand("CarpetRun", carpet.runCarpetCommand(CarpetModes.INTAKE));
+    NamedCommands.registerCommand("deployIntake", intake.runPivotVoltageCommand(3));
     NamedCommands.registerCommand("RevShooterClose", shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));
   }
   /**
