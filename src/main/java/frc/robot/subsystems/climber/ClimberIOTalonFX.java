@@ -60,9 +60,14 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.currentAmps = currentAmps.getValueAsDouble();
   }
 
+  // @Override
+  // public void setClimberPosition(double positionAngle) {
+  //   PositionVoltage mm = config.positionVoltage.withPosition(positionAngle);
+  //     talon.setControl(mm);
+  // }
+
   @Override
-  public void setClimberPosition(double positionAngle) {
-    PositionVoltage mm = config.positionVoltage.withPosition(positionAngle);
-      talon.setControl(mm);
-  }
+    public void setVoltage(double voltage) {
+        talon.setVoltage(voltage);
+    }
 }

@@ -40,9 +40,9 @@ public class ClimberIOSparkFlex implements ClimberIO {
     ifOk(sparkFlex, sparkFlex::getOutputCurrent, (value) -> inputs.currentAmps = value);
   }
 
-  @Override
-  public void setClimberPosition(double positionAngle) {
-    sparkFlex.getClosedLoopController().setSetpoint((positionAngle), ControlType.kPosition,
-            ClosedLoopSlot.kSlot0);
-  }  
+  // @Override
+  // public void setClimberPosition(double positionAngle) {
+  //   sparkFlex.getClosedLoopController().setSetpoint((positionAngle), ControlType.kPosition,
+  //           ClosedLoopSlot.kSlot0);
+  // }  
 }

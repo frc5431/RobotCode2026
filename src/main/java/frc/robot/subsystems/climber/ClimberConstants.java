@@ -11,7 +11,8 @@ import edu.wpi.first.units.measure.Current;
 public class ClimberConstants {
   public enum ClimberModes {
     STOW(Units.Rotation.of(0.0)),
-    CLIMB(Units.Rotation.of(5));
+    CLIMB(Units.Rotation.of(5)),
+    CLIMB_MINS(Units.Rotations.of(-5));
 
     public Angle positionAngle;
     
@@ -22,7 +23,7 @@ public class ClimberConstants {
   
   public static final boolean attached = true;
 
-  public static final int id = -1;
+  public static final int id = 24;
 
   PIDConstants pidConstants = new PIDConstants(1, 0, 0);
   public static final double p = 1;

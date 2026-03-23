@@ -1,6 +1,8 @@
 
 package frc.robot.subsystems.climber;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,13 +31,14 @@ public class Climber extends SubsystemBase {
 
   public void runClimberEnum(ClimberModes climberMode) {
     this.mode = climberMode;
-    climberIO.setClimberPosition(mode.positionAngle.baseUnitMagnitude());
+    climberIO.setVoltage(climberMode.positionAngle.in(Rotations));
+    // climberIO.setClimberPosition(mode.positionAngle.baseUnitMagnitude());
   }
 
-  public Command runCarpetCommand(ClimberModes climberModes) {
+  public Command runClimberCommand(ClimberModes climberModes) {
     return new RunCommand(() -> {
       this.runClimberEnum(climberModes);
-    }, this).withName("Carpet.runCarpetEnum");
+    }, this).withName("Climber.runClimberEnum");
   }
 
 }
