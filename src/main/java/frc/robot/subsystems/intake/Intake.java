@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
   
 
   public Intake(RollerIO rollerIO, PivotIO pivotIO) {
-    this.rollerIO = rollerIO;
+    this.rollerIO  = rollerIO;
     this.pivotIO = pivotIO;
     this.intakeMode = IntakeMode.STOW;
   }

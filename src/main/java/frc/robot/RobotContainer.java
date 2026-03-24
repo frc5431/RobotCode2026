@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InhaleCommand;
 import frc.robot.commands.ShootFuelCommand;
@@ -43,11 +42,6 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.feeder.FeederIO;
-import frc.robot.subsystems.feeder.FeederIOSim;
-import frc.robot.subsystems.feeder.FeederIOSparkFlex;
-import frc.robot.subsystems.feeder.FeederConstants.FeederModes;
 import frc.robot.subsystems.hopper.Carpet;
 import frc.robot.subsystems.hopper.CarpetIO;
 import frc.robot.subsystems.hopper.CarpetIOSim;
@@ -58,14 +52,17 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.robot.subsystems.intake.pivot.PivotIO;
 import frc.robot.subsystems.intake.pivot.PivotIOSim;
 import frc.robot.subsystems.intake.pivot.PivotIOSparkFlex;
+import frc.robot.subsystems.intake.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.intake.roller.RollerIO;
 import frc.robot.subsystems.intake.roller.RollerIOSim;
 import frc.robot.subsystems.intake.roller.RollerIOSparkFlex;
+import frc.robot.subsystems.intake.roller.RollerIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
-import frc.robot.subsystems.shooter.angler.AnglerIO;
-import frc.robot.subsystems.shooter.angler.AnglerIOSim;
-import frc.robot.subsystems.shooter.angler.AnglerIOTalonFX;
+import frc.robot.subsystems.shooter.feeder.FeederIO;
+import frc.robot.subsystems.shooter.feeder.FeederIOSim;
+import frc.robot.subsystems.shooter.feeder.FeederIOSparkFlex;
+import frc.robot.subsystems.shooter.feeder.FeederIOTalonFX;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOTalonFX;
@@ -96,7 +93,6 @@ public class RobotContainer {
   private final Shooter shooter;
   private final Carpet carpet;
   private final Climber climber;
-  private final Feeder feeder;
   private final Vision vision;
 
   // Controller
@@ -129,11 +125,10 @@ public class RobotContainer {
         //         new VisionIOLimelight(camera0Name, drive::getRotation),
         //         new VisionIOLimelight(camera1Name, drive::getRotation));
 
-        intake = new Intake(new RollerIOSparkFlex(), new PivotIOSparkFlex());
-        shooter = new Shooter(new AnglerIOSim(), new FlywheelIOTalonFX());
+        intake = new Intake(new RollerIOTalonFX(), new PivotIOTalonFX());
+        shooter = new Shooter(new FeederIOTalonFX(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOSparkFlex());
         climber = new Climber(new ClimberIOTalonFX());
-        feeder = new Feeder(new FeederIOSparkFlex());
         vision = new Vision(drive::addVisionMeasurement, new VisionIOLimelight("limelight", drive::getRotation));
         // vision =
         // new Vision(
@@ -178,12 +173,11 @@ public class RobotContainer {
         intake = 
             new Intake(new RollerIOSim(), new PivotIOSim());
         shooter = 
-              new Shooter(new AnglerIOSim(), new FlywheelIOSim());
+              new Shooter(new FeederIOSim(), new FlywheelIOSim());
         carpet = 
               new Carpet(new CarpetIOSim());
         climber = 
               new Climber(new ClimberIOSim());
-        feeder = new Feeder(new FeederIOSim());
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
       default:
@@ -198,10 +192,9 @@ public class RobotContainer {
 
         // vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         intake = new Intake(new RollerIO() {}, new PivotIO() {});
-        shooter = new Shooter(new AnglerIO() {}, new FlywheelIO() {});
+        shooter = new Shooter(new FeederIO() {}, new FlywheelIO() {});
         carpet = new Carpet(new CarpetIO() {});
         climber = new Climber(new ClimberIO() {});
-        feeder = new Feeder(new FeederIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
 
@@ -252,7 +245,6 @@ public class RobotContainer {
     
     intake.setDefaultCommand(intake.stop());
     carpet.setDefaultCommand(carpet.runCarpetCommand(CarpetModes.IDLE));
-    feeder.setDefaultCommand(feeder.runFeederCommand(FeederModes.IDLE));
     shooter.setDefaultCommand(shooter.stop());
     climber.setDefaultCommand(climber.runClimberCommand(ClimberModes.STOW));
     // shooter.setDefaultCommand();
@@ -287,12 +279,12 @@ public class RobotContainer {
       controller.y().whileTrue(
       new ParallelCommandGroup(
         DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle()),
-        new ShootFuelCommandAuto(feeder, shooter, () -> getTranslationToGameElement().getNorm())
+        new ShootFuelCommandAuto(shooter, () -> getTranslationToGameElement().getNorm())
       )
     );
 
-    controller.x().whileTrue(new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_CLOSE));
-    controller.a().whileTrue(new ShootFuelCommandAuto(feeder, shooter, () -> getTranslationToGameElement().getNorm()));
+    controller.x().whileTrue(new ShootFuelCommand(shooter, ShooterModes.SHOOT_CLOSE));
+    controller.a().whileTrue(new ShootFuelCommandAuto(shooter, () -> getTranslationToGameElement().getNorm()));
 
     // controller.a().whileTrue(Commands.defer(() -> {
     //   return new AutoShootCommand(intake, carpet, feeder, shooter, drive);
@@ -314,12 +306,10 @@ public class RobotContainer {
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
     
     // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
-    controller.povLeft().whileTrue(shooter.runAngler(ShooterModes.IDLE));
 
     controller.povRight().whileTrue(shooter.tune());
-        controller.rightBumper().whileTrue(feeder.runFeederCommand(FeederModes.FEEDER));
 
-    controller.start().whileTrue(new UnjamCommand(feeder, shooter));
+    controller.start().whileTrue(new UnjamCommand(shooter));
 
     controller.b().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB));
     controller.rightBumper().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB_MINS));
@@ -350,7 +340,7 @@ public class RobotContainer {
   private void registerCommands() {
     NamedCommands.registerCommand("ShootClose", Commands.parallel(
       new InhaleCommand(intake, carpet, true),
-      new ShootFuelCommand(feeder, shooter, ShooterModes.SHOOT_CLOSE)
+      new ShootFuelCommand(shooter, ShooterModes.SHOOT_CLOSE)
     ).withTimeout(10));
     // NamedCommands.registerCommand("DeployIntake");
     // NamedCommands.registerCommand("ShootCloseJer",  );
@@ -361,7 +351,7 @@ public class RobotContainer {
 
 
     // NamedCommands.registerCommand("AutoShoot", );
-    NamedCommands.registerCommand("AutoShoot", new ShootFuelCommandAuto(feeder, shooter, () -> getTranslationToGameElement().getNorm()));
+    NamedCommands.registerCommand("AutoShoot", new ShootFuelCommandAuto(shooter, () -> getTranslationToGameElement().getNorm()));
 
     NamedCommands.registerCommand("AutoAlign", DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle()));
 
@@ -380,9 +370,9 @@ public class RobotContainer {
   }
 
   public void teleopInit() {
-    if (!shooter.isZeroed()) {
-        CommandScheduler.getInstance().schedule(shooter.homing());
-    }
+    // if (!shooter.isZeroed()) {
+    //     CommandScheduler.getInstance().schedule(shooter.homing());
+    // }
     }
 
   public Translation2d getTranslationToGameElement() {
@@ -399,7 +389,7 @@ public class RobotContainer {
     return diff;
   }
 
-  public Command getHomingCommand() {
-    return shooter.homing();
-  }
+  // public Command getHomingCommand() {
+  //   return shooter.homing();
+  // }
 }

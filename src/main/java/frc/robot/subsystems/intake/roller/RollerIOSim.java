@@ -42,9 +42,9 @@ public class RollerIOSim implements RollerIO {
         rollerMotorSim.update(0.02);
 
         inputs.rollerConnected = true;
-        inputs.RPM = rollerMotorSim.getAngularVelocityRadPerSec();
-        inputs.appliedVoltage = appliedVoltage;
-        inputs.currentAmps = Math.abs(rollerMotorSim.getCurrentDrawAmps());
+        inputs.leaderRPM = rollerMotorSim.getAngularVelocityRadPerSec();
+        inputs.leaderAppliedVoltage = appliedVoltage;
+        inputs.leaderCurrentAmps = Math.abs(rollerMotorSim.getCurrentDrawAmps());
         
     }
 

@@ -47,13 +47,13 @@ public class FlywheelIOSim implements FlywheelIO {
 
         inputs.flywheelConnected = true;
         
-        inputs.leaderRPM = flywheelMotorSim.getAngularVelocityRPM();
-        inputs.leaderAppliedVoltage = appliedVoltage;
-        inputs.leaderAmps = Math.abs(flywheelMotorSim.getCurrentDrawAmps());
+        inputs.leftTopLeaderRPM = flywheelMotorSim.getAngularVelocityRPM();
+        inputs.leftTopLeaderAppliedVoltage = appliedVoltage;
+        inputs.leftTopLeaderAmps = Math.abs(flywheelMotorSim.getCurrentDrawAmps());
 
-        inputs.followerRPM = flywheelMotorSim.getAngularVelocityRPM();
-        inputs.followerAppliedVoltage = appliedVoltage;
-        inputs.followerAmps = Math.abs(flywheelMotorSim.getCurrentDrawAmps());
+        inputs.leftBottomFollowerRPM = flywheelMotorSim.getAngularVelocityRPM();
+        inputs.leftBottomFollowerAppliedVoltage = appliedVoltage;
+        inputs.leftBottomFollowerAmps = Math.abs(flywheelMotorSim.getCurrentDrawAmps());
         inputs.setpointRPM = flywheelSetpoint;
     }
 

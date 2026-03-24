@@ -7,9 +7,15 @@ public interface RollerIO {
   @AutoLog
   public static class RollerIOInputs {
     public boolean rollerConnected = false;
-    public double appliedVoltage = 0.0;
-    public double RPM = 0.0;
-    public double currentAmps = 0.0;
+
+    public double leaderAppliedVoltage = 0.0;
+    public double leaderRPM = 0.0;
+    public double leaderCurrentAmps = 0.0;
+
+    public double followerAppliedVoltage = 0.0;
+    public double followerRPM = 0.0;
+    public double followerCurrentAmps = 0.0;
+
   }
 
   /** Updates the set of loggable inputs. */

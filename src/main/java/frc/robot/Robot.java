@@ -108,7 +108,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(
         Commands.sequence(
-          robotContainer.getHomingCommand(),
+          // robotContainer.getHomingCommand(),
           autonomousCommand.asProxy()
         ));
     }

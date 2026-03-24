@@ -8,13 +8,22 @@ public interface FlywheelIO {
   @AutoLog
   public static class FlywheelIOInputs {
     public boolean flywheelConnected = false;
-    public double leaderAppliedVoltage = 0.0;
-    public double leaderRPM = 0.0;
-    public double leaderAmps = 0.0;
 
-    public double followerAppliedVoltage = 0.0;
-    public double followerRPM = 0.0;
-    public double followerAmps = 0.0;
+    public double leftTopLeaderAppliedVoltage = 0.0;
+    public double leftTopLeaderRPM = 0.0;
+    public double leftTopLeaderAmps = 0.0;
+
+    public double leftBottomFollowerAppliedVoltage = 0.0;
+    public double leftBottomFollowerRPM = 0.0;
+    public double leftBottomFollowerAmps = 0.0;
+
+    public double rightTopFollowerAppliedVoltage = 0.0;
+    public double rightTopFollowerRPM = 0.0;
+    public double rightTopFollowerAmps = 0.0;
+
+    public double rightBottomFollowerAppliedVoltage = 0.0;
+    public double rightBottomFollowerRPM = 0.0;
+    public double rightBottomFollowerAmps = 0.0;
 
     public double setpointRPM = 0.0;
   }

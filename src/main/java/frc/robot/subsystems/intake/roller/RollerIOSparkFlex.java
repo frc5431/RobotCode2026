@@ -15,7 +15,7 @@ import edu.wpi.first.units.Units;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
 
 public class RollerIOSparkFlex implements RollerIO {
-    private final SparkFlex sparkFlex = new SparkFlex(IntakeRollerConstants.id, MotorType.kBrushless);
+    private final SparkFlex sparkFlex = new SparkFlex(IntakeRollerConstants.leaderId, MotorType.kBrushless);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
     private final SparkFlexConfig config = new SparkFlexConfig();
 
@@ -32,9 +32,9 @@ public class RollerIOSparkFlex implements RollerIO {
 
     @Override
     public void updateInputs(RollerIOInputs inputs) {
-        ifOk(sparkFlex, encoder::getVelocity, (value) -> inputs.RPM = value);
-        ifOk(sparkFlex, sparkFlex::getBusVoltage, (value) -> inputs.appliedVoltage = value);
-        ifOk(sparkFlex, sparkFlex::getOutputCurrent, (value) -> inputs.currentAmps = value);
+        ifOk(sparkFlex, encoder::getVelocity, (value) -> inputs.leaderRPM = value);
+        ifOk(sparkFlex, sparkFlex::getBusVoltage, (value) -> inputs.leaderAppliedVoltage = value);
+        ifOk(sparkFlex, sparkFlex::getOutputCurrent, (value) -> inputs.leaderCurrentAmps = value);
 
         // figure out 
     }

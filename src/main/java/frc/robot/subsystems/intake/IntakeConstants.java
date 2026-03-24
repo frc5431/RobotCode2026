@@ -33,7 +33,8 @@ public  class IntakeConstants {
 
     public static final boolean attached = true;
 
-    public static final int id = 46;
+    public static final int leaderId = 46;
+    public static final int followerId = 47;
 
     PIDConstants pidConstants = new PIDConstants(1, 0, 0);
     public static final double p = 1;
@@ -47,7 +48,7 @@ public  class IntakeConstants {
     public static final boolean gravityType = false;
     public static final boolean breakType = false;
 
-    public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.FusedCANcoder;
+    public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.RotorSensor;
     public static final FeedbackSensor feedbackSensorREV = FeedbackSensor.kPrimaryEncoder;
 
     public static final boolean useFMaxRotation = true;
