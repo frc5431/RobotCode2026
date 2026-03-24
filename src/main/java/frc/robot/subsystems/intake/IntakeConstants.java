@@ -33,8 +33,8 @@ public  class IntakeConstants {
 
     public static final boolean attached = true;
 
-    public static final int leaderId = 46;
-    public static final int followerId = 47;
+    public static final int leaderId = 61;
+    public static final int followerId = 62;
 
     PIDConstants pidConstants = new PIDConstants(1, 0, 0);
     public static final double p = 1;

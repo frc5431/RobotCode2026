@@ -71,8 +71,8 @@ public class ShooterConstants {
   public class ShooterFeederConstants {
     public static final boolean attached = true;
 
-    public static final int leaderId = 24;
-    public static final int followerId = 25;
+    public static final int leaderId = 55;
+    public static final int followerId = 56;
 
     public static final double p = 1;
     public static final double i = 0;
