@@ -23,8 +23,6 @@ public class CarpetIOTalonFX implements CarpetIO {
       configPIDGains(CarpetRollerConstants.p, CarpetRollerConstants.i, CarpetRollerConstants.d);
       configNeutralBrakeMode(CarpetRollerConstants.breakType);
       configFeedbackSensorSource(CarpetRollerConstants.feedbackSensorCTRE);
-      // configGearRatio(CarpetRoller.gearRatio);
-      // configGravityType(CarpetRoller.gravityType);
       configSupplyCurrentLimit(CarpetRollerConstants.supplyLimit);
     }
   }

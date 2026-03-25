@@ -22,8 +22,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InhaleCommand;
@@ -45,36 +43,32 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.hopper.Carpet;
 import frc.robot.subsystems.hopper.CarpetIO;
 import frc.robot.subsystems.hopper.CarpetIOSim;
-import frc.robot.subsystems.hopper.CarpetIOSparkFlex;
+import frc.robot.subsystems.hopper.CarpetIOTalonFX;
 import frc.robot.subsystems.hopper.CarpetConstants.CarpetModes;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.robot.subsystems.intake.pivot.PivotIO;
 import frc.robot.subsystems.intake.pivot.PivotIOSim;
-import frc.robot.subsystems.intake.pivot.PivotIOSparkFlex;
 import frc.robot.subsystems.intake.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.intake.roller.RollerIO;
 import frc.robot.subsystems.intake.roller.RollerIOSim;
-import frc.robot.subsystems.intake.roller.RollerIOSparkFlex;
 import frc.robot.subsystems.intake.roller.RollerIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
 import frc.robot.subsystems.shooter.feeder.FeederIO;
 import frc.robot.subsystems.shooter.feeder.FeederIOSim;
-import frc.robot.subsystems.shooter.feeder.FeederIOSparkFlex;
 import frc.robot.subsystems.shooter.feeder.FeederIOTalonFX;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIO;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.shooter.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.util.AllianceFlipUtil;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import static edu.wpi.first.units.Units.Inches;
-
-import java.util.Set;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -127,9 +121,14 @@ public class RobotContainer {
 
         intake = new Intake(new RollerIOTalonFX(), new PivotIOTalonFX());
         shooter = new Shooter(new FeederIOTalonFX(), new FlywheelIOTalonFX());
-        carpet = new Carpet(new CarpetIOSparkFlex());
+        carpet = new Carpet(new CarpetIOTalonFX());
         climber = new Climber(new ClimberIOTalonFX());
-        vision = new Vision(drive::addVisionMeasurement, new VisionIOLimelight("limelight", drive::getRotation));
+        vision = new Vision(drive::addVisionMeasurement, 
+            new VisionIOLimelight(VisionConstants.camera3Name, drive::getRotation), 
+            new VisionIOLimelight(VisionConstants.camera2Name, drive::getRotation),
+            new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation),
+            new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation)
+          );
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -279,12 +278,12 @@ public class RobotContainer {
       controller.y().whileTrue(
       new ParallelCommandGroup(
         DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle()),
-        new ShootFuelCommandAuto(shooter, () -> getTranslationToGameElement().getNorm())
+        new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm())
       )
     );
 
     controller.x().whileTrue(new ShootFuelCommand(shooter, ShooterModes.SHOOT_CLOSE));
-    controller.a().whileTrue(new ShootFuelCommandAuto(shooter, () -> getTranslationToGameElement().getNorm()));
+    controller.a().whileTrue(new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
 
     // controller.a().whileTrue(Commands.defer(() -> {
     //   return new AutoShootCommand(intake, carpet, feeder, shooter, drive);
@@ -292,27 +291,19 @@ public class RobotContainer {
     
     controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
     controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, false));
-    // controller.rightBumper().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
+    controller.rightBumper().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
     controller.leftBumper().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
-
-    // controller.x().whileTrue(new ShootFuelCommand(intake, carpet, feeder, shooter));
-    // controller.b().whileTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
-    // controller.b().whileTrue(intake.runPivotVoltageCommand(-1));
-    // controller.povUp().whileTrue(intake.runPivotVoltageCommand(-5)
-    // controller.x().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE));
-    // controller.a().whileTrue(shooter.runShooterCommand(ShooterModes.SHOOT_FAR));
 
     controller.povUp().whileTrue(intake.runPivotVoltageCommand(-5));
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
+    controller.povRight().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB));
+    controller.povLeft().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB));
     
     // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
 
-    controller.povRight().whileTrue(shooter.tune());
+    // controller.povRight().whileTrue(shooter.tune());
 
     controller.start().whileTrue(new UnjamCommand(shooter));
-
-    controller.b().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB));
-    controller.rightBumper().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB_MINS));
 
     // controller.x().whileTrue(shooter.tune());
 
@@ -351,7 +342,7 @@ public class RobotContainer {
 
 
     // NamedCommands.registerCommand("AutoShoot", );
-    NamedCommands.registerCommand("AutoShoot", new ShootFuelCommandAuto(shooter, () -> getTranslationToGameElement().getNorm()));
+    NamedCommands.registerCommand("AutoShoot", new ShootFuelCommandAuto(shooter,vision, () -> getTranslationToGameElement().getNorm()));
 
     NamedCommands.registerCommand("AutoAlign", DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle()));
 

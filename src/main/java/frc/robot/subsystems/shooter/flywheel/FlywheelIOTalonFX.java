@@ -23,13 +23,13 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
-  private final TalonFX leftTopLeader = new TalonFX(ShooterFlywheelConstants.leftTopId, Constants.CANIVORE_CANBUS);
+  private final TalonFX leftBackLeader = new TalonFX(ShooterFlywheelConstants.leftBackId, Constants.RIO_CANBUS);
 
-  private final TalonFX leftBottomFollower = new TalonFX(ShooterFlywheelConstants.leftBottomId, Constants.CANIVORE_CANBUS);
+  private final TalonFX leftFrontFollower = new TalonFX(ShooterFlywheelConstants.leftFrontId, Constants.RIO_CANBUS);
  
-  private final TalonFX rightTopFollower = new TalonFX(ShooterFlywheelConstants.rightTopId, Constants.CANIVORE_CANBUS);
+  private final TalonFX rightFrontFollower = new TalonFX(ShooterFlywheelConstants.rightFrontId, Constants.RIO_CANBUS);
 
-  private final TalonFX rightBottomFollower = new TalonFX(ShooterFlywheelConstants.rightBottomId, Constants.CANIVORE_CANBUS);
+  private final TalonFX rightBottomFollower = new TalonFX(ShooterFlywheelConstants.rightBackId, Constants.RIO_CANBUS);
 
   public final PIDController pid = new PIDController(ShooterFlywheelConstants.testp.get(), ShooterFlywheelConstants.testi.get(), ShooterFlywheelConstants.testd.get());
 
@@ -75,17 +75,17 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private FlywheelTalonFXConfig rightConfig = new FlywheelTalonFXConfig();
 
   public FlywheelIOTalonFX() {
-    leftTopAppliedVoltage = leftTopLeader.getMotorVoltage();
-    leftTopFlywheelRPM = leftTopLeader.getVelocity();
-    leftTopAmps = leftTopLeader.getSupplyCurrent();
+    leftTopAppliedVoltage = leftBackLeader.getMotorVoltage();
+    leftTopFlywheelRPM = leftBackLeader.getVelocity();
+    leftTopAmps = leftBackLeader.getSupplyCurrent();
 
-    leftBottomAppliedVoltage = leftBottomFollower.getMotorVoltage();
-    leftBottomFlywheelRPM = leftBottomFollower.getVelocity();
-    leftBottomAmps = leftBottomFollower.getSupplyCurrent();
+    leftBottomAppliedVoltage = leftFrontFollower.getMotorVoltage();
+    leftBottomFlywheelRPM = leftFrontFollower.getVelocity();
+    leftBottomAmps = leftFrontFollower.getSupplyCurrent();
 
-    rightTopAppliedVoltage = rightTopFollower.getMotorVoltage();
-    rightTopFlywheelRPM = rightTopFollower.getVelocity();
-    rightTopAmps = rightTopFollower.getSupplyCurrent();
+    rightTopAppliedVoltage = rightFrontFollower.getMotorVoltage();
+    rightTopFlywheelRPM = rightFrontFollower.getVelocity();
+    rightTopAmps = rightFrontFollower.getSupplyCurrent();
 
     rightBottomAppliedVoltage = rightBottomFollower.getMotorVoltage();
     rightBottomFlywheelRPM = rightBottomFollower.getVelocity();
@@ -94,18 +94,18 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     // might need to do  
     // rightConfig.configMotorInverted(false);
     
-    leftConfig.applyTalonConfig(leftTopLeader);
-    leftConfig.applyTalonConfig(leftBottomFollower);
+    leftConfig.applyTalonConfig(leftBackLeader);
+    leftConfig.applyTalonConfig(leftFrontFollower);
 
-    rightConfig.applyTalonConfig(rightTopFollower);
+    rightConfig.applyTalonConfig(rightFrontFollower);
     rightConfig.applyTalonConfig(rightBottomFollower);
 
     // will need to config whether aligned or inverted later
-    leftBottomFollower.setControl(new Follower(ShooterFlywheelConstants.leftTopId, MotorAlignmentValue.Opposed));
+    leftFrontFollower.setControl(new Follower(ShooterFlywheelConstants.leftBackId, MotorAlignmentValue.Aligned));
 
-    rightBottomFollower.setControl(new Follower(ShooterFlywheelConstants.leftTopId, MotorAlignmentValue.Opposed));
+    rightBottomFollower.setControl(new Follower(ShooterFlywheelConstants.leftBackId, MotorAlignmentValue.Opposed));
 
-    rightTopFollower.setControl(new Follower(ShooterFlywheelConstants.leftTopId, MotorAlignmentValue.Opposed));
+    rightFrontFollower.setControl(new Follower(ShooterFlywheelConstants.leftBackId, MotorAlignmentValue.Opposed));
 
     BaseStatusSignal.setUpdateFrequencyForAll(50, 
         leftTopAppliedVoltage, leftTopAmps, leftTopFlywheelRPM,
@@ -152,7 +152,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
       SmartDashboard.putNumber("FlyhweelOutputVelocity", plotOutput.Velocity);
     }
 
-    SmartDashboard.putNumber("Flywheel RPM", leftTopLeader.getVelocity().getValue().in(Units.RPM));
+    SmartDashboard.putNumber("Flywheel RPM", leftBackLeader.getVelocity().getValue().in(Units.RPM));
 
   }
   
@@ -161,21 +161,21 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   public void setRPM(AngularVelocity rpm){
     setpointRPM = rpm.in(Units.RPM);
     
-    Logger.recordOutput("/Shooter/Voltage", leftTopLeader.getMotorVoltage().getValueAsDouble());
-    AngularVelocity currentRPM = leftTopLeader.getVelocity().getValue();
+    Logger.recordOutput("/Shooter/Voltage", leftBackLeader.getMotorVoltage().getValueAsDouble());
+    AngularVelocity currentRPM = leftBackLeader.getVelocity().getValue();
     double pidOutput = pid.calculate(currentRPM.in(Units.RPM), rpm.in(Units.RPM));
 
     double voltage = pidOutput + ShooterFlywheelConstants.testkS.get() + ShooterFlywheelConstants.testkV.get() * rpm.in(Units.RPM);
 
     voltage = Math.max(Math.min(voltage, 12), -12);
 
-    leftTopLeader.setVoltage(voltage);
+    leftBackLeader.setVoltage(voltage);
 
     if(rpm.in(Units.RotationsPerSecond) > 0){
-    leftTopLeader.setVoltage(voltage);
+    leftBackLeader.setVoltage(voltage);
     }
     else {
-      leftTopLeader.set(0);
+      leftBackLeader.set(0);
     }
 
     
@@ -191,6 +191,6 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void setVoltage(double voltage) {
-     leftTopLeader.setVoltage(voltage);
+     leftBackLeader.setVoltage(voltage);
   }
 }

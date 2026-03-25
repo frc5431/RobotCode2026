@@ -12,9 +12,9 @@ public interface RollerIO {
     public double leaderRPM = 0.0;
     public double leaderCurrentAmps = 0.0;
 
-    public double followerAppliedVoltage = 0.0;
-    public double followerRPM = 0.0;
-    public double followerCurrentAmps = 0.0;
+    // public double followerAppliedVoltage = 0.0;
+    // public double followerRPM = 0.0;
+    // public double followerCurrentAmps = 0.0;
 
   }
 

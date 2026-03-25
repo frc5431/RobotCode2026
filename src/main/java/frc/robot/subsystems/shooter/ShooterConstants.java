@@ -34,11 +34,11 @@ public class ShooterConstants {
   public static class ShooterFlywheelConstants {
     public static final boolean attached = true;
 
-    public static final int leftTopId = 51;
-    public static final int leftBottomId = 52;
+    public static final int leftBackId = 51;
+    public static final int leftFrontId = 52;
 
-    public static final int rightTopId = 53;
-    public static final int rightBottomId = 54;
+    public static final int rightFrontId = 54;
+    public static final int rightBackId = 53;
 
     public static final boolean inverted = false;
     public static final boolean breakType = false;

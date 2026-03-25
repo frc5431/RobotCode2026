@@ -2,13 +2,18 @@ package frc.robot.subsystems.intake.pivot;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public interface PivotIO {
 
   @AutoLog
   public static class PivotIOInputs {
     public boolean pivotConnected = true;
+    public boolean turnEncoderConnected = false;
+    
     public double appliedVoltage = 0.0;
     public double positionAngle = 0.0;
+    public Rotation2d absolutePosition = new Rotation2d();
     public double currentAmps = 0.0;
   }
 
