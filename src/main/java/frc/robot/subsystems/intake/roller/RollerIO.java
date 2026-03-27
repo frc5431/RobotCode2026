@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake.roller;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public interface RollerIO {
 
   @AutoLog
@@ -11,6 +13,7 @@ public interface RollerIO {
     public double leaderAppliedVoltage = 0.0;
     public double leaderRPM = 0.0;
     public double leaderCurrentAmps = 0.0;
+    public double setpointRPM = 0.0;
 
     // public double followerAppliedVoltage = 0.0;
     // public double followerRPM = 0.0;
@@ -25,5 +28,5 @@ public interface RollerIO {
   public default void setRollerVoltage(double voltage) {}
 
   /** Run the motor to the specified rotation per minute. */
-  public default void setRPM(double rpm) {}
+  public default void setRPM(AngularVelocity rpm) {}
 }

@@ -16,6 +16,8 @@ public interface FeederIO {
     public double followerApliedVoltage = 0.0;
     public double followerRPM = 0.0;
     public double followerCurrentAmps = 0.0;
+    public double setpointRPM = 0.0;
+
   }
 
   /** Updates the set of loggable inputs. */

@@ -36,10 +36,13 @@ public  class IntakeConstants {
     public static final int leaderId = 62;
     // public static final int followerId = 61;
 
-    PIDConstants pidConstants = new PIDConstants(1, 0, 0);
-    public static final double p = 1;
-    public static final double i = 0;
-    public static final double d = 0;
+    PIDConstants pidConstants = new PIDConstants(1, 0, 0); //useless
+    public static LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Roller/P", 0.002);
+    public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Roller/I", 0);
+    public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Roller/D", 0.0);
+    public static final LoggedNetworkNumber kS = new LoggedNetworkNumber("/Tuning/Roller/kS", 0.33);
+    public static final LoggedNetworkNumber kV = new LoggedNetworkNumber("/Tuning/Roller/kV", 0.002);
+    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Roller/desiredSpeed",0);
     public static final double maxIAccum = 0.2;
 
     public static final double gearRatio = 1 / 1;

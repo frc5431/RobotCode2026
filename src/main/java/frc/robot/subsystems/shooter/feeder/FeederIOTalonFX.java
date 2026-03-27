@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooter.feeder;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
@@ -10,6 +12,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -39,13 +42,15 @@ public class FeederIOTalonFX implements FeederIO {
     private StatusSignal<Voltage> followerAppliedVoltage;
     private StatusSignal<AngularVelocity> followerRPM;
     private StatusSignal<Current> followerCurrentAmps;
-    
-    private final Debouncer feederConnectedDebounce =
-        new Debouncer(0.5, Debouncer.DebounceType.kFalling);
+
+    public double setpointRPM = 0.0;
+
+    private final Debouncer feederConnectedDebounce = new Debouncer(0.5, Debouncer.DebounceType.kFalling);
 
     private FeederIOTalonFXConfig config = new FeederIOTalonFXConfig();
 
-    public final PIDController pid = new PIDController(ShooterFlywheelConstants.testp.get(), ShooterFlywheelConstants.testi.get(), ShooterFlywheelConstants.testd.get());
+    public final PIDController pid = new PIDController(ShooterFlywheelConstants.testp.get(),
+            ShooterFlywheelConstants.testi.get(), ShooterFlywheelConstants.testd.get());
 
     public FeederIOTalonFX() {
         leaderAppliedVoltage = leader.getMotorVoltage();
@@ -62,12 +67,19 @@ public class FeederIOTalonFX implements FeederIO {
         // will need to config whether aligned or inverted later
         follower.setControl(new Follower(ShooterFeederConstants.leaderId, MotorAlignmentValue.Opposed));
 
-        BaseStatusSignal.setUpdateFrequencyForAll(50, leaderAppliedVoltage, leaderCurrentAmps, leaderRPM, followerAppliedVoltage, followerCurrentAmps, followerRPM);
+        BaseStatusSignal.setUpdateFrequencyForAll(50, leaderAppliedVoltage, leaderCurrentAmps, leaderRPM,
+                followerAppliedVoltage, followerCurrentAmps, followerRPM);
     }
 
     @Override
     public void updateInputs(FeederIOInputs inputs) {
-        var feederStatus = BaseStatusSignal.refreshAll(leaderAppliedVoltage, leaderCurrentAmps, leaderRPM, followerAppliedVoltage, followerCurrentAmps, followerRPM);
+
+        pid.setP(ShooterFlywheelConstants.testp.get());
+        pid.setI(ShooterFlywheelConstants.testi.get());
+        pid.setD(ShooterFlywheelConstants.testd.get());
+
+        var feederStatus = BaseStatusSignal.refreshAll(leaderAppliedVoltage, leaderCurrentAmps, leaderRPM,
+                followerAppliedVoltage, followerCurrentAmps, followerRPM);
 
         inputs.feederConnected = feederConnectedDebounce.calculate(feederStatus.isOK());
         inputs.leaderApliedVoltage = leaderAppliedVoltage.getValueAsDouble();
@@ -76,11 +88,35 @@ public class FeederIOTalonFX implements FeederIO {
         inputs.followerApliedVoltage = followerAppliedVoltage.getValueAsDouble();
         inputs.followerRPM = followerRPM.getValue().in(RPM);
         inputs.followerCurrentAmps = followerCurrentAmps.getValueAsDouble();
+        inputs.setpointRPM = setpointRPM;
+
     }
 
     @Override
     public void setVoltage(double voltage) {
         leader.setVoltage(voltage);
+    }
+
+    @Override
+    public void setRPM(AngularVelocity rpm) {
+        setpointRPM = rpm.in(Units.RPM);
+
+        Logger.recordOutput("/Feeder/Voltage", leader.getMotorVoltage().getValueAsDouble());
+        AngularVelocity currentRPM = leader.getVelocity().getValue();
+        double pidOutput = pid.calculate(currentRPM.in(Units.RPM), rpm.in(Units.RPM));
+
+        double voltage = pidOutput + ShooterFeederConstants.kS.get()
+                + ShooterFeederConstants.kV.get() * rpm.in(Units.RPM);
+
+        voltage = Math.max(Math.min(voltage, 12), -12);
+
+        leader.setVoltage(voltage);
+
+        if (rpm.in(Units.RotationsPerSecond) > 0) {
+            leader.setVoltage(voltage);
+        } else {
+            leader.set(0);
+        }
     }
 
     @Override

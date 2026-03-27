@@ -21,7 +21,7 @@ public class FeederIOSparkFlex implements FeederIO {
         config.closedLoop.feedbackSensor(ShooterFeederConstants.feedbackSensorREV);
         config.smartCurrentLimit(
           (int) ShooterFeederConstants.stallLimit.in(Units.Amps), (int) ShooterFeederConstants.supplyLimit.in(Units.Amps));
-        config.closedLoop.pid(ShooterFeederConstants.p, ShooterFeederConstants.i, ShooterFeederConstants.d, ClosedLoopSlot.kSlot0);
+        config.closedLoop.pid(ShooterFeederConstants.p.get(), ShooterFeederConstants.i.get(), ShooterFeederConstants.d.get(), ClosedLoopSlot.kSlot0);
         
         
         sparkFlex.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

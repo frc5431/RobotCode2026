@@ -4,10 +4,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.littletonrobotics.junction.Logger;
 
+import static edu.wpi.first.units.Units.RPM;
+
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
 import frc.robot.subsystems.intake.pivot.PivotIO;
 import frc.robot.subsystems.intake.pivot.PivotIOInputsAutoLogged;
 import frc.robot.subsystems.intake.roller.RollerIO;
@@ -54,6 +58,12 @@ public class Intake extends SubsystemBase {
 
   public Command runPivotVoltageCommand(double voltage){
     return new StartEndCommand(()-> pivotIO.setPivotVoltage(voltage), ()-> pivotIO.setPivotVoltage(0), this);
+  }
+
+  public Command tuneIntake(){
+  return new RunCommand(() -> {
+      rollerIO.setRPM(AngularVelocity.ofRelativeUnits(IntakeRollerConstants.tuneDesiredSpeed.get(), RPM));
+    }, this);
   }
 
   public Command stop() {

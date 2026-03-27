@@ -65,6 +65,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   public static VelocityVoltage plotOutput;
   public static double plotrps;
+  
 
   public double setpointRPM = 0.0;
   // No clue stole from ModuleIO

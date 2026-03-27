@@ -24,7 +24,7 @@ public class RollerIOSparkFlex implements RollerIO {
         config.closedLoop.feedbackSensor(IntakeRollerConstants.feedbackSensorREV);
         config.smartCurrentLimit(
         (int) IntakeRollerConstants.stallLimit.in(Units.Amps), (int) IntakeRollerConstants.supplyLimit.in(Units.Amps));
-        config.closedLoop.pid(IntakeRollerConstants.p, IntakeRollerConstants.i, IntakeRollerConstants.d, ClosedLoopSlot.kSlot0);
+        // config.closedLoop.pid(IntakeRollerConstants.p, IntakeRollerConstants.i, IntakeRollerConstants.d, ClosedLoopSlot.kSlot0);
         
         sparkFlex.configure(config, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
@@ -39,12 +39,12 @@ public class RollerIOSparkFlex implements RollerIO {
         // figure out 
     }
 
-    @Override
-    public void setRPM(double rpm) {
-        sparkFlex
-          .getClosedLoopController()
-          .setSetpoint(rpm, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-    }
+    // @Override
+    // public void setRPM(double rpm) {
+    //     sparkFlex
+    //       .getClosedLoopController()
+    //       .setSetpoint(rpm, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    // }
 
     @Override
     public void setRollerVoltage(double voltage) {

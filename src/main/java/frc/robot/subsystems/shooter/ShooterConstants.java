@@ -53,8 +53,7 @@ public class ShooterConstants {
     public static final LoggedNetworkNumber testd = new LoggedNetworkNumber("/Tuning/Shooter/D", 0.0);
     public static final LoggedNetworkNumber testkS = new LoggedNetworkNumber("/Tuning/Shooter/kS", 0.33);
     public static final LoggedNetworkNumber testkV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0.002);
-    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/desiredSpeed",
-        0);
+    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/desiredSpeed",0);
 
     public static final double kS = 0;
     public static final double kV = 0.001000; // feedforward
@@ -74,9 +73,13 @@ public class ShooterConstants {
     public static final int leaderId = 55;
     public static final int followerId = 56;
 
-    public static final double p = 1;
-    public static final double i = 0;
-    public static final double d = 0;
+    public static LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/P", 0.002);
+    public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/I", 0);
+    public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/D", 0.0);
+    public static final LoggedNetworkNumber kS = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/kS", 0.33);
+    public static final LoggedNetworkNumber kV = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/kV", 0.002);
+    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/desiredSpeed",0);
+
 
     public static final boolean invert = false;
     public static final boolean breakType = false;

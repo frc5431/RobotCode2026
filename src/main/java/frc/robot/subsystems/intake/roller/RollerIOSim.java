@@ -48,12 +48,13 @@ public class RollerIOSim implements RollerIO {
         
     }
 
-    @Override
-    public void setRPM(double RPM) {
-        rollerClosedLoop = true;
-        rollerFFVolts = ROLLER_KS * Math.signum(RPM) + ROLLER_KV * RPM;
-        rollerController.setSetpoint(RPM);
-    }
+    //TODO: REIMPLEMENT
+    // @Override
+    // public void setRPM(double RPM) {
+    //     rollerClosedLoop = true;
+    //     rollerFFVolts = ROLLER_KS * Math.signum(RPM) + ROLLER_KV * RPM;
+    //     rollerController.setSetpoint(RPM);
+    // }
     
     @Override
     public void setRollerVoltage(double voltage) {

@@ -135,7 +135,7 @@ public class Shooter extends SubsystemBase {
   public Command tune() {
     return new RunCommand(() -> {
       flywheelIO.setRPM(AngularVelocity.ofRelativeUnits(ShooterFlywheelConstants.tuneDesiredSpeed.get(), RPM));
-      feederIO.setVoltage(ShooterFeederConstants.tuneDesiredFeederVoltage.get());
+      feederIO.setRPM(AngularVelocity.ofRelativeUnits(ShooterFeederConstants.tuneDesiredSpeed.get(), RPM));
     }, this);
   }
   
