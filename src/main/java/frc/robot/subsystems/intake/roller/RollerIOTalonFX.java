@@ -30,9 +30,9 @@ public class RollerIOTalonFX implements RollerIO {
   private StatusSignal<AngularVelocity> leaderRPM;
   private StatusSignal<Current> leaderCurrentAmps;
 
-  private StatusSignal<Voltage> followerAppliedVoltage;
-  private StatusSignal<AngularVelocity> followerRPM;
-  private StatusSignal<Current> followerCurrentAmps;
+  // private StatusSignal<Voltage> followerAppliedVoltage;
+  // private StatusSignal<AngularVelocity> followerRPM;
+  // private StatusSignal<Current> followerCurrentAmps;
 
   // No clue what this means copied from ModuleIO
   private final Debouncer rollerConnectedDebounce =
@@ -55,15 +55,14 @@ public class RollerIOTalonFX implements RollerIO {
      // will need to config whether aligned or inverted later
     // follower.setControl(new Follower(IntakeRollerConstants.leaderId, MotorAlignmentValue.Opposed));
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50, leaderAppliedVoltage, leaderCurrentAmps, leaderRPM, followerAppliedVoltage, followerCurrentAmps, followerRPM);
+    BaseStatusSignal.setUpdateFrequencyForAll(50, leaderAppliedVoltage, leaderCurrentAmps, leaderRPM);
   }
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
-    var rollerStatus = BaseStatusSignal.refreshAll(leaderAppliedVoltage, leaderCurrentAmps, leaderRPM,
-        followerAppliedVoltage, followerCurrentAmps, followerRPM);
+    var rollerStatus = BaseStatusSignal.refreshAll(leaderAppliedVoltage, leaderCurrentAmps, leaderRPM);
 
-    inputs.rollerConnected = rollerConnectedDebounce.calculate(rollerStatus.isOK());
+    // inputs.rollerConnected = rollerConnectedDebounce.calculate(rollerStatus.isOK());
     inputs.leaderAppliedVoltage = leaderAppliedVoltage.getValueAsDouble();
     inputs.leaderRPM = leaderRPM.getValue().in(RPM);
     inputs.leaderCurrentAmps = leaderCurrentAmps.getValueAsDouble();

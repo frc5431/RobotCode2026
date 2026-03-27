@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -122,12 +123,11 @@ public class RobotContainer {
         intake = new Intake(new RollerIOTalonFX(), new PivotIOTalonFX());
         shooter = new Shooter(new FeederIOTalonFX(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOTalonFX());
-        climber = new Climber(new ClimberIOTalonFX());
+        climber = new Climber(new ClimberIOSim());
         vision = new Vision(drive::addVisionMeasurement, 
-            new VisionIOLimelight(VisionConstants.camera3Name, drive::getRotation), 
+            // new VisionIOLimelight(VisionConstants.camera2Name, drive::getRotation),
             new VisionIOLimelight(VisionConstants.camera2Name, drive::getRotation),
-            new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation),
-            new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation)
+            new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation)
           );
         // vision =
         // new Vision(
@@ -206,7 +206,7 @@ public class RobotContainer {
 
     // Set up SysId routines
     autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive)); 
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
@@ -224,6 +224,8 @@ public class RobotContainer {
 
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
     RobotController.setBrownoutVoltage(6);
+
+    SmartDashboard.putNumber("Match/MatchTime", Timer.getMatchTime());
   }
 
   /**
@@ -275,15 +277,16 @@ public class RobotContainer {
     //   DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), this::getAngleToGameElement)
     // );
      //TODO: ready to test
-      controller.y().whileTrue(
-      new ParallelCommandGroup(
-        DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle()),
-        new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm())
-      )
-    );
+    //   controller.y().whileTrue(
+    //   new ParallelCommandGroup(
+    //     DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle()),
+    //     new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm())
+    //   )
+    // );
+    controller.y().whileTrue(shooter.runCustomVoltageCommand(5, 5));
 
-    controller.x().whileTrue(new ShootFuelCommand(shooter, ShooterModes.SHOOT_CLOSE));
-    controller.a().whileTrue(new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
+    controller.a().whileTrue(new ShootFuelCommand(shooter, ShooterModes.SHOOT_CLOSE));
+    controller.x().whileTrue(new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
 
     // controller.a().whileTrue(Commands.defer(() -> {
     //   return new AutoShootCommand(intake, carpet, feeder, shooter, drive);
@@ -297,11 +300,11 @@ public class RobotContainer {
     controller.povUp().whileTrue(intake.runPivotVoltageCommand(-5));
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
     controller.povRight().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB));
-    controller.povLeft().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB));
+    controller.povLeft().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB_MINS));
     
     // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
 
-    // controller.povRight().whileTrue(shooter.tune());
+    controller.b().whileTrue(shooter.tune());
 
     controller.start().whileTrue(new UnjamCommand(shooter));
 

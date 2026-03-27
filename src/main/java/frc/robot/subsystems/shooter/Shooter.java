@@ -115,7 +115,7 @@ public class Shooter extends SubsystemBase {
   public Command runCustomVoltageCommand(double feederVoltage, double flywheelVoltage){
     return new RunCommand(()-> {
       flywheelIO.setVoltage(feederVoltage);
-      flywheelIO.setVoltage(flywheelVoltage);
+      feederIO.setVoltage(flywheelVoltage);
     });
   }
 

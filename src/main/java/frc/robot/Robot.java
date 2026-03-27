@@ -27,6 +27,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  double startTime;
 
   public Robot() {
     // Record metadata
@@ -112,6 +113,8 @@ public class Robot extends LoggedRobot {
           autonomousCommand.asProxy()
         ));
     }
+
+    
   }
 
   /** This function is called periodically during autonomous. */

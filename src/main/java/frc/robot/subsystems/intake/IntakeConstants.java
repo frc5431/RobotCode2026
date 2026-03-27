@@ -64,7 +64,7 @@ public  class IntakeConstants {
     public static final boolean attached = true;
 
     public static final int id = 14;
-    public static final int cancoderId = 15;
+    public static final int cancoderId = 44;
 
     public static final double EncoderOffset = 0.0;
     public static final boolean EncoderInverted = false;

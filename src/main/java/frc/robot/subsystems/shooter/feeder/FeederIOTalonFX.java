@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -38,11 +39,13 @@ public class FeederIOTalonFX implements FeederIO {
     private StatusSignal<Voltage> followerAppliedVoltage;
     private StatusSignal<AngularVelocity> followerRPM;
     private StatusSignal<Current> followerCurrentAmps;
-
+    
     private final Debouncer feederConnectedDebounce =
         new Debouncer(0.5, Debouncer.DebounceType.kFalling);
 
     private FeederIOTalonFXConfig config = new FeederIOTalonFXConfig();
+
+    public final PIDController pid = new PIDController(ShooterFlywheelConstants.testp.get(), ShooterFlywheelConstants.testi.get(), ShooterFlywheelConstants.testd.get());
 
     public FeederIOTalonFX() {
         leaderAppliedVoltage = leader.getMotorVoltage();

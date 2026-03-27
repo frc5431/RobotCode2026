@@ -15,8 +15,8 @@ import edu.wpi.first.units.measure.Voltage;
 public class ShooterConstants {
 
   public enum ShooterModes {
-    SHOOT_FAR(Units.RPM.of(3500), Units.Volts.of(5)),
-    SHOOT_CLOSE(Units.RPM.of(2500), Units.Volts.of(
+    SHOOT_FAR(Units.RPM.of(2500), Units.Volts.of(5)),
+    SHOOT_CLOSE(Units.RPM.of(2000), Units.Volts.of(
         5)),
     IDLE(Units.RPM.of(0), Units.Volts.of(
         0)),
@@ -40,7 +40,7 @@ public class ShooterConstants {
     public static final int rightFrontId = 54;
     public static final int rightBackId = 53;
 
-    public static final boolean inverted = false;
+    public static final boolean inverted = true;
     public static final boolean breakType = false;
     public static final double gearRatio = 1 / 1;
 
@@ -48,11 +48,11 @@ public class ShooterConstants {
     public static final double i = 0;
     public static final double d = 0;
 
-    public static LoggedNetworkNumber testp = new LoggedNetworkNumber("/Tuning/Shooter/P", 0.003);
+    public static LoggedNetworkNumber testp = new LoggedNetworkNumber("/Tuning/Shooter/P", 0.002);
     public static final LoggedNetworkNumber testi = new LoggedNetworkNumber("/Tuning/Shooter/I", 0);
-    public static final LoggedNetworkNumber testd = new LoggedNetworkNumber("/Tuning/Shooter/D", 0.00002);
-    public static final LoggedNetworkNumber testkS = new LoggedNetworkNumber("/Tuning/Shooter/kS", 0.375);
-    public static final LoggedNetworkNumber testkV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0.0021);
+    public static final LoggedNetworkNumber testd = new LoggedNetworkNumber("/Tuning/Shooter/D", 0.0);
+    public static final LoggedNetworkNumber testkS = new LoggedNetworkNumber("/Tuning/Shooter/kS", 0.33);
+    public static final LoggedNetworkNumber testkV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0.002);
     public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/desiredSpeed",
         0);
 

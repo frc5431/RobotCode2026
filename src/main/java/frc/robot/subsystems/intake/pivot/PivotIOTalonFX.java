@@ -21,12 +21,12 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class PivotIOTalonFX implements PivotIO {
-  private final TalonFX talon = new TalonFX(IntakePivotConstants.id, Constants.RIO_CANBUS);
-   private final CANcoder cancoder = new CANcoder(IntakePivotConstants.cancoderId, Constants.RIO_CANBUS);
+  private final TalonFX talon = new TalonFX(IntakePivotConstants.id, Constants.CANIVORE_CANBUS);
+   private final CANcoder cancoder = new CANcoder(IntakePivotConstants.cancoderId, Constants.CANIVORE_CANBUS);
 
   public static class PivotTalonFXConfig extends CTREMechanism.Config {
     public PivotTalonFXConfig() {
-      super("PivotTalonFX", Constants.RIO_CANBUS);
+      super("PivotTalonFX", Constants.CANIVORE_CANBUS);
       configNeutralBrakeMode(IntakePivotConstants.breakType);
       configFeedbackSensorSource(IntakePivotConstants.feedbackSensorCTRE);
       configGearRatio(IntakePivotConstants.gearRatio);

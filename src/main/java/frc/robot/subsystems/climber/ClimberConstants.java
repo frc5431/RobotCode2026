@@ -23,7 +23,7 @@ public class ClimberConstants {
   
   public static final boolean attached = true;
 
-  public static final int id = 24;
+  public static final int id = 34;
 
   PIDConstants pidConstants = new PIDConstants(1, 0, 0);
   public static final double p = 1;

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.hopper;
 
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.pathplanner.lib.config.PIDConstants;
 import com.revrobotics.spark.FeedbackSensor;
@@ -25,13 +27,16 @@ public class CarpetConstants {
   public static final class CarpetRollerConstants {
     public static final boolean attached = true;
 
-    public static final int id = 34;
+    public static final int id = 45;
 
     PIDConstants pidConstants = new PIDConstants(1, 0, 0);
     public static final double p = 1;
     public static final double i = 0;
     public static final double d = 0;
     public static final double maxIAccum = 0.2;
+
+    public static LoggedNetworkNumber testVoltage = new LoggedNetworkNumber("/Tuning/Carpet/Voltage", 2);
+
 
     public static final double gearRatio = 1 / 1;
 

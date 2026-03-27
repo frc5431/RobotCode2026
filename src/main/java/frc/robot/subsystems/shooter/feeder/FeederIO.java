@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooter.feeder;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public interface FeederIO {
   @AutoLog
   public static class FeederIOInputs {
@@ -25,4 +27,7 @@ public interface FeederIO {
   /** Run the motor at the specified percent output. */
   public default void setPercentOutput(double percent) {}
   
+  /** Run the motor to the specified rotation per minute. */
+  public default void setRPM(AngularVelocity rpm) {}
+
 }

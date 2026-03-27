@@ -58,6 +58,12 @@ public class CarpetIOTalonFX implements CarpetIO {
 
   @Override
   public void setRollerVoltage(double voltage) {
-    talon.setVoltage(voltage);
+    if(voltage > 0){
+      talon.setVoltage(CarpetRollerConstants.testVoltage.get());
+    }
+    else {
+      talon.setVoltage(0);
+    }
+    
   }
 }

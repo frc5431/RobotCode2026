@@ -32,7 +32,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private final TalonFX rightBottomFollower = new TalonFX(ShooterFlywheelConstants.rightBackId, Constants.RIO_CANBUS);
 
   public final PIDController pid = new PIDController(ShooterFlywheelConstants.testp.get(), ShooterFlywheelConstants.testi.get(), ShooterFlywheelConstants.testd.get());
-
+  
   public static class FlywheelTalonFXConfig extends CTREMechanism.Config {
     public FlywheelTalonFXConfig() {
       super("FlywheelTalonFX", Constants.CANIVORE_CANBUS);
