@@ -128,10 +128,10 @@ public class DriveCommands {
               // Calculate angular speed
               double omega =
                   angleController.calculate(
-                      drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+                      drive.getRotation().getRadians(), rotationSupplier.get().getRadians() + Math.PI);
 
               Logger.recordOutput("RotationTuning/curr", drive.getRotation().getRadians());
-              Logger.recordOutput("RotationTuning/desired", rotationSupplier.get().getRadians());
+              Logger.recordOutput("RotationTuning/desired", rotationSupplier.get().getRadians() + Math.PI);
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =

@@ -5,15 +5,28 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "TakingStepBack"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.8
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "deployIntake"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "deployIntake"
+            "pathName": "StepBack"
           }
         },
         {
@@ -26,6 +39,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "AA",
+  "folder": null,
   "choreoAuto": false
 }

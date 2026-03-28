@@ -42,13 +42,13 @@ public class Shooter extends SubsystemBase {
     this.feederIO = feederIO;
     this.flywheelIO = flywheelIO;
     this.shooterMode = ShooterModes.IDLE;
-    speedMap.put(1.9, 2000.0);
-    speedMap.put(2.75, 2500.0);
-    speedMap.put(2.9, 2600.0);
-    speedMap.put(3.1, 2700.0);
-    speedMap.put(3.3, 2800.0);
-    speedMap.put(3.5, 3000.0);
-    speedMap.put(3.8, 3500.0);
+    speedMap.put(1.379, 1950.0);
+    // speedMap.put(2.75, 2500.0);
+    // speedMap.put(2.9, 2600.0);
+    // speedMap.put(3.1, 2700.0);
+    // speedMap.put(3.3, 2800.0);
+    // speedMap.put(3.5, 3000.0);
+    // speedMap.put(3.8, 3500.0);
   }
   
   @Override
@@ -72,9 +72,13 @@ public class Shooter extends SubsystemBase {
     feederIO.setVoltage(mode.feederVoltage.magnitude());
   }
 
-  public void runShooterCustom(double rpm, double feederVoltage) {
-    flywheelIO.setRPM(Units.RPM.of(rpm));
-    feederIO.setVoltage(feederVoltage);
+  public Command runShooterCustom(double flywheelRPM, double feederRPM) {
+    
+    return new RunCommand(() -> {
+      flywheelIO.setRPM(Units.RPM.of(flywheelRPM));
+      feederIO.setRPM(Units.RPM.of(feederRPM));
+    }, this);
+    
   }
 
   public Command runShootAuto(DoubleSupplier dist) {
@@ -135,6 +139,12 @@ public class Shooter extends SubsystemBase {
   public Command tune() {
     return new RunCommand(() -> {
       flywheelIO.setRPM(AngularVelocity.ofRelativeUnits(ShooterFlywheelConstants.tuneDesiredSpeed.get(), RPM));
+      feederIO.setRPM(AngularVelocity.ofRelativeUnits(ShooterFeederConstants.tuneDesiredSpeed.get(), RPM));
+    }, this);
+  }
+
+  public Command tuneFeeder(){
+    return new RunCommand(() -> {
       feederIO.setRPM(AngularVelocity.ofRelativeUnits(ShooterFeederConstants.tuneDesiredSpeed.get(), RPM));
     }, this);
   }

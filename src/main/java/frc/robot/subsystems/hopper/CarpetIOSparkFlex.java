@@ -24,7 +24,7 @@ public class CarpetIOSparkFlex implements CarpetIO {
         config.closedLoop.feedbackSensor(CarpetRollerConstants.feedbackSensorREV);
         config.smartCurrentLimit(
           (int) CarpetRollerConstants.stallLimit.in(Units.Amps), (int) CarpetRollerConstants.supplyLimit.in(Units.Amps));
-        config.closedLoop.pid(CarpetRollerConstants.p, CarpetRollerConstants.i, CarpetRollerConstants.d, ClosedLoopSlot.kSlot0);
+        // config.closedLoop.pid(CarpetRollerConstants.p, CarpetRollerConstants.i, CarpetRollerConstants.d, ClosedLoopSlot.kSlot0);
         
         sparkFlex.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }

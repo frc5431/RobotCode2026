@@ -6,10 +6,13 @@ import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import frc.robot.subsystems.hopper.CarpetConstants.CarpetRollerConstants;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
 import frc.robot.subsystems.intake.pivot.PivotIO;
@@ -47,7 +50,7 @@ public class Intake extends SubsystemBase {
   public void runIntakeEnum(IntakeMode intakeMode) {
     this.intakeMode = intakeMode;
     rollerIO.setRollerVoltage(intakeMode.voltage.baseUnitMagnitude());
-    pivotIO.setPosition(intakeMode.position.magnitude());
+    // pivotIO.setPosition(intakeMode.position.magnitude());
   }
 
   public Command runIntakeCommand(IntakeMode intakeMode) {
@@ -57,13 +60,12 @@ public class Intake extends SubsystemBase {
   }
 
   public Command runPivotVoltageCommand(double voltage){
-    return new StartEndCommand(()-> pivotIO.setPivotVoltage(voltage), ()-> pivotIO.setPivotVoltage(0), this);
+    return Commands.run(() -> pivotIO.setPivotVoltage(voltage)).withName("pivotVoltage" + voltage);
   }
 
-  public Command tuneIntake(){
-  return new RunCommand(() -> {
-      rollerIO.setRPM(AngularVelocity.ofRelativeUnits(IntakeRollerConstants.tuneDesiredSpeed.get(), RPM));
-    }, this);
+  public Command runIntakeTuneCommand(){
+    return Commands.run(() -> AngularVelocity.ofRelativeUnits(CarpetRollerConstants.tuneDesiredSpeed.get(), RPM));
+  
   }
 
   public Command stop() {
@@ -74,7 +76,7 @@ public class Intake extends SubsystemBase {
     
     return run(() -> {
       rollerIO.setRollerVoltage(0);
-      pivotIO.setPivotVoltage(0);
+      // pivotIO.setPivotVoltage(0);
     }).withName("Intake.Stop");
 
   }

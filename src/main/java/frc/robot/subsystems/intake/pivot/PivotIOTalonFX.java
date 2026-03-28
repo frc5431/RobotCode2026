@@ -92,6 +92,7 @@ public class PivotIOTalonFX implements PivotIO {
 
   @Override
   public void setPivotVoltage(double voltage) {
+    // System.out.println(voltage);
     talon.setVoltage(voltage);
   }
 

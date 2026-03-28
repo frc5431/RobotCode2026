@@ -18,7 +18,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.Constants;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterFeederConstants;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
+// import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class FeederIOTalonFX implements FeederIO {
@@ -49,8 +49,8 @@ public class FeederIOTalonFX implements FeederIO {
 
     private FeederIOTalonFXConfig config = new FeederIOTalonFXConfig();
 
-    public final PIDController pid = new PIDController(ShooterFlywheelConstants.testp.get(),
-            ShooterFlywheelConstants.testi.get(), ShooterFlywheelConstants.testd.get());
+    public final PIDController pid = new PIDController(ShooterFeederConstants.p.get(),
+            ShooterFeederConstants.i.get(), ShooterFeederConstants.d.get());
 
     public FeederIOTalonFX() {
         leaderAppliedVoltage = leader.getMotorVoltage();
@@ -74,9 +74,9 @@ public class FeederIOTalonFX implements FeederIO {
     @Override
     public void updateInputs(FeederIOInputs inputs) {
 
-        pid.setP(ShooterFlywheelConstants.testp.get());
-        pid.setI(ShooterFlywheelConstants.testi.get());
-        pid.setD(ShooterFlywheelConstants.testd.get());
+        pid.setP(ShooterFeederConstants.p.get());
+        pid.setI(ShooterFeederConstants.i.get());
+        pid.setD(ShooterFeederConstants.d.get());
 
         var feederStatus = BaseStatusSignal.refreshAll(leaderAppliedVoltage, leaderCurrentAmps, leaderRPM,
                 followerAppliedVoltage, followerCurrentAmps, followerRPM);

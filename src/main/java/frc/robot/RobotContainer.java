@@ -23,11 +23,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InhaleCommand;
-import frc.robot.commands.ShootFuelCommand;
 import frc.robot.commands.ShootFuelCommandAuto;
+import frc.robot.commands.SuperShooterCommand;
 import frc.robot.commands.UnjamCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
@@ -75,15 +78,18 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-//   private final Vision vision;
+  // private final Vision vision;
   private final Intake intake;
   private final Shooter shooter;
   private final Carpet carpet;
@@ -96,39 +102,37 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-
-  
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                new ModuleIOTalonFX(TunerConstants.FrontRight),
-                new ModuleIOTalonFX(TunerConstants.BackLeft),
-                new ModuleIOTalonFX(TunerConstants.BackRight));
+        drive = new Drive(
+            new GyroIOPigeon2(),
+            new ModuleIOTalonFX(TunerConstants.FrontLeft),
+            new ModuleIOTalonFX(TunerConstants.FrontRight),
+            new ModuleIOTalonFX(TunerConstants.BackLeft),
+            new ModuleIOTalonFX(TunerConstants.BackRight));
 
         // Real robot, instantiate hardware IO implementations
         // vision =
-        //     new Vision(
-        //         drive::addVisionMeasurement,
-        //         new VisionIOLimelight(camera0Name, drive::getRotation),
-        //         new VisionIOLimelight(camera1Name, drive::getRotation));
+        // new Vision(
+        // drive::addVisionMeasurement,
+        // new VisionIOLimelight(camera0Name, drive::getRotation),
+        // new VisionIOLimelight(camera1Name, drive::getRotation));
 
         intake = new Intake(new RollerIOTalonFX(), new PivotIOTalonFX());
         shooter = new Shooter(new FeederIOTalonFX(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOTalonFX());
         climber = new Climber(new ClimberIOSim());
-        vision = new Vision(drive::addVisionMeasurement, 
+        vision = new Vision(drive::addVisionMeasurement,
             // new VisionIOLimelight(VisionConstants.camera2Name, drive::getRotation),
             new VisionIOLimelight(VisionConstants.camera2Name, drive::getRotation),
-            new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation)
-          );
+            new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -155,46 +159,55 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIOSim(TunerConstants.FrontLeft),
+            new ModuleIOSim(TunerConstants.FrontRight),
+            new ModuleIOSim(TunerConstants.BackLeft),
+            new ModuleIOSim(TunerConstants.BackRight));
 
         // vision =
-        //     new Vision(
-        //         drive::addVisionMeasurement,
-        //         new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
-        //         new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
+        // new Vision(
+        // drive::addVisionMeasurement,
+        // new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
+        // new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
 
-        intake = 
-            new Intake(new RollerIOSim(), new PivotIOSim());
-        shooter = 
-              new Shooter(new FeederIOSim(), new FlywheelIOSim());
-        carpet = 
-              new Carpet(new CarpetIOSim());
-        climber = 
-              new Climber(new ClimberIOSim());
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
+        intake = new Intake(new RollerIOSim(), new PivotIOSim());
+        shooter = new Shooter(new FeederIOSim(), new FlywheelIOSim());
+        carpet = new Carpet(new CarpetIOSim());
+        climber = new Climber(new ClimberIOSim());
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
+        });
         break;
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
 
-        // vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        intake = new Intake(new RollerIO() {}, new PivotIO() {});
-        shooter = new Shooter(new FeederIO() {}, new FlywheelIO() {});
-        carpet = new Carpet(new CarpetIO() {});
-        climber = new Climber(new ClimberIO() {});
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
+        // vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new
+        // VisionIO() {});
+        intake = new Intake(new RollerIO() {
+        }, new PivotIO() {
+        });
+        shooter = new Shooter(new FeederIO() {
+        }, new FlywheelIO() {
+        });
+        carpet = new Carpet(new CarpetIO() {
+        });
+        climber = new Climber(new ClimberIO() {
+        });
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
+        });
         break;
 
     }
@@ -206,7 +219,7 @@ public class RobotContainer {
 
     // Set up SysId routines
     autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive)); 
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
     autoChooser.addOption(
         "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
     autoChooser.addOption(
@@ -263,97 +276,69 @@ public class RobotContainer {
     // // Switch to X pattern when X button is pressed
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-    // Reset gyro to 0° when B button is pressed
-    // controller
-    //     .y()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () ->
-    //                     drive.setPose(
-    //                         new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-    //                 drive)
-    //             .ignoringDisable(true));
-    // controller.y().whileTrue(
-    //   DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), this::getAngleToGameElement)
-    // );
      //TODO: ready to test
-    //   controller.y().whileTrue(
-    //   new ParallelCommandGroup(
-    //     DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle()),
-    //     new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm())
-    //   )
-    // );
-    controller.y().whileTrue(shooter.runCustomVoltageCommand(5, 5));
+      controller.y().whileTrue(
+      new ParallelCommandGroup(
+        DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle())
+        // shooter.runShooterCustom(2250, 2750)
+        // shooter.tune()
+        // new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm())
+      )
+    );
+    // controller.y().whileTrue(shooter.runCustomVoltageCommand(5, 5));
 
-    controller.a().whileTrue(new ShootFuelCommand(shooter, ShooterModes.SHOOT_CLOSE));
-    controller.x().whileTrue(new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
+    controller.a().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE));
+    controller.x().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_FAR));
+        controller.b().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE_MORE));
+
+    // controller.x().whileTrue(new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
 
     // controller.a().whileTrue(Commands.defer(() -> {
     //   return new AutoShootCommand(intake, carpet, feeder, shooter, drive);
-    // }, Set.of(intake, carpet, feeder, shooter)));
+    // }, Set.of(intake, carpet, feeder, shooter)));x
     
-    controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
+    // controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
     controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, false));
     controller.rightBumper().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
     controller.leftBumper().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
 
-    controller.povUp().whileTrue(intake.runPivotVoltageCommand(-5));
+    controller.povUp().whileTrue(intake.runPivotVoltageCommand(-6)); //TODO: change back to 5
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
+    // controller.povUp().or(controller.povDown()).whileFalse(intake.runPivotVoltageCommand(0));
     controller.povRight().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB));
     controller.povLeft().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB_MINS));
     
+    controller.rightTrigger().whileTrue(intake.runIntakeTuneCommand());
     // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
 
-    controller.b().whileTrue(shooter.tune());
+    // controller.b().whileTrue(new IntakeJiggleCommand(intake));
+    // controller.b().whileTrue(new ParallelCommandGroup(shooter.tune()));
 
     controller.start().whileTrue(new UnjamCommand(shooter));
 
-    // controller.x().whileTrue(shooter.tune());
-
-
-    // upclimb is left dpad, downclimb is right dpad
-
-
-    // // Auto aim command example; code from AKit template.
-    // @SuppressWarnings("resource")
-    // PIDController aimController = new PIDController(0.2, 0.0, 0.0);
-    // aimController.enableContinuousInput(-Math.PI, Math.PI);
-    // controller
-    // .button(1)
-    // .whileTrue(
-    // Commands.startRun(
-    // () -> {
-    // aimController.reset();
-    // },
-    // () -> {
-    // drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
-    // },
-    // drive));
   }
 
   private void registerCommands() {
-    NamedCommands.registerCommand("ShootClose", Commands.parallel(
-      new InhaleCommand(intake, carpet, true),
-      new ShootFuelCommand(shooter, ShooterModes.SHOOT_CLOSE)
-    ).withTimeout(10));
+    NamedCommands.registerCommand("ShootClose", Commands.sequence(
+        new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE)).withTimeout(10));
     // NamedCommands.registerCommand("DeployIntake");
-    // NamedCommands.registerCommand("ShootCloseJer",  );
-    NamedCommands.registerCommand("ShootFar", Commands.parallel(
-      new InhaleCommand(intake, carpet, true),
-      shooter.runShooterCommand(ShooterModes.SHOOT_FAR)
-    ).withTimeout(10));
-
+    // NamedCommands.registerCommand("ShootCloseJer", );
+    NamedCommands.registerCommand("ShootFar", Commands.sequence(
+        new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_FAR)).withTimeout(10));
 
     // NamedCommands.registerCommand("AutoShoot", );
-    NamedCommands.registerCommand("AutoShoot", new ShootFuelCommandAuto(shooter,vision, () -> getTranslationToGameElement().getNorm()));
+    NamedCommands.registerCommand("AutoShoot",
+        new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
 
-    NamedCommands.registerCommand("AutoAlign", DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle()));
+    NamedCommands.registerCommand("AutoAlign",
+        DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle()));
 
     NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
-    NamedCommands.registerCommand("CarpetRun", carpet.runCarpetCommand(CarpetModes.INTAKE));
     NamedCommands.registerCommand("deployIntake", intake.runPivotVoltageCommand(3));
-    NamedCommands.registerCommand("RevShooterClose", shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));
+    NamedCommands.registerCommand("RevShooterClose",
+        shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));
   }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -365,16 +350,16 @@ public class RobotContainer {
 
   public void teleopInit() {
     // if (!shooter.isZeroed()) {
-    //     CommandScheduler.getInstance().schedule(shooter.homing());
+    // CommandScheduler.getInstance().schedule(shooter.homing());
     // }
-    }
+  }
 
   public Translation2d getTranslationToGameElement() {
     Translation2d hubPose = FieldConstants.Hub.innerCenterPoint.toTranslation2d();
     Translation2d hubPoseAdj = AllianceFlipUtil.apply(hubPose);
-    
+
     Pose2d robotPose = drive.getPose();
-    Transform2d shooterTransform = new Transform2d(Inches.of(-10.824), Inches.of(8.125), Rotation2d.kZero);
+    Transform2d shooterTransform = new Transform2d(Inches.of(-10.824), Inches.of(0), Rotation2d.kZero);
     Pose2d shooterPose = robotPose.transformBy(shooterTransform);
 
     Translation2d diff = hubPoseAdj.minus(shooterPose.getTranslation());
@@ -384,6 +369,6 @@ public class RobotContainer {
   }
 
   // public Command getHomingCommand() {
-  //   return shooter.homing();
+  // return shooter.homing();
   // }
 }

@@ -17,10 +17,10 @@ public class VisionConstants {
   public static AprilTagFieldLayout aprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-  public static boolean visionEnabled = false;
+  public static boolean visionEnabled = true;
   // Camera names, must match names configured on coprocessor
-  public static String camera1Name = "limelight-one";
-  public static String camera2Name = "limelight-two";
+  public static String camera1Name = "limelight-yogev";
+  public static String camera2Name = "limelight-michael";
 //   public static String camera3Name = "limelight-2";
 
   // Robot to camera transforms

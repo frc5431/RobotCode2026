@@ -5,9 +5,8 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.revrobotics.spark.FeedbackSensor;
 
-import edu.wpi.first.math.controller.BangBangController;
+// import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
@@ -15,7 +14,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class ShooterConstants {
 
   public enum ShooterModes {
-    SHOOT_FAR(Units.RPM.of(2500), Units.Volts.of(5)),
+    SHOOT_FAR(Units.RPM.of(2800), Units.Volts.of(5)),
     SHOOT_CLOSE(Units.RPM.of(2000), Units.Volts.of(
         5)),
     IDLE(Units.RPM.of(0), Units.Volts.of(
@@ -73,11 +72,11 @@ public class ShooterConstants {
     public static final int leaderId = 55;
     public static final int followerId = 56;
 
-    public static LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/P", 0.002);
+    public static LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/P", 0.0001);
     public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/I", 0);
     public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/D", 0.0);
-    public static final LoggedNetworkNumber kS = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/kS", 0.33);
-    public static final LoggedNetworkNumber kV = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/kV", 0.002);
+    public static final LoggedNetworkNumber kS = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/kS", 0.1875);
+    public static final LoggedNetworkNumber kV = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/kV", 0.0017);
     public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/desiredSpeed",0);
 
 

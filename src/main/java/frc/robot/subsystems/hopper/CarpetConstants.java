@@ -30,10 +30,12 @@ public class CarpetConstants {
     public static final int id = 45;
 
     PIDConstants pidConstants = new PIDConstants(1, 0, 0);
-    public static final double p = 1;
-    public static final double i = 0;
-    public static final double d = 0;
-    public static final double maxIAccum = 0.2;
+    public static LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Carpet/P", 0.0002);
+    public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Carpet/I", 0);
+    public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Carpet/D", 0.0);
+    public static final LoggedNetworkNumber kS = new LoggedNetworkNumber("/Tuning/Carpet/kS", 0.375);
+    public static final LoggedNetworkNumber kV = new LoggedNetworkNumber("/Tuning/Carpet/kV", 0.00201);
+    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Carpet/desiredSpeed",6000);
 
     public static LoggedNetworkNumber testVoltage = new LoggedNetworkNumber("/Tuning/Carpet/Voltage", 2);
 

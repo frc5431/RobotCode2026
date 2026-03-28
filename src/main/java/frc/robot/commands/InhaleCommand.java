@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.hopper.Carpet;
 import frc.robot.subsystems.hopper.CarpetConstants.CarpetModes;
@@ -16,7 +17,7 @@ public class InhaleCommand extends ParallelCommandGroup {
      if (isInhaling) {
       addCommands(
         intake.runIntakeCommand(IntakeMode.INTAKE),
-        carpet.runCarpetCommand(CarpetModes.INTAKE)
+        carpet.runCarpetRPM(Units.RPM.of(6000))
       );
      } 
      
