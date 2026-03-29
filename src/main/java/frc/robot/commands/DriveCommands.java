@@ -107,7 +107,8 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      Supplier<Rotation2d> rotationSupplier) {
+      Supplier<Rotation2d> rotationSupplier,
+      Supplier<Translation2d> hubDifSupplier) {
 
     // Create PID controller
     ProfiledPIDController angleController =
@@ -132,6 +133,7 @@ public class DriveCommands {
 
               Logger.recordOutput("RotationTuning/curr", drive.getRotation().getRadians());
               Logger.recordOutput("RotationTuning/desired", rotationSupplier.get().getRadians() + Math.PI);
+              double rotationDiff = Math.abs(drive.getRotation().getDegrees() - (rotationSupplier.get().getDegrees() + 180));
 
               // Convert to field relative speeds & send command
               ChassisSpeeds speeds =
@@ -139,15 +141,31 @@ public class DriveCommands {
                       linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                       linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                       omega);
+
               boolean isFlipped =
                   DriverStation.getAlliance().isPresent()
                       && DriverStation.getAlliance().get() == Alliance.Red;
-              drive.runVelocity(
+
+              boolean enableAutoDist = false;
+
+              if (speeds.vxMetersPerSecond == 0 && speeds.vyMetersPerSecond == 0 && rotationDiff < 4 && enableAutoDist) {
+                if (hubDifSupplier.get().getNorm() < 1.376) {
+                  speeds.vxMetersPerSecond = 0.11;
+                } else if (hubDifSupplier.get().getNorm() > 1.342) {
+                  speeds.vxMetersPerSecond = -0.1;
+                }
+                drive.runVelocity(ChassisSpeeds.fromRobotRelativeSpeeds(speeds, isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation()));
+              } else {
+                drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       speeds,
                       isFlipped
                           ? drive.getRotation().plus(new Rotation2d(Math.PI))
                           : drive.getRotation()));
+              }
+              
             },
             drive)
 

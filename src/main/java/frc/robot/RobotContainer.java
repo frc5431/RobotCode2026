@@ -279,7 +279,7 @@ public class RobotContainer {
      //TODO: ready to test
       controller.y().whileTrue(
       new ParallelCommandGroup(
-        DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle())
+        DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle(), () -> getTranslationToGameElement())
         // shooter.runShooterCustom(2250, 2750)
         // shooter.tune()
         // new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm())
@@ -289,7 +289,6 @@ public class RobotContainer {
 
     controller.a().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE));
     controller.x().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_FAR));
-        controller.b().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE_MORE));
 
     // controller.x().whileTrue(new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
 
@@ -298,8 +297,10 @@ public class RobotContainer {
     // }, Set.of(intake, carpet, feeder, shooter)));x
     
     // controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
-    controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, false));
+    
+    controller.rightTrigger().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE_MORE));
     controller.rightBumper().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
+    
     controller.leftBumper().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
 
     controller.povUp().whileTrue(intake.runPivotVoltageCommand(-6)); //TODO: change back to 5
@@ -331,7 +332,7 @@ public class RobotContainer {
         new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
 
     NamedCommands.registerCommand("AutoAlign",
-        DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle()));
+        DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle(), () -> getTranslationToGameElement()));
 
     NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
     NamedCommands.registerCommand("StopIntake", intake.runIntakeCommand(IntakeMode.OUT_IDLE));

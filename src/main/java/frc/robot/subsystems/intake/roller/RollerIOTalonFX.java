@@ -28,7 +28,8 @@ public class RollerIOTalonFX implements RollerIO {
       super("RollerTalonFX", Constants.RIO_CANBUS);
       configNeutralBrakeMode(IntakeRollerConstants.breakType);
       configFeedbackSensorSource(IntakeRollerConstants.feedbackSensorCTRE);
-      configSupplyCurrentLimit(IntakeRollerConstants.supplyLimit);
+      // configSupplyCurrentLimit(IntakeRollerConstants.supplyLimit);
+      
     }
   }
 

@@ -60,8 +60,8 @@ public  class IntakeConstants {
     public static final Angle maxReverseRotation = Units.Rotation.of(-0.1);
     public static final Angle maxFowardRotation = Units.Rotation.of(5);
 
-    public static final Current stallLimit = Units.Amps.of(70);
-    public static final Current supplyLimit = Units.Amps.of(80);
+    public static final Current stallLimit = Units.Amps.of(80);
+    public static final Current supplyLimit = Units.Amps.of(85);
 
     
   }
