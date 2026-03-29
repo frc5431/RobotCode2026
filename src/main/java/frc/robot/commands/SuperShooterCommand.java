@@ -12,10 +12,9 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
 public class SuperShooterCommand extends SequentialCommandGroup {
     public SuperShooterCommand(Shooter shooter, Intake intake, Carpet carpet, ShooterModes shooterModes){
         addCommands(
-            new ParallelDeadlineGroup(
-                new WaitCommand(.5),
-                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 0)
-            ),
+            shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 0).until(
+                () -> shooter.getFlywheelSpeed() > shooterModes.flywheelSpeed.magnitude() * 0.99
+            ).withTimeout(0.5),
             new ParallelDeadlineGroup(
                 new WaitCommand(1.25),
                 shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2750),

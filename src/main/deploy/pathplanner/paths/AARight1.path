@@ -112,12 +112,12 @@
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 2.45
+        "x": 2.952,
+        "y": 2.6311554921540665
       },
       "prevControl": {
-        "x": 3.4709742988286334,
-        "y": 2.449999999999999
+        "x": 3.4229742988286334,
+        "y": 2.631155492154065
       },
       "nextControl": null,
       "isLocked": false,
@@ -144,7 +144,7 @@
       "minWaypointRelativePos": 2.4701670644391385,
       "maxWaypointRelativePos": 4.0,
       "constraints": {
-        "maxVelocity": 0.8,
+        "maxVelocity": 1.8,
         "maxAcceleration": 0.8,
         "maxAngularVelocity": 270.0,
         "maxAngularAcceleration": 360.0,
@@ -165,6 +165,12 @@
           "name": "Intake"
         }
       }
+    },
+    {
+      "name": "StopIntake",
+      "waypointRelativePos": 5.091288782816202,
+      "endWaypointRelativePos": null,
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -180,7 +186,7 @@
     "rotation": 42.709389957361466
   },
   "reversed": false,
-  "folder": null,
+  "folder": "AA2",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

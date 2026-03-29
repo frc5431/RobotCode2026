@@ -334,6 +334,7 @@ public class RobotContainer {
         DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle()));
 
     NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
+    NamedCommands.registerCommand("StopIntake", intake.runIntakeCommand(IntakeMode.OUT_IDLE));
     NamedCommands.registerCommand("deployIntake", intake.runPivotVoltageCommand(3));
     NamedCommands.registerCommand("RevShooterClose",
         shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));

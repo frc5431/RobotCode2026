@@ -3,10 +3,12 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "AA"
+    "AA",
+    "AA2"
   ],
   "autoFolders": [
-    "AA"
+    "AA",
+    "AA2"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
@@ -34,6 +36,6 @@
   "bumperOffsetY": 0.0,
   "robotFeatures": [
     "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.6,\"y\":0.0},\"size\":{\"width\":0.9,\"length\":0.3},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}",
-    "{\"name\":\"Line\",\"type\":\"line\",\"data\":{\"start\":{\"x\":-0.3,\"y\":0.206375},\"end\":{\"x\":-0.15,\"y\":0.206},\"strokeWidth\":0.05}}"
+    "{\"name\":\"Line\",\"type\":\"line\",\"data\":{\"start\":{\"x\":0.0,\"y\":0.0},\"end\":{\"x\":-3.0,\"y\":0.0},\"strokeWidth\":0.01}}"
   ]
 }
