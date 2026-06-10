@@ -149,6 +149,13 @@ public class Shooter extends SubsystemBase {
     }, this);
   }
   
+
+    public Command feederRPM(AngularVelocity RPM){
+    return new RunCommand(() -> {
+      feederIO.setRPM(RPM);
+    }, this);
+
+  }
   // public Command homing() {
   //   return new SequentialCommandGroup(
   //     new RunCommand(() -> {

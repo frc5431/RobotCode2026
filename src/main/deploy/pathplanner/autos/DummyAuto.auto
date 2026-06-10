@@ -7,25 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "TakingStepBack"
+            "pathName": "Dummy"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "deployIntake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootClose"
+            "name": "Intake"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "AA",
+  "folder": null,
   "choreoAuto": false
 }

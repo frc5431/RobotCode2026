@@ -5,19 +5,25 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.8
+                  "waitTime": 1.0
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "deployIntake"
+                  "name": "ShootClose"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "CarpetRun"
                 }
               }
             ]
@@ -26,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "NeutralZoneEatShoot"
+            "pathName": "2.5Pass_Collect1"
           }
         },
         {
@@ -36,7 +42,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 1.2
                 }
               },
               {
@@ -52,6 +58,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2.5Pass_Collect2"
           }
         }
       ]

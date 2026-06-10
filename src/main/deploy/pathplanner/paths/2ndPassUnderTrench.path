@@ -1,0 +1,181 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.836,
+        "y": 2.671
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.347823529411765,
+        "y": 2.51063025210084
+      },
+      "isLocked": false,
+      "linkedName": "1stPassEnd2"
+    },
+    {
+      "anchor": {
+        "x": 3.3996386554621854,
+        "y": 0.544193277310925
+      },
+      "prevControl": {
+        "x": 0.22776608232518214,
+        "y": 1.0247800308165331
+      },
+      "nextControl": {
+        "x": 3.9026806722689082,
+        "y": 0.46797478991596675
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.9377142857142875,
+        "y": 0.8643109243697484
+      },
+      "prevControl": {
+        "x": 5.378239542330056,
+        "y": 0.31995711999590026
+      },
+      "nextControl": {
+        "x": 6.21972268907563,
+        "y": 1.1386974789915962
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.7852773109243705,
+        "y": 3.4252521008403356
+      },
+      "prevControl": {
+        "x": 5.767611844681304,
+        "y": 3.06134349623317
+      },
+      "nextControl": {
+        "x": 5.82338655462185,
+        "y": 4.210302521008403
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.888907563025212,
+        "y": 3.65390756302521
+      },
+      "prevControl": {
+        "x": 7.374863797886886,
+        "y": 4.116546951649704
+      },
+      "nextControl": {
+        "x": 8.422436974789916,
+        "y": 3.173731092436975
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.646546218487396,
+        "y": 1.0929663865546217
+      },
+      "prevControl": {
+        "x": 6.989529411764706,
+        "y": 1.207294117647059
+      },
+      "nextControl": {
+        "x": 5.350067731538628,
+        "y": 0.6608068909050298
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.3996386554621854,
+        "y": 0.8643109243697484
+      },
+      "prevControl": {
+        "x": 3.8629064237614306,
+        "y": 0.7162030133149714
+      },
+      "nextControl": {
+        "x": 1.349361344537816,
+        "y": 1.5197899159663857
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.836,
+        "y": 2.671
+      },
+      "prevControl": {
+        "x": 2.5917226890756306,
+        "y": 2.495386554621848
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "1stPassEnd2"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 2.625383542538363,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 3.3375174337516618,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 5.609762900976227,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 2.284326018808769,
+      "maxWaypointRelativePos": 4.013479623824438,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 270.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 270.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -137.61504197323237
+  },
+  "reversed": false,
+  "folder": "2Pass",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -137.61504197323237
+  },
+  "useDefaultConstraints": true
+}

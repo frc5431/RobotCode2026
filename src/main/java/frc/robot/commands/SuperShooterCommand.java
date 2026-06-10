@@ -17,19 +17,19 @@ public class SuperShooterCommand extends SequentialCommandGroup {
             ).withTimeout(0.5),
             new ParallelDeadlineGroup(
                 new WaitCommand(1.25),
-                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2750),
+                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2850),
                 carpet.runCarpetRPM(Units.RPM.of(6500))
             ),
             new ParallelDeadlineGroup(
                 new WaitCommand(0.5), 
                 intake.runPivotVoltageCommand(-5),
-                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2750),
+                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2850),
                 carpet.runCarpetRPM(Units.RPM.of(6500))
             ),
             new ParallelDeadlineGroup(
                 new WaitCommand(0.5), 
                 intake.runPivotVoltageCommand(3),
-                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2750),
+                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2850),
                 carpet.runCarpetRPM(Units.RPM.of(6500))
             )
         );

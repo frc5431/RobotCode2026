@@ -327,6 +327,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("ShootFar", Commands.sequence(
         new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_FAR)).withTimeout(10));
 
+    
+
+
+
     // NamedCommands.registerCommand("AutoShoot", );
     NamedCommands.registerCommand("AutoShoot",
         new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
