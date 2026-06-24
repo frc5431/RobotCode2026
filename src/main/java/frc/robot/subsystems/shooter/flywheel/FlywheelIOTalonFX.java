@@ -108,7 +108,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
     rightFrontFollower.setControl(new Follower(ShooterFlywheelConstants.leftBackId, MotorAlignmentValue.Opposed));
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50, 
+    BaseStatusSignal.setUpdateFrequencyForAll(100, 
         leftTopAppliedVoltage, leftTopAmps, leftTopFlywheelRPM,
         leftBottomAppliedVoltage, leftBottomAmps, leftBottomFlywheelRPM, 
         rightTopAppliedVoltage, rightTopAmps, rightTopFlywheelRPM,

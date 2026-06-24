@@ -72,7 +72,7 @@ public class PivotIOTalonFX implements PivotIO {
 
     config.applyTalonConfig(talon);
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, pivotPosition, turnAbsolutePosition);
+    BaseStatusSignal.setUpdateFrequencyForAll(100, appliedVoltage, currentAmps, pivotPosition, turnAbsolutePosition);
   }
 
   @Override

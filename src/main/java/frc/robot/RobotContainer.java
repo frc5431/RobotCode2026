@@ -10,10 +10,16 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+
+
+
+
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
@@ -290,6 +296,9 @@ public class RobotContainer {
     controller.a().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE));
     controller.x().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_FAR));
 
+
+
+
     // controller.x().whileTrue(new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
 
     // controller.a().whileTrue(Commands.defer(() -> {
@@ -299,9 +308,14 @@ public class RobotContainer {
     // controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
     
     controller.rightTrigger().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE_MORE));
-    controller.rightBumper().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
+    controller.rightBumper().whileTrue(carpet.runCarpetRPM(Units.RPM.of(6500)));
     
     controller.leftBumper().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
+
+    // controller[\]
+    // controller.b().whileTrue(carpet.runCarpetRPM(Units.RPM.of(6500)));
+
+
 
     controller.povUp().whileTrue(intake.runPivotVoltageCommand(-6)); //TODO: change back to 5
     controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
@@ -313,7 +327,7 @@ public class RobotContainer {
     // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
 
     // controller.b().whileTrue(new IntakeJiggleCommand(intake));
-    // controller.b().whileTrue(new ParallelCommandGroup(shooter.tune()));
+    controller.b().whileTrue(new ParallelCommandGroup(shooter.tune()));
 
     controller.start().whileTrue(new UnjamCommand(shooter));
 
@@ -321,7 +335,15 @@ public class RobotContainer {
 
   private void registerCommands() {
     NamedCommands.registerCommand("ShootClose", Commands.sequence(
-        new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE)).withTimeout(10));
+        new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE)));
+
+    
+    NamedCommands.registerCommand("UnjamShooter", Commands.sequence(
+        new UnjamCommand(shooter)));
+
+
+    NamedCommands.registerCommand("ShootIdle", Commands.sequence(
+        new SuperShooterCommand(shooter, intake, carpet, ShooterModes.IDLE)));
     // NamedCommands.registerCommand("DeployIntake");
     // NamedCommands.registerCommand("ShootCloseJer", );
     NamedCommands.registerCommand("ShootFar", Commands.sequence(

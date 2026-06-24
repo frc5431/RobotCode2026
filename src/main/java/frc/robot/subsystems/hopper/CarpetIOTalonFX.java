@@ -21,14 +21,14 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
 import frc.team5431.titan.core.subsystem.CTREMechanism;
 
 public class CarpetIOTalonFX implements CarpetIO {
-  private final TalonFX talon = new TalonFX(CarpetRollerConstants.id, Constants.RIO_CANBUS);
+  private final TalonFX talon = new TalonFX(CarpetRollerConstants.id, Constants.CANIVORE_CANBUS);
   
   public final PIDController pid = new PIDController(CarpetRollerConstants.p.get(),
       CarpetRollerConstants.i.get(), CarpetRollerConstants.d.get());
 
   public static class CarpetIOTalonFXConfig extends CTREMechanism.Config {
     public CarpetIOTalonFXConfig() {
-      super("RollerTalonFX",Constants.RIO_CANBUS);
+      super("RollerTalonFX",Constants.CANIVORE_CANBUS);
       // configPIDGains(CarpetRollerConstants.p, CarpetRollerConstants.i, CarpetRollerConstants.d);
       configNeutralBrakeMode(CarpetRollerConstants.breakType);
       configFeedbackSensorSource(CarpetRollerConstants.feedbackSensorCTRE);
@@ -54,7 +54,7 @@ public class CarpetIOTalonFX implements CarpetIO {
     currentAmps = talon.getSupplyCurrent();
     config.applyTalonConfig(talon);
     
-    BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, rollerRPM);
+    BaseStatusSignal.setUpdateFrequencyForAll(100, appliedVoltage, currentAmps, rollerRPM);
   }
 
   @Override

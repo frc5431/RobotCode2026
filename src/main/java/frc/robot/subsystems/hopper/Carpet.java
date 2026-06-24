@@ -18,7 +18,7 @@ public class Carpet extends SubsystemBase {
 
   private CarpetModes mode;
 
-  public Carpet(CarpetIO carpetIO) {
+  public  Carpet(CarpetIO carpetIO) {
     this.carpetIO = carpetIO;
     this.mode = CarpetModes.IDLE;
   }

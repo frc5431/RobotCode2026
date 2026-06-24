@@ -186,7 +186,7 @@
     "rotation": 42.709389957361466
   },
   "reversed": false,
-  "folder": "AA2",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

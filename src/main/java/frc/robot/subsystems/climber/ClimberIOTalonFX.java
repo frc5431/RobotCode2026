@@ -45,7 +45,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     currentAmps = talon.getSupplyCurrent();
     config.applyTalonConfig(talon);
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50, appliedVoltage, currentAmps, pivotPosition);
+    BaseStatusSignal.setUpdateFrequencyForAll(100, appliedVoltage, currentAmps, pivotPosition);
 
   }
 

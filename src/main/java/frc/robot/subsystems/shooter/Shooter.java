@@ -42,14 +42,17 @@ public class Shooter extends SubsystemBase {
     this.feederIO = feederIO;
     this.flywheelIO = flywheelIO;
     this.shooterMode = ShooterModes.IDLE;
-    speedMap.put(1.379, 1950.0);
-    // speedMap.put(2.75, 2500.0);
-    // speedMap.put(2.9, 2600.0);
-    // speedMap.put(3.1, 2700.0);
-    // speedMap.put(3.3, 2800.0);
-    // speedMap.put(3.5, 3000.0);
-    // speedMap.put(3.8, 3500.0);
-  }
+   speedMap.put(1.3, 1650.0);
+    speedMap.put(1.5, 1750.0);
+    speedMap.put(1.6, 1850.0);
+    speedMap.put(1.7, 1975.0);
+    speedMap.put(1.8, 1895.0);
+    speedMap.put(1.9, 2050.0);
+    speedMap.put(2.0, 1895.0);
+    speedMap.put(2.2, 2125.0);
+    speedMap.put(2.3, 2125.0);
+    speedMap.put(2.9, 2400.0);
+    }
   
   @Override
   public void periodic() {
@@ -61,6 +64,8 @@ public class Shooter extends SubsystemBase {
 
     Logger.recordOutput("Shooter/Mode", shooterMode);
     Logger.recordOutput("Shooter/Zeroed", zeroed);
+    Logger.recordOutput("Shooter/ShootMapCalc", 0.0);
+
     // System.out.println("***********************");
     // System.out.println(FlywheelIOTalonFX.plotOutput);
     // System.out.println("***********************");

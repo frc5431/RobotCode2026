@@ -17,8 +17,8 @@ public  class IntakeConstants {
 
     STOW(Units.Volts.of(0.0), Units.Degrees.of(0.0)),
     OUT_IDLE(Units.Volts.of(0.0), Units.Degrees.of(180.0)),
-    INTAKE(Units.Volts.of(-6), Units.Degrees.of(0.0)),
-    OUTTAKE(Units.Volts.of(2.8), Units.Degrees.of(180.0)),
+    INTAKE(Units.Volts.of(6), Units.Degrees.of(0.0)),
+    OUTTAKE(Units.Volts.of(-2.8), Units.Degrees.of(180.0)),
     INTAKE_MORE(Units.Volts.of(-9),  Units.Degrees.of(0.0));
     public Voltage voltage;
     public Angle position;
@@ -34,7 +34,7 @@ public  class IntakeConstants {
     public static final boolean attached = true;
 
     public static final int leaderId = 62;
-    // public static final int followerId = 61;
+    public static final int followerId = 61;
 
     PIDConstants pidConstants = new PIDConstants(1, 0, 0); //useless
     public static final double maxIAccum = 0.2;
@@ -82,7 +82,7 @@ public  class IntakeConstants {
     public static final double v = 0.0021;
     public static final double maxIAccum = 0.2;
 
-    public static final double gearRatio = 1 / 1;
+    public static final double gearRatio = 45 / 1;
 
     public static final boolean invert = false;
     public static final boolean gravityType = false;

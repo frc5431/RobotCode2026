@@ -71,6 +71,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "AA2",
+  "folder": null,
   "choreoAuto": false
 }

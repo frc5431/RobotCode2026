@@ -67,7 +67,7 @@ public class FeederIOTalonFX implements FeederIO {
         // will need to config whether aligned or inverted later
         follower.setControl(new Follower(ShooterFeederConstants.leaderId, MotorAlignmentValue.Opposed));
 
-        BaseStatusSignal.setUpdateFrequencyForAll(50, leaderAppliedVoltage, leaderCurrentAmps, leaderRPM,
+        BaseStatusSignal.setUpdateFrequencyForAll(100, leaderAppliedVoltage, leaderCurrentAmps, leaderRPM,
                 followerAppliedVoltage, followerCurrentAmps, followerRPM);
     }
 

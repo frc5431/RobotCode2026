@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 public interface CarpetIO {
   @AutoLog
   public static class CarpetIOInputs {
-    public boolean rollerConnected = false;
+    public boolean rollerConnected = true;
     public double appliedVoltage = 0.0;
     public double RPM = 0.0;
     public double currentAmps = 0.0;
