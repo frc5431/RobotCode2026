@@ -7,14 +7,10 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
-
-
-
-
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -33,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.InhaleCommand;
 import frc.robot.commands.ShootFuelCommandAuto;
@@ -40,10 +37,10 @@ import frc.robot.commands.SuperShooterCommand;
 import frc.robot.commands.UnjamCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberConstants.ClimberModes;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
-import frc.robot.subsystems.climber.ClimberConstants.ClimberModes;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -51,12 +48,13 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.hopper.Carpet;
+import frc.robot.subsystems.hopper.CarpetConstants.CarpetModes;
 import frc.robot.subsystems.hopper.CarpetIO;
 import frc.robot.subsystems.hopper.CarpetIOSim;
 import frc.robot.subsystems.hopper.CarpetIOTalonFX;
-import frc.robot.subsystems.hopper.CarpetConstants.CarpetModes;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
+import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants;
 import frc.robot.subsystems.intake.pivot.PivotIO;
 import frc.robot.subsystems.intake.pivot.PivotIOSim;
 import frc.robot.subsystems.intake.pivot.PivotIOTalonFX;
@@ -76,20 +74,15 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.LimelightCameraStream;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
-
-import static edu.wpi.first.units.Units.Inches;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -108,21 +101,24 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  // ===========================================================================
+  // Setup
+  // ===========================================================================
+
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
-        drive = new Drive(
-            new GyroIOPigeon2(),
-            new ModuleIOTalonFX(TunerConstants.FrontLeft),
-            new ModuleIOTalonFX(TunerConstants.FrontRight),
-            new ModuleIOTalonFX(TunerConstants.BackLeft),
-            new ModuleIOTalonFX(TunerConstants.BackRight));
+        drive =
+            new Drive(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
 
         // Real robot, instantiate hardware IO implementations
         // vision =
@@ -135,10 +131,16 @@ public class RobotContainer {
         shooter = new Shooter(new FeederIOTalonFX(), new FlywheelIOTalonFX());
         carpet = new Carpet(new CarpetIOTalonFX());
         climber = new Climber(new ClimberIOSim());
-        vision = new Vision(drive::addVisionMeasurement,
-            // new VisionIOLimelight(VisionConstants.camera2Name, drive::getRotation),
-            new VisionIOLimelight(VisionConstants.camera2Name, drive::getRotation),
-            new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                // new VisionIOLimelight(VisionConstants.camera2Name, drive::getRotation),
+                new VisionIOLimelight(VisionConstants.camera2Name, drive::getRotation),
+                new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
+
+        // Publish the Limelight video feeds so they can be added as Camera Stream widgets.
+        LimelightCameraStream.publish(VisionConstants.camera1Name);
+        LimelightCameraStream.publish(VisionConstants.camera2Name);
         // vision =
         // new Vision(
         // demoDrive::addVisionMeasurement,
@@ -165,58 +167,42 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIOSim(TunerConstants.FrontLeft),
-            new ModuleIOSim(TunerConstants.FrontRight),
-            new ModuleIOSim(TunerConstants.BackLeft),
-            new ModuleIOSim(TunerConstants.BackRight));
-
-        // vision =
-        // new Vision(
-        // drive::addVisionMeasurement,
-        // new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, drive::getPose),
-        // new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, drive::getPose));
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIOSim(TunerConstants.FrontLeft),
+                new ModuleIOSim(TunerConstants.FrontRight),
+                new ModuleIOSim(TunerConstants.BackLeft),
+                new ModuleIOSim(TunerConstants.BackRight));
 
         intake = new Intake(new RollerIOSim(), new PivotIOSim());
         shooter = new Shooter(new FeederIOSim(), new FlywheelIOSim());
         carpet = new Carpet(new CarpetIOSim());
         climber = new Climber(new ClimberIOSim());
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
-        });
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
+
       default:
         // Replayed robot, disable IO implementations
-        drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            });
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
 
-        // vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new
-        // VisionIO() {});
-        intake = new Intake(new RollerIO() {
-        }, new PivotIO() {
-        });
-        shooter = new Shooter(new FeederIO() {
-        }, new FlywheelIO() {
-        });
-        carpet = new Carpet(new CarpetIO() {
-        });
-        climber = new Climber(new ClimberIO() {
-        });
-        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {
-        });
+      
+        intake = new Intake(new RollerIO() {}, new PivotIO() {});
+        shooter = new Shooter(new FeederIO() {}, new FlywheelIO() {});
+        carpet = new Carpet(new CarpetIO() {});
+        climber = new Climber(new ClimberIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
-
     }
+
+    // Log the live shoot-map RPM estimate from the hub distance every loop.
+    // shooter.setHubDistanceSupplier(drive::distFromHub);
 
     registerCommands();
 
@@ -247,26 +233,99 @@ public class RobotContainer {
     SmartDashboard.putNumber("Match/MatchTime", Timer.getMatchTime());
   }
 
+  /** Registers the named commands used by PathPlanner autos. */
+  private void registerCommands() {
+    NamedCommands.registerCommand(
+        "ShootClose",
+        Commands.sequence(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE)));
+
+    NamedCommands.registerCommand(
+        "UnjamShooter", Commands.sequence(new UnjamCommand(shooter)));
+
+    NamedCommands.registerCommand(
+        "ShootIdle",
+        Commands.sequence(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.IDLE)));
+
+    NamedCommands.registerCommand(
+        "ShootFar",
+        Commands.sequence(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_FAR))
+            .withTimeout(10));
+
+    NamedCommands.registerCommand(
+        "AutoAlign",
+        DriveCommands.joystickDriveAtAngle(
+            drive,
+            () -> 0,
+            () -> 0,
+            () -> getTranslationToGameElement().getAngle(),
+            () -> getTranslationToGameElement()));
+
+    NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
+    NamedCommands.registerCommand("CarpetRun", carpet.runCarpetRPM(Units.RPM.of(6500)));
+    NamedCommands.registerCommand("StopIntake", intake.runIntakeCommand(IntakeMode.OUT_IDLE));
+    NamedCommands.registerCommand(
+        "deployIntake", intake.runPivotVoltageCommand(4).withTimeout(1));
+    NamedCommands.registerCommand(
+        "RevShooterClose", shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));
+  }
+
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * Use this method to define your button->command mappings. Buttons can be created by instantiating
+   * a {@link GenericHID} or one of its subclasses ({@link edu.wpi.first.wpilibj.Joystick} or {@link
+   * XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureDriverBindings() {
-    // Default Commands
+    // ---- Default commands ----
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY() * 0.7,
-            () -> -controller.getLeftX() * 0.7,
+            () -> -controller.getLeftY() * 0.8,
+            () -> -controller.getLeftX() * 0.8,
             () -> -controller.getRightX()));
-
-    
     intake.setDefaultCommand(intake.stop());
     carpet.setDefaultCommand(carpet.runCarpetCommand(CarpetModes.IDLE));
     shooter.setDefaultCommand(shooter.stop());
     climber.setDefaultCommand(climber.runClimberCommand(ClimberModes.STOW));
+
+    // ---- Face buttons ----
+    // TODO: ready to test
+    // Y: auto-shoot -- aim at hub, spin to shoot-map RPM, then feed everything.
+    controller
+        .y()
+        .whileTrue(
+            new AutoShootCommand(
+                drive,
+                shooter,
+                intake,
+                carpet,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                this::getTranslationToGameElement));
+    controller.a().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE));
+    controller.x().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_FAR));
+    // B: tune-shoot -- spin to tune RPM, then feed with feeder + magic carpet.
+    controller
+        .b()
+        .whileTrue(
+            new ParallelCommandGroup(shooter.tune(), carpet.tuneCarpet()));
+    controller.start().whileTrue(new UnjamCommand(shooter));
+
+    // ---- Bumpers & triggers ----
+    controller.rightTrigger().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
+
+    controller.rightBumper().whileTrue(carpet.runCarpetRPM(Units.RPM.of(6500)));
+    controller.leftBumper().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
+
+    // ---- D-pad ----
+    // Closed-loop position: hold pivot at the live-tunable up/down setpoints while held.
+    controller.povUp().whileTrue(intake.runPivotPositionCommand(
+        () -> IntakePivotConstants.upSetpoint.get())); // up (retract)
+    controller.povDown().whileTrue(intake.runPivotPositionCommand(
+        () -> IntakePivotConstants.downSetpoint.get())); // down (deploy)
+    controller.povRight().whileTrue(new UnjamCommand(shooter));
+    controller.povLeft().whileTrue(shooter.tune());
+    // ---- Disabled ----
     // shooter.setDefaultCommand();
     // // Lock to 0° when A button is held
     // controller
@@ -274,98 +333,27 @@ public class RobotContainer {
     //     .whileTrue(
     //         DriveCommands.joystickDriveAtAngle(
     //             drive,
-    
     //             () -> -controller.getLeftY(),
     //             () -> -controller.getLeftX(),
     //             () -> Rotation2d.kZero));
-
     // // Switch to X pattern when X button is pressed
     // driver.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-
-     //TODO: ready to test
-      controller.y().whileTrue(
-      new ParallelCommandGroup(
-        DriveCommands.joystickDriveAtAngle(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(), () -> getTranslationToGameElement().getAngle(), () -> getTranslationToGameElement())
-        // shooter.runShooterCustom(2250, 2750)
-        // shooter.tune()
-        // new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm())
-      )
-    );
     // controller.y().whileTrue(shooter.runCustomVoltageCommand(5, 5));
-
-    controller.a().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE));
-    controller.x().whileTrue(new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_FAR));
-
-
-
-
     // controller.x().whileTrue(new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
-
     // controller.a().whileTrue(Commands.defer(() -> {
     //   return new AutoShootCommand(intake, carpet, feeder, shooter, drive);
     // }, Set.of(intake, carpet, feeder, shooter)));x
-    
     // controller.rightTrigger().whileTrue(new InhaleCommand(intake, carpet, true)); // TODO: run magic carpet, also when pivot is out, doesn't run if pivot is in
-    
-    controller.rightTrigger().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE_MORE));
-    controller.rightBumper().whileTrue(carpet.runCarpetRPM(Units.RPM.of(6500)));
-    
-    controller.leftBumper().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
-
     // controller[\]
     // controller.b().whileTrue(carpet.runCarpetRPM(Units.RPM.of(6500)));
-
-
-
-    controller.povUp().whileTrue(intake.runPivotVoltageCommand(-6)); //TODO: change back to 5
-    controller.povDown().whileTrue(intake.runPivotVoltageCommand(3)); //positive means down
     // controller.povUp().or(controller.povDown()).whileFalse(intake.runPivotVoltageCommand(0));
-    controller.povRight().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB));
-    controller.povLeft().whileTrue(climber.runClimberCommand(ClimberModes.CLIMB_MINS));
-    
-    controller.rightTrigger().whileTrue(intake.runIntakeTuneCommand());
     // controller.povRight().onTrue(shooter.runAngler(ShooterModes.SHOOT_FAR));
-
     // controller.b().whileTrue(new IntakeJiggleCommand(intake));
-    controller.b().whileTrue(new ParallelCommandGroup(shooter.tune()));
-
-    controller.start().whileTrue(new UnjamCommand(shooter));
-
   }
 
-  private void registerCommands() {
-    NamedCommands.registerCommand("ShootClose", Commands.sequence(
-        new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_CLOSE)));
-
-    
-    NamedCommands.registerCommand("UnjamShooter", Commands.sequence(
-        new UnjamCommand(shooter)));
-
-
-    NamedCommands.registerCommand("ShootIdle", Commands.sequence(
-        new SuperShooterCommand(shooter, intake, carpet, ShooterModes.IDLE)));
-    // NamedCommands.registerCommand("DeployIntake");
-    // NamedCommands.registerCommand("ShootCloseJer", );
-    NamedCommands.registerCommand("ShootFar", Commands.sequence(
-        new SuperShooterCommand(shooter, intake, carpet, ShooterModes.SHOOT_FAR)).withTimeout(10));
-
-    
-
-
-
-    // NamedCommands.registerCommand("AutoShoot", );
-    NamedCommands.registerCommand("AutoShoot",
-        new ShootFuelCommandAuto(shooter, vision, () -> getTranslationToGameElement().getNorm()));
-
-    NamedCommands.registerCommand("AutoAlign",
-        DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> getTranslationToGameElement().getAngle(), () -> getTranslationToGameElement()));
-
-    NamedCommands.registerCommand("Intake", intake.runIntakeCommand(IntakeMode.INTAKE));
-    NamedCommands.registerCommand("StopIntake", intake.runIntakeCommand(IntakeMode.OUT_IDLE));
-    NamedCommands.registerCommand("deployIntake", intake.runPivotVoltageCommand(3));
-    NamedCommands.registerCommand("RevShooterClose",
-        shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));
-  }
+  // ===========================================================================
+  // Public API
+  // ===========================================================================
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -381,6 +369,10 @@ public class RobotContainer {
     // CommandScheduler.getInstance().schedule(shooter.homing());
     // }
   }
+
+  // ===========================================================================
+  // Helpers
+  // ===========================================================================
 
   public Translation2d getTranslationToGameElement() {
     Translation2d hubPose = FieldConstants.Hub.innerCenterPoint.toTranslation2d();

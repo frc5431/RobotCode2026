@@ -15,6 +15,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
@@ -36,6 +37,8 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -100,6 +103,10 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
 
+  // Field2d for the Elastic/Shuffleboard "Field" widget. Shows the odometry pose as the
+  // robot and the latest accepted Limelight estimate as a separate "Limelight" marker.
+  private final Field2d field2d = new Field2d();
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -117,6 +124,15 @@ public class Drive extends SubsystemBase {
 
     // Start odometry thread
     PhoenixOdometryThread.getInstance().start();
+
+    // The 2026 field is ROTATIONALLY symmetric (verified from the AprilTag layout:
+    // blue station tags 29/30 at y=0.651/1.083 map to red tags 13/14 at y=7.392/6.960,
+    // i.e. Y-flipped + rotated 180, not mirrored). Flip red-alliance paths by rotation.
+    // Field dimensions taken from deploy/apriltags/andymark/2026-official.json so the flip
+    // axis matches the real field rather than PathPlanner's bundled default.
+    FlippingUtil.symmetryType = FlippingUtil.FieldSymmetry.kRotational;
+    FlippingUtil.fieldSizeX = 16.518;
+    FlippingUtil.fieldSizeY = 8.043;
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configure(
@@ -149,6 +165,9 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    // Publish the Field2d to NetworkTables so it can be added as a "Field" widget in Elastic.
+    SmartDashboard.putData("Field", field2d);
   }
 
   @Override
@@ -209,6 +228,9 @@ public class Drive extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+
+    // Push the latest odometry pose to the Field2d widget.
+    field2d.setRobotPose(getPose());
   }
 
   /**
@@ -338,6 +360,9 @@ public class Drive extends SubsystemBase {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+
+    // Show the raw Limelight estimate as a separate marker on the Field2d widget.
+    field2d.getObject("Limelight").setPose(visionRobotPoseMeters);
   }
 
   /** Returns the maximum linear speed in meters per sec. */
@@ -361,10 +386,9 @@ public class Drive extends SubsystemBase {
   }
 
   public double distFromHub() {
-    Translation2d hub = FieldConstants.Hub.topCenterPoint.toTranslation2d().minus(this.getPose().getTranslation());
-    Translation2d hubAdjusted = AllianceFlipUtil.apply(hub);
-    Translation2d translateDiff = hubAdjusted.minus(this.getPose().getTranslation());
-    return translateDiff.getNorm();
+    // Flip the hub POSITION for alliance, then take distance from the robot once.
+    Translation2d hub = AllianceFlipUtil.apply(FieldConstants.Hub.topCenterPoint.toTranslation2d());
+    return hub.minus(this.getPose().getTranslation()).getNorm();
   }
 
 }

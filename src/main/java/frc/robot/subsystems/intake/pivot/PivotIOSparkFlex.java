@@ -19,7 +19,7 @@ import frc.robot.subsystems.shooter.ShooterConstants.ShooterFlywheelConstants;
 public class PivotIOSparkFlex implements PivotIO {
     private final SparkFlex sparkFlex = new SparkFlex(IntakePivotConstants.id, MotorType.kBrushless);
     private final RelativeEncoder encoder = sparkFlex.getEncoder();
-    public final PIDController pid = new PIDController(IntakePivotConstants.p, IntakePivotConstants.i, IntakePivotConstants.d);
+    public final PIDController pid = new PIDController(IntakePivotConstants.p.get(), IntakePivotConstants.i.get(), IntakePivotConstants.d.get());
     private final SparkFlexConfig config = new SparkFlexConfig();
 
 
@@ -28,7 +28,7 @@ public class PivotIOSparkFlex implements PivotIO {
         config.closedLoop.feedbackSensor(ShooterFlywheelConstants.feedbackSensorREV);
         config.smartCurrentLimit(
             (int) IntakePivotConstants.stallLimit.in(Units.Amps), (int) IntakePivotConstants.supplyLimit.in(Units.Amps));
-        config.closedLoop.pid(IntakePivotConstants.p, IntakePivotConstants.i, IntakePivotConstants.d);
+        config.closedLoop.pid(IntakePivotConstants.p.get(), IntakePivotConstants.i.get(), IntakePivotConstants.d.get());
         config.softLimit.reverseSoftLimit(IntakePivotConstants.maxReverseRotation.in(Units.Rotations));
         config.softLimit.reverseSoftLimitEnabled(true);
         config.softLimit.forwardSoftLimit(IntakePivotConstants.maxReverseRotation.in(Units.Rotations));

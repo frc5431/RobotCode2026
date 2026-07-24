@@ -1,65 +1,65 @@
-// package frc.robot.commands;
+package frc.robot.commands;
 
-// import java.util.function.Supplier;
+import static edu.wpi.first.units.Units.RPM;
 
-// import edu.wpi.first.math.MathUtil;
-// import edu.wpi.first.wpilibj2.command.Command;
-// import frc.robot.subsystems.drive.Drive;
-// import frc.robot.subsystems.hopper.Carpet;
-// import frc.robot.subsystems.hopper.CarpetConstants.CarpetModes;
-// import frc.robot.subsystems.intake.Intake;
-// import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
-// import frc.robot.subsystems.shooter.Shooter;
-// import frc.robot.subsystems.shooter.ShooterMath;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.hopper.Carpet;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
+import frc.robot.subsystems.shooter.Shooter;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
-// public class AutoShootCommand extends Command {
 
-//     private final Intake intake;
-//     private final Carpet carpet;
-//     private final Shooter shooter;
-//     private final Supplier<Double> distToHub;
-//     private double cyclesAtTarget;
-//     private boolean speedAchieved;
+public class AutoShootCommand extends ParallelCommandGroup {
 
-//     public AutoShootCommand(Intake intake, Carpet carpet, Shooter shooter, Drive drive) {
-//     // addCommands(
-//     //   // new ParallelRaceGroup(
-//     //   //   feeder.runFeederCommand(FeederModes.REVERSE),
-//     //   //   new WaitCommand(0.5)),
-//     //   new ParallelCommandGroup(
-//     //     new InhaleCommand(intake, carpet, feeder,true, true).withName("ShootFuelCommand.Inhale")),
-//     //     shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withName("ShootFuelCommand.Shoot")
-//     //   );
+  private static final double FEEDER_RPM = 2850;
+  private static final double CARPET_RPM = 6500;
+  private static final double RPM_TOLERANCE = 0.99;
+  private static final double SPINUP_TIMEOUT = 1.5;
+  private static final double PIVOT_PERIOD_SECONDS = 1.5;
+  private static final double PIVOT_UP_VOLTAGE = -6; // negative = up
+  private static final double PIVOT_DOWN_VOLTAGE = 3; // positive = down
+
+  public AutoShootCommand(
+      Drive drive,
+      Shooter shooter,
+      Intake intake,
+      Carpet carpet,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      Supplier<Translation2d> hubDiffSupplier) {
+
+    DoubleSupplier dist = drive::distFromHub;
+
+    addCommands(
       
-//     addRequirements(intake, carpet, shooter);
+        DriveCommands.joystickDriveAtAngle(
+            drive, xSupplier, ySupplier, () -> hubDiffSupplier.get().getAngle(), hubDiffSupplier),
 
-//     this.intake = intake;
-//     this.carpet = carpet;
-//     this.shooter = shooter;
-//     distToHub = drive::distFromHub;
-//   }
-
-//     @Override
-//     public void execute() {
-//         double desiredRPM = ShooterMath.calculateSpeed(distToHub.get());
-//         double desiredPos = ShooterMath.calculateHoodPosition(distToHub.get());
-
-//         shooter.runShooterCustom(desiredRPM, desiredPos);
-
-//         if (!MathUtil.isNear(desiredPos, shooter.getPosition(), ShooterAnglerConstants.tolerance)) {
-//             cyclesAtTarget = 0;
-//         } else {
-//             cyclesAtTarget++;
-//         }
-
-//         if (MathUtil.isNear(desiredRPM, shooter.getFlywheelSpeed(), desiredRPM * 0.05)) {
-//             speedAchieved = true;
-//         }
-
-//         if (cyclesAtTarget > 5 && speedAchieved) {
-//             intake.runIntakeEnum(IntakeMode.INTAKE);
-//             carpet.runRollerEnum(CarpetModes.INTAKE);
-//             feeder.runFeederEnum(FeederModes.FEEDER);
-//         }
-//     }
-// }
+ 
+        Commands.sequence(
+            shooter
+                .runShootMap(dist, 0)
+                .until(
+                    () ->
+                        shooter.getFlywheelSpeed()
+                            >= shooter.getMapSpeed(dist.getAsDouble()) * RPM_TOLERANCE)
+                .withTimeout(SPINUP_TIMEOUT),
+            new ParallelCommandGroup(
+                shooter.runShootMap(dist, FEEDER_RPM),
+                carpet.runCarpetRPM(RPM.of(CARPET_RPM)),
+              
+                intake.runIntakeCommand(IntakeMode.INTAKE)
+             
+                // intake.runIntakePivotPulseCommand(
+                //     IntakeMode.INTAKE,
+                //     PIVOT_UP_VOLTAGE,
+                //     PIVOT_DOWN_VOLTAGE,
+                //     PIVOT_PERIOD_SECONDS)
+                )));
+  }
+}

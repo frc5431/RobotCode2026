@@ -8,7 +8,6 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,7 +33,6 @@ public class Shooter extends SubsystemBase {
   private final FlywheelIOInputsAutoLogged flywheelInputs = new FlywheelIOInputsAutoLogged();
   
   private ShooterModes shooterMode;
-  private static InterpolatingDoubleTreeMap speedMap = new InterpolatingDoubleTreeMap();
 
   @Getter private boolean zeroed = false;
 
@@ -42,16 +40,6 @@ public class Shooter extends SubsystemBase {
     this.feederIO = feederIO;
     this.flywheelIO = flywheelIO;
     this.shooterMode = ShooterModes.IDLE;
-   speedMap.put(1.3, 1650.0);
-    speedMap.put(1.5, 1750.0);
-    speedMap.put(1.6, 1850.0);
-    speedMap.put(1.7, 1975.0);
-    speedMap.put(1.8, 1895.0);
-    speedMap.put(1.9, 2050.0);
-    speedMap.put(2.0, 1895.0);
-    speedMap.put(2.2, 2125.0);
-    speedMap.put(2.3, 2125.0);
-    speedMap.put(2.9, 2400.0);
     }
   
   @Override
@@ -87,7 +75,20 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command runShootAuto(DoubleSupplier dist) {
-    return new RunCommand(() -> flywheelIO.setRPM(Units.RPM.of(speedMap.get(dist.getAsDouble()))), this);
+    return new RunCommand(() -> flywheelIO.setRPM(Units.RPM.of(ShooterMath.calculateSpeed(dist.getAsDouble()))), this);
+  }
+
+
+  public Command runShootMap(DoubleSupplier dist, double feederRPM) {
+    return new RunCommand(() -> {
+      flywheelIO.setRPM(Units.RPM.of(ShooterMath.calculateSpeed(dist.getAsDouble())));
+      feederIO.setRPM(Units.RPM.of(feederRPM));
+    }, this);
+  }
+
+ 
+  public double getMapSpeed(double dist) {
+    return ShooterMath.calculateSpeed(dist);
   }
 
   // public Command runShootAuto(DoubleSupplier dist) {
@@ -97,11 +98,11 @@ public class Shooter extends SubsystemBase {
    public void runShootAutotest(double dist) {
     System.out.println("((((((((((()))))))))))");
     System.out.println(dist);
-    System.out.println(speedMap.get(dist));
-    System.out.println(speedMap.get(10.1));
-    System.out.println(speedMap.get(10.8));
+    System.out.println(ShooterMath.calculateSpeed(dist));
+    System.out.println(ShooterMath.calculateSpeed(10.1));
+    System.out.println(ShooterMath.calculateSpeed(10.8));
     System.out.println("((((((((((()))))))))))");
-    flywheelIO.setRPM(Units.RPM.of(speedMap.get(dist)));
+    flywheelIO.setRPM(Units.RPM.of(ShooterMath.calculateSpeed(dist)));
   }
 
   public BooleanSupplier atSetpoint() {

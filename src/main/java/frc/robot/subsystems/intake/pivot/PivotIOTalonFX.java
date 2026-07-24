@@ -3,12 +3,15 @@
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -29,9 +32,26 @@ public class PivotIOTalonFX implements PivotIO {
       super("PivotTalonFX", Constants.CANIVORE_CANBUS);
       configNeutralBrakeMode(IntakePivotConstants.breakType);
       configFeedbackSensorSource(IntakePivotConstants.feedbackSensorCTRE);
-      configGearRatio(IntakePivotConstants.gearRatio);
+      // FusedCANcoder: the CANcoder measures the mechanism directly, so the rotor->sensor
+      // gearing gets the reduction and sensor->mechanism is 1:1.
+      talonConfig.Feedback.FeedbackRemoteSensorID = IntakePivotConstants.cancoderId;
+      talonConfig.Feedback.RotorToSensorRatio = IntakePivotConstants.gearRatio;
+      configGearRatio(1.0);
       configGravityType(IntakePivotConstants.gravityType);
+      // Seed closed-loop gains from the tunable NT values (re-applied live in updateInputs).
+      configPIDGains(
+          IntakePivotConstants.p.get(), IntakePivotConstants.i.get(), IntakePivotConstants.d.get());
+      configFeedForwardGains(
+          IntakePivotConstants.s.get(), IntakePivotConstants.v.get(), 0.0, IntakePivotConstants.g.get());
+      // Motion Magic profile for setPosition (re-applied live in updateInputs).
+      configMotionMagic(
+          RotationsPerSecond.of(IntakePivotConstants.mmCruiseVelocity.get()),
+          IntakePivotConstants.mmAcceleration.get(),
+          0.0);
       configSupplyCurrentLimit(IntakePivotConstants.supplyLimit);
+      // Ramping is handled in software (see setPivotVoltage) so it can be direction-aware:
+      // ease when moving up, but no ramp when moving down. Disable the symmetric hardware ramp.
+      talonConfig.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.0;
       configReverseSoftLimit(
           IntakePivotConstants.maxReverseRotation.in(Rotation), IntakePivotConstants.useRMaxRotation);
       configForwardSoftLimit(
@@ -54,6 +74,15 @@ public class PivotIOTalonFX implements PivotIO {
   
   private PivotTalonFXConfig config = new PivotTalonFXConfig();
 
+  // Ease the applied voltage in over 0.15s when moving up (negative), but apply down (positive)
+  // instantly with no ramp. 12V / 0.15s = 80 V/s.
+  private final SlewRateLimiter upRampLimiter = new SlewRateLimiter(12.0 / 0.15);
+
+  // Live closed-loop gains: re-pushed to the TalonFX whenever a /Tuning/Intake/Pivot/... value changes.
+  private final Slot0Configs tunableGains = new Slot0Configs();
+  // Live Motion Magic profile: re-pushed whenever cruise velocity / acceleration changes.
+  private final MotionMagicConfigs tunableMM = new MotionMagicConfigs();
+
   public PivotIOTalonFX() {
     appliedVoltage = talon.getMotorVoltage();
     pivotPosition = talon.getPosition();
@@ -71,6 +100,8 @@ public class PivotIOTalonFX implements PivotIO {
 
 
     config.applyTalonConfig(talon);
+    // With FusedCANcoder the mechanism position is derived from the CANcoder's absolute
+    // reading automatically, so no manual seeding of the talon position is needed.
 
     BaseStatusSignal.setUpdateFrequencyForAll(100, appliedVoltage, currentAmps, pivotPosition, turnAbsolutePosition);
   }
@@ -88,18 +119,67 @@ public class PivotIOTalonFX implements PivotIO {
     inputs.currentAmps = currentAmps.getValueAsDouble();
 
     inputs.absolutePosition = Rotation2d.fromRotations(turnAbsolutePosition.getValueAsDouble());
+
+    updateTunableGains();
+    updateTunableMotionMagic();
+  }
+
+  /** Re-push closed-loop gains to the TalonFX only when a tunable NT value actually changes. */
+  private void updateTunableGains() {
+    double p = IntakePivotConstants.p.get();
+    double i = IntakePivotConstants.i.get();
+    double d = IntakePivotConstants.d.get();
+    double s = IntakePivotConstants.s.get();
+    double v = IntakePivotConstants.v.get();
+    double g = IntakePivotConstants.g.get();
+    if (p == tunableGains.kP
+        && i == tunableGains.kI
+        && d == tunableGains.kD
+        && s == tunableGains.kS
+        && v == tunableGains.kV
+        && g == tunableGains.kG) {
+      return;
+    }
+    tunableGains.kP = p;
+    tunableGains.kI = i;
+    tunableGains.kD = d;
+    tunableGains.kS = s;
+    tunableGains.kV = v;
+    tunableGains.kG = g;
+    talon.getConfigurator().apply(tunableGains);
+  }
+
+  /** Re-push the Motion Magic profile only when a tunable NT value actually changes. */
+  private void updateTunableMotionMagic() {
+    double cruise = IntakePivotConstants.mmCruiseVelocity.get();
+    double accel = IntakePivotConstants.mmAcceleration.get();
+    if (cruise == tunableMM.MotionMagicCruiseVelocity && accel == tunableMM.MotionMagicAcceleration) {
+      return;
+    }
+    tunableMM.MotionMagicCruiseVelocity = cruise;
+    tunableMM.MotionMagicAcceleration = accel;
+    talon.getConfigurator().apply(tunableMM);
   }
 
   @Override
   public void setPivotVoltage(double voltage) {
     // System.out.println(voltage);
-    talon.setVoltage(voltage);
+    double output;
+    if (voltage > 0) {
+      // Down: no ramp, apply instantly. Keep the limiter in sync so a later up move eases from here.
+      output = voltage;
+      upRampLimiter.reset(voltage);
+    } else {
+      // Up (and easing back to 0 from up): ramp in over 0.15s.
+      output = upRampLimiter.calculate(voltage);
+    }
+    talon.setVoltage(output);
   }
 
   @Override
   public void setPosition(double positionAngle) {
-    PositionVoltage mm = config.positionVoltage.withPosition(positionAngle);
-      talon.setControl(mm);
+    MotionMagicVoltage mm = config.mmPositionVoltage.withPosition(positionAngle);
+    talon.setControl(mm);
   }
 
 }

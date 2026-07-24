@@ -3,8 +3,10 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
+    "2Pass",
     "AA",
-    "2Pass"
+    "Bumblebee",
+    "Itkant"
   ],
   "autoFolders": [
     "AA"

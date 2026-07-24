@@ -3,47 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5473894436519258,
-        "y": 4.0
+        "x": 3.4952222222222225,
+        "y": 3.869344444444444
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0139148641319236,
-        "y": 4.0
+        "x": 3.222377777777778,
+        "y": 3.840111111111111
       },
       "isLocked": false,
-      "linkedName": "MidStart"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8912410841654772,
-        "y": 3.795634807417975
+        "x": 2.6961777777777773,
+        "y": 3.869344444444444
       },
       "prevControl": {
-        "x": 2.3379528555486515,
-        "y": 3.795634807417975
+        "x": 1.6961777777777773,
+        "y": 3.869344444444444
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "TowerShoot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "deployIntake",
-      "waypointRelativePos": 0.3349088453747421,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "deployIntake"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -54,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "AA",
+  "folder": "2Pass",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

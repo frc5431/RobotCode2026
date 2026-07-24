@@ -54,6 +54,9 @@ public class ShooterConstants {
     public static final LoggedNetworkNumber testkV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0.002);
     public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/desiredSpeed",0);
 
+
+    public static final LoggedNetworkNumber shootMapConstant = new LoggedNetworkNumber("/Tuning/Shooter/ShootMapC", 1430);
+
     public static final double kS = 0;
     public static final double kV = 0.001000; // feedforward
     // public static final double maxIAccum = 2 * i; //CTRE Doesn't have one? Might

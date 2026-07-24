@@ -6,8 +6,11 @@ import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -59,8 +62,45 @@ public class Intake extends SubsystemBase {
     }, this).withName("Intake.runIntakeCommand" + intakeMode.toString());
   }
 
+  /** Closed-loop hold of the pivot at {@code positionRotations} (mechanism rotations). */
+  public Command runPivotPositionCommand(double positionRotations) {
+    return new RunCommand(() -> pivotIO.setPosition(positionRotations), this)
+        .withName("Intake.pivotPosition" + positionRotations);
+  }
+
+  /** Closed-loop hold of the pivot at a live target (re-read each loop, e.g. a tunable NT value). */
+  public Command runPivotPositionCommand(DoubleSupplier positionRotations) {
+    return new RunCommand(() -> pivotIO.setPosition(positionRotations.getAsDouble()), this)
+        .withName("Intake.pivotPositionLive");
+  }
+
   public Command runPivotVoltageCommand(double voltage){
-    return Commands.run(() -> pivotIO.setPivotVoltage(voltage)).withName("pivotVoltage" + voltage);
+    return runEnd(
+            () -> pivotIO.setPivotVoltage(voltage),
+            () -> pivotIO.setPivotVoltage(0))
+        .withName("pivotVoltage" + voltage);
+  }
+
+  /**
+   * Runs the roller at {@code mode} while pulsing the pivot up/down on a fixed period. Both the
+   * roller and pivot live on this one subsystem, so they must be driven from a single command
+   * (you cannot run them as two parallel commands that each require Intake).
+   */
+  public Command runIntakePivotPulseCommand(
+      IntakeMode mode, double upVoltage, double downVoltage, double periodSeconds) {
+    Timer timer = new Timer();
+    double half = periodSeconds / 2.0;
+    return runEnd(
+            () -> {
+              runIntakeEnum(mode);
+              pivotIO.setPivotVoltage((timer.get() % periodSeconds) < half ? upVoltage : downVoltage);
+            },
+            () -> {
+              rollerIO.setRollerVoltage(0);
+              pivotIO.setPivotVoltage(0);
+            })
+        .beforeStarting(timer::restart)
+        .withName("Intake.runIntakePivotPulse" + mode);
   }
 
   public Command runIntakeTuneCommand(){
