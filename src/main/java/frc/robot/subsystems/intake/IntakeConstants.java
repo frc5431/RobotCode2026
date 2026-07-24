@@ -76,23 +76,23 @@ public  class IntakeConstants {
     public static final boolean EncoderInverted = true;
     
     // Live-tunable over NetworkTables (AdvantageScope: /Tuning/Intake/Pivot/...).
-    public static final LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Intake/Pivot/P", 40);
-    public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Intake/Pivot/I", 0.02);
-    public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Intake/Pivot/D", 5);
+    public static final LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Intake/Pivot/P", 15);
+    public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Intake/Pivot/I", 0);
+    public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Intake/Pivot/D", 0.5);
     public static final LoggedNetworkNumber s = new LoggedNetworkNumber("/Tuning/Intake/Pivot/kS", 0.375);
-    public static final LoggedNetworkNumber v = new LoggedNetworkNumber("/Tuning/Intake/Pivot/kV", 0.002);
+    public static final LoggedNetworkNumber v = new LoggedNetworkNumber("/Tuning/Intake/Pivot/kV", 6);
     // Gravity feedforward: constant voltage to hold the arm's weight (Elevator_Static). Sign matters.
     public static final LoggedNetworkNumber g = new LoggedNetworkNumber("/Tuning/Intake/Pivot/kG", 0.0);
     public static final double maxIAccum = 0.2;
 
     // Tunable target angles (mechanism rotations) the pov up/down buttons drive to.
     // Clamped by the soft limits below, so widen those if you need more travel.
-    public static final LoggedNetworkNumber upSetpoint = new LoggedNetworkNumber("/Tuning/Intake/Pivot/upSetpoint", -0.20);
+    public static final LoggedNetworkNumber upSetpoint = new LoggedNetworkNumber("/Tuning/Intake/Pivot/upSetpoint", -0.31);
     public static final LoggedNetworkNumber downSetpoint = new LoggedNetworkNumber("/Tuning/Intake/Pivot/downSetpoint", 0.0);
 
     // Motion Magic profile (mechanism units): cruise velocity rot/s, acceleration rot/s^2.
-    public static final LoggedNetworkNumber mmCruiseVelocity = new LoggedNetworkNumber("/Tuning/Intake/Pivot/mmCruiseVel", 1.0);
-    public static final LoggedNetworkNumber mmAcceleration = new LoggedNetworkNumber("/Tuning/Intake/Pivot/mmAccel", 2.0);
+    public static final LoggedNetworkNumber mmCruiseVelocity = new LoggedNetworkNumber("/Tuning/Intake/Pivot/mmCruiseVel", 1.5);
+    public static final LoggedNetworkNumber mmAcceleration = new LoggedNetworkNumber("/Tuning/Intake/Pivot/mmAccel", 3);
 
     public static final double gearRatio = 45 / 1;
 
@@ -105,7 +105,7 @@ public  class IntakeConstants {
 
     public static final boolean useFMaxRotation = true;
     public static final boolean useRMaxRotation = true;
-    public static final Angle maxReverseRotation = Units.Rotation.of(-0.30); // up/retract stop; less negative = stops sooner (further from motors)
+    public static final Angle maxReverseRotation = Units.Rotation.of(-0.32); // up/retract stop; less negative = stops sooner (further from motors)
     public static final Angle maxFowardRotation = Units.Rotation.of(0);
 
     public static final Current stallLimit = Units.Amps.of(80);
