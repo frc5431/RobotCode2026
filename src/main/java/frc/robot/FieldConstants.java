@@ -37,6 +37,10 @@ public class FieldConstants {
   public static final double fieldLength = AprilTagLayoutType.OFFICIAL.getLayout().getFieldLength();
   public static final double fieldWidth = AprilTagLayoutType.OFFICIAL.getLayout().getFieldWidth();
 
+  // Pass targets (blue-frame). Alliance-flip at use site.
+  public static final Translation2d passSpotLeft = new Translation2d(2.3, 6.0);
+  public static final Translation2d passSpotRight = new Translation2d(2.5, 2.3);
+
   // Fuel dimensions
   public static final double fuelDiameter = Units.inchesToMeters(5.91);
 

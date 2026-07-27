@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import com.ctre.phoenix6.CANBus;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -18,6 +21,44 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+  
+
+//TUNING
+public static final LoggedNetworkBoolean TuningMode =
+        new LoggedNetworkBoolean("/Tuning/TuningMode", false);
+
+//SHOOTER
+public static final LoggedNetworkBoolean ShooterEnabled =
+        new LoggedNetworkBoolean("/Tuning/Shooter/ShooterEnabled", false);
+
+public static final LoggedNetworkNumber TuningMode_Shooter_RPM =
+        new LoggedNetworkNumber("/Tuning/Shooter/Shooter_RPM", 3000);
+
+public static final LoggedNetworkNumber Feeder_RPM =
+        new LoggedNetworkNumber("/Tuning/Shooter/Feeder_RPM", 2850);
+
+//CARPET
+public static final LoggedNetworkBoolean CarpetEnabled =
+        new LoggedNetworkBoolean("/Tuning/Carpet/CarpetEnabled", false);
+
+public static final LoggedNetworkNumber Carpet_RPM =
+        new LoggedNetworkNumber("/Tuning/Carpet/Carpet_RPM", 6000);
+
+//INTAKE
+public static final LoggedNetworkBoolean IntakeEnabled =
+        new LoggedNetworkBoolean("/Tuning/Intake/IntakeEnabled", false);
+
+public static final LoggedNetworkNumber Intake_RPM =
+        new LoggedNetworkNumber("/Tuning/Intake/Intake_RPM", 6000);
+
+//PIVOT PULSE
+
+public static final LoggedNetworkBoolean PIVOT_PULSE =
+        new LoggedNetworkBoolean("/Tuning/Intake/PivotPulse", false);
+
+
+
+
 
   // CAN bus that the devices are located on;
   public static final CANBus CANIVORE_CANBUS = new CANBus("Canivore", "./logs/example.hoot");

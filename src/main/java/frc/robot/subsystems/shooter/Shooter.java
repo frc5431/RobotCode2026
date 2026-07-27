@@ -23,9 +23,7 @@ import frc.robot.subsystems.shooter.flywheel.FlywheelIOInputsAutoLogged;
 import lombok.Getter;
 
 public class Shooter extends SubsystemBase {
-  /*
-   * 
-   */
+  
   private final FeederIO feederIO;
   private final FlywheelIO flywheelIO;
 
@@ -40,6 +38,12 @@ public class Shooter extends SubsystemBase {
     this.feederIO = feederIO;
     this.flywheelIO = flywheelIO;
     this.shooterMode = ShooterModes.IDLE;
+
+    // Force-load so PID tunables publish to NT in sim/replay (sim IOs don't touch these).
+    ShooterFlywheelConstants.testp.get();
+    ShooterFeederConstants.p.get();
+
+    
     }
   
   @Override
@@ -54,9 +58,7 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/Zeroed", zeroed);
     Logger.recordOutput("Shooter/ShootMapCalc", 0.0);
 
-    // System.out.println("***********************");
-    // System.out.println(FlywheelIOTalonFX.plotOutput);
-    // System.out.println("***********************");
+    
   }
 
   public void runShooterEnum(ShooterModes mode) {
@@ -65,13 +67,13 @@ public class Shooter extends SubsystemBase {
     feederIO.setVoltage(mode.feederVoltage.magnitude());
   }
 
-  public Command runShooterCustom(double flywheelRPM, double feederRPM) {
-    
+  public Command runShooterCustom(DoubleSupplier flywheelRPM, DoubleSupplier feederRPM) {
+
     return new RunCommand(() -> {
-      flywheelIO.setRPM(Units.RPM.of(flywheelRPM));
-      feederIO.setRPM(Units.RPM.of(feederRPM));
+      flywheelIO.setRPM(Units.RPM.of(flywheelRPM.getAsDouble()));
+      feederIO.setRPM(Units.RPM.of(feederRPM.getAsDouble()));
     }, this);
-    
+
   }
 
   public Command runShootAuto(DoubleSupplier dist) {
@@ -79,10 +81,10 @@ public class Shooter extends SubsystemBase {
   }
 
 
-  public Command runShootMap(DoubleSupplier dist, double feederRPM) {
+  public Command runShootMap(DoubleSupplier dist, DoubleSupplier feederRPM) {
     return new RunCommand(() -> {
       flywheelIO.setRPM(Units.RPM.of(ShooterMath.calculateSpeed(dist.getAsDouble())));
-      feederIO.setRPM(Units.RPM.of(feederRPM));
+      feederIO.setRPM(Units.RPM.of(feederRPM.getAsDouble()));
     }, this);
   }
 
@@ -91,19 +93,7 @@ public class Shooter extends SubsystemBase {
     return ShooterMath.calculateSpeed(dist);
   }
 
-  // public Command runShootAuto(DoubleSupplier dist) {
-  //   return new RunCommand(() -> runShootAutotest(dist.getAsDouble()), this);
-  // }
 
-   public void runShootAutotest(double dist) {
-    System.out.println("((((((((((()))))))))))");
-    System.out.println(dist);
-    System.out.println(ShooterMath.calculateSpeed(dist));
-    System.out.println(ShooterMath.calculateSpeed(10.1));
-    System.out.println(ShooterMath.calculateSpeed(10.8));
-    System.out.println("((((((((((()))))))))))");
-    flywheelIO.setRPM(Units.RPM.of(ShooterMath.calculateSpeed(dist)));
-  }
 
   public BooleanSupplier atSetpoint() {
     return () -> MathUtil.isNear(flywheelInputs.setpointRPM, flywheelInputs.leftTopLeaderRPM, flywheelInputs.setpointRPM * 0.10);
@@ -138,22 +128,11 @@ public class Shooter extends SubsystemBase {
 
   } 
 
-  // public InstantCommand setZero() {
-  //   return new InstantCommand(() -> feederIO.setZero(), this);
-  // }
 
-  public Command tune() {
-    return new RunCommand(() -> {
-      flywheelIO.setRPM(AngularVelocity.ofRelativeUnits(ShooterFlywheelConstants.tuneDesiredSpeed.get(), RPM));
-      feederIO.setRPM(AngularVelocity.ofRelativeUnits(ShooterFeederConstants.tuneDesiredSpeed.get(), RPM));
-    }, this);
-  }
 
-  public Command tuneFeeder(){
-    return new RunCommand(() -> {
-      feederIO.setRPM(AngularVelocity.ofRelativeUnits(ShooterFeederConstants.tuneDesiredSpeed.get(), RPM));
-    }, this);
-  }
+
+
+
   
 
     public Command feederRPM(AngularVelocity RPM){
@@ -162,20 +141,7 @@ public class Shooter extends SubsystemBase {
     }, this);
 
   }
-  // public Command homing() {
-  //   return new SequentialCommandGroup(
-  //     new RunCommand(() -> {
-  //       zeroed = false;
-  //       feederIO.setVoltage(-1);
-  //     }, this).until(
-  //       () -> feederInputs.leaderCurrentAmps > ShooterFeederConstants.homingCurrent.baseUnitMagnitude()
-  //     ).withTimeout(2),
-  //     Commands.runOnce(() -> {
-  //       zeroed = true;
-  //       feederIO.setZero();
-  //     })
-  //     );
-  // }
+
 
   public double getFeederVoltage() {
     return feederInputs.leaderApliedVoltage;

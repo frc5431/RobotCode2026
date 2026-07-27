@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -47,15 +48,14 @@ public class ShooterConstants {
     public static final double i = 0;
     public static final double d = 0;
 
-    public static LoggedNetworkNumber testp = new LoggedNetworkNumber("/Tuning/Shooter/P", 0.002);
-    public static final LoggedNetworkNumber testi = new LoggedNetworkNumber("/Tuning/Shooter/I", 0);
-    public static final LoggedNetworkNumber testd = new LoggedNetworkNumber("/Tuning/Shooter/D", 0.0);
-    public static final LoggedNetworkNumber testkS = new LoggedNetworkNumber("/Tuning/Shooter/kS", 0.33);
-    public static final LoggedNetworkNumber testkV = new LoggedNetworkNumber("/Tuning/Shooter/kV", 0.002);
-    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/desiredSpeed",0);
+    public static LoggedNetworkNumber testp = new LoggedNetworkNumber("/Tuning/Shooter/PID/P", 0.002);
+    public static final LoggedNetworkNumber testi = new LoggedNetworkNumber("/Tuning/Shooter/PID/I", 0);
+    public static final LoggedNetworkNumber testd = new LoggedNetworkNumber("/Tuning/Shooter/PID/D", 0.0);
+    public static final LoggedNetworkNumber testkS = new LoggedNetworkNumber("/Tuning/Shooter/PID/kS", 0.33);
+    public static final LoggedNetworkNumber testkV = new LoggedNetworkNumber("/Tuning/Shooter/PID/kV", 0.002);
 
 
-    public static final LoggedNetworkNumber shootMapConstant = new LoggedNetworkNumber("/Tuning/Shooter/ShootMapC", 1430);
+    public static final LoggedNetworkNumber shootMapConstant = new LoggedNetworkNumber("/Tuning/Shooter/ShootMapCalc", 1430);
 
     public static final double kS = 0;
     public static final double kV = 0.001000; // feedforward
@@ -75,12 +75,11 @@ public class ShooterConstants {
     public static final int leaderId = 55;
     public static final int followerId = 56;
 
-    public static LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/P", 0.0001);
-    public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/I", 0);
-    public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/D", 0.0);
-    public static final LoggedNetworkNumber kS = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/kS", 0.1875);
-    public static final LoggedNetworkNumber kV = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/kV", 0.0017);
-    public static final LoggedNetworkNumber tuneDesiredSpeed = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/desiredSpeed",0);
+    public static LoggedNetworkNumber p = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/PID/P", 0.0001);
+    public static final LoggedNetworkNumber i = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/PID/I", 0);
+    public static final LoggedNetworkNumber d = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/PID/D", 0.0);
+    public static final LoggedNetworkNumber kS = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/PID/kS", 0.1875);
+    public static final LoggedNetworkNumber kV = new LoggedNetworkNumber("/Tuning/Shooter/Feeder/PID/kV", 0.0017);
 
 
     public static final boolean invert = false;
@@ -94,8 +93,5 @@ public class ShooterConstants {
 
     public static final FeedbackSensorSourceValue feedbackSensorCTRE = FeedbackSensorSourceValue.RotorSensor;
     public static final FeedbackSensor feedbackSensorREV = FeedbackSensor.kPrimaryEncoder;
-
-    public static final LoggedNetworkNumber tuneDesiredFeederVoltage = new LoggedNetworkNumber("/Tuning/Shooter/desiredFeederVoltage",
-        0);
   }
 }

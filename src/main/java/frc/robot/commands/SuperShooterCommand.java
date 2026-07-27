@@ -1,38 +1,49 @@
 package frc.robot.commands;
 
-import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.hopper.Carpet;
+import frc.robot.subsystems.hopper.CarpetConstants.CarpetModes;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterConstants.ShooterModes;
+import frc.robot.Constants;
 
-public class SuperShooterCommand extends SequentialCommandGroup {
-    public SuperShooterCommand(Shooter shooter, Intake intake, Carpet carpet, ShooterModes shooterModes){
+public class SuperShooterCommand extends ParallelCommandGroup {
+
+
+
+    public SuperShooterCommand(
+            Shooter shooter,
+            Carpet carpet,
+            Intake intake,
+            int shootFar) {
+
         addCommands(
-            shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 0).until(
-                () -> shooter.getFlywheelSpeed() > shooterModes.flywheelSpeed.magnitude() * 0.99
-            ).withTimeout(0.5),
-            new ParallelDeadlineGroup(
-                new WaitCommand(1.25),
-                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2850),
-                carpet.runCarpetRPM(Units.RPM.of(6500))
-            ),
-            new ParallelDeadlineGroup(
-                new WaitCommand(0.5), 
-                // intake.runPivotVoltageCommand(-5),
-                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2850),
-                carpet.runCarpetRPM(Units.RPM.of(6500))
-            ),
-            new ParallelDeadlineGroup(
-                new WaitCommand(0.5), 
-                // intake.runPivotVoltageCommand(3),
-                shooter.runShooterCustom(shooterModes.flywheelSpeed.magnitude(), 2850),
-                carpet.runCarpetRPM(Units.RPM.of(6500))
-            )
-        );
-        addRequirements(shooter, carpet);
+                Commands.sequence(
+                       
+                        Commands.waitUntil(shooter.atSetpoint()),
+                        Commands.parallel(
+                                carpet.runCarpetCommand(CarpetModes.INTAKE),
+                                shooter.runShooterCustom(() -> shootFar, Constants.Feeder_RPM::getAsDouble),
+                                Constants.PIVOT_PULSE.getAsBoolean() ? pivotPulse(intake) : Commands.none()
+)));
+
+        addRequirements(shooter, carpet, intake);
+    }
+
+  
+    private static Command pivotPulse(Intake intake) {
+        return Commands.sequence(
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1.5),
+                        intake.runPivotPositionCommand(() -> IntakePivotConstants.upSetpoint.get())),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(0.5),
+                        intake.runPivotPositionCommand(() -> IntakePivotConstants.downSetpoint.get())))
+                .repeatedly();
     }
 }

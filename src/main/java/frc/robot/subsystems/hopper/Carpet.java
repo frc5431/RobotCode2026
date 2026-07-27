@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.RPM;
 
 import org.littletonrobotics.junction.Logger;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -21,6 +23,9 @@ public class Carpet extends SubsystemBase {
   public  Carpet(CarpetIO carpetIO) {
     this.carpetIO = carpetIO;
     this.mode = CarpetModes.IDLE;
+
+    // Force-load so PID tunables publish to NT in sim/replay (sim IOs don't touch these).
+    CarpetRollerConstants.p.get();
   }
 
   @Override
@@ -42,15 +47,11 @@ public class Carpet extends SubsystemBase {
     }, this).withName("Carpet.runCarpetEnum" + carpetMode.toString());
   }
 
-  public Command tuneCarpet(){
-  return new RunCommand(() -> {
-      carpetIO.setRPM(AngularVelocity.ofRelativeUnits(CarpetRollerConstants.tuneDesiredSpeed.get(), RPM));
-    }, this);
-  }
 
-  public Command runCarpetRPM(AngularVelocity RPM) {
+
+  public Command runCarpetRPM(DoubleSupplier rpm) {
     return new RunCommand(() -> {
-      carpetIO.setRPM(RPM);
+      carpetIO.setRPM(RPM.of(rpm.getAsDouble()));
     }, this);
   }
 

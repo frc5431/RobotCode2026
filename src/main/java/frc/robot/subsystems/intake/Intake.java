@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.subsystems.hopper.CarpetConstants.CarpetRollerConstants;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeMode;
+import java.util.function.DoubleSupplier;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerConstants;
+import frc.robot.subsystems.intake.IntakeConstants.IntakePivotConstants;
 import frc.robot.subsystems.intake.pivot.PivotIO;
 import frc.robot.subsystems.intake.pivot.PivotIOInputsAutoLogged;
 import frc.robot.subsystems.intake.roller.RollerIO;
@@ -30,13 +32,17 @@ public class Intake extends SubsystemBase {
   private final PivotIOInputsAutoLogged pivotInputs = new PivotIOInputsAutoLogged();
   
   private IntakeMode intakeMode;
-  // private IntakePivotModes pivotMode;
+ 
   
 
   public Intake(RollerIO rollerIO, PivotIO pivotIO) {
     this.rollerIO  = rollerIO;
     this.pivotIO = pivotIO;
     this.intakeMode = IntakeMode.STOW;
+
+    // Force-load so PID tunables publish to NT in sim/replay (sim IOs don't touch these).
+    IntakeRollerConstants.p.get();
+    IntakePivotConstants.p.get();
   }
   
   @Override
@@ -53,7 +59,7 @@ public class Intake extends SubsystemBase {
   public void runIntakeEnum(IntakeMode intakeMode) {
     this.intakeMode = intakeMode;
     rollerIO.setRollerVoltage(intakeMode.voltage.baseUnitMagnitude());
-    // pivotIO.setPosition(intakeMode.position.magnitude());
+    
   }
 
   public Command runIntakeCommand(IntakeMode intakeMode) {
@@ -62,13 +68,21 @@ public class Intake extends SubsystemBase {
     }, this).withName("Intake.runIntakeCommand" + intakeMode.toString());
   }
 
-  /** Closed-loop hold of the pivot at {@code positionRotations} (mechanism rotations). */
+
   public Command runPivotPositionCommand(double positionRotations) {
     return new RunCommand(() -> pivotIO.setPosition(positionRotations), this)
         .withName("Intake.pivotPosition" + positionRotations);
   }
 
-  /** Closed-loop hold of the pivot at a live target (re-read each loop, e.g. a tunable NT value). */
+public Command runIntakeRPM(DoubleSupplier rpm) {
+  return new RunCommand(() -> rollerIO.setRPM(Units.RPM.of(rpm.getAsDouble())), this)
+      .withName("Intake.runRollerRPM");
+}
+
+
+
+
+
   public Command runPivotPositionCommand(DoubleSupplier positionRotations) {
     return new RunCommand(() -> pivotIO.setPosition(positionRotations.getAsDouble()), this)
         .withName("Intake.pivotPositionLive");
@@ -103,10 +117,7 @@ public class Intake extends SubsystemBase {
         .withName("Intake.runIntakePivotPulse" + mode);
   }
 
-  public Command runIntakeTuneCommand(){
-    return Commands.run(() -> AngularVelocity.ofRelativeUnits(CarpetRollerConstants.tuneDesiredSpeed.get(), RPM));
-  
-  }
+
 
   public Command stop() {
     // return new RunCommand(() -> {

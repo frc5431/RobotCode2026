@@ -38,7 +38,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
       super("FlywheelTalonFX", Constants.CANIVORE_CANBUS);
       configNeutralBrakeMode(ShooterFlywheelConstants.breakType);
       configFeedbackSensorSource(ShooterFlywheelConstants.feedbackSensorCTRE);
-      // configPIDGains(0, ShooterFlywheelConstants.p, ShooterFlywheelConstants.i, ShooterFlywheelConstants.d);
+      
       configGearRatio(ShooterFlywheelConstants.gearRatio);
       configMotorInverted(ShooterFlywheelConstants.inverted);
       configFeedForwardGains(0, 0.35, 0.12, 0, 0);
@@ -180,14 +180,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     }
 
     
-    // System.out.println("******************");
-    // System.out.println(ShooterFlywheelConstants.testp.getAsDouble());
-    // System.out.println("******************");
-    // if (rpm == 0 || rpm < 0) {
-    //   leader.setVoltage(0);
-    // } else {
-    //   leader.setVoltage(5);
-    // }
+   
   }
 
   @Override
