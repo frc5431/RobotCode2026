@@ -243,9 +243,17 @@ public class RobotContainer {
     NamedCommands.registerCommand("CarpetRun", carpet.runCarpetRPM(() -> 6500));
     NamedCommands.registerCommand("StopIntake", intake.runIntakeCommand(IntakeMode.OUT_IDLE));
     NamedCommands.registerCommand(
-        "deployIntake", intake.runPivotVoltageCommand(4).withTimeout(1));
+        "deployIntake",
+        intake.runPivotPositionCommand(() -> IntakePivotConstants.downSetpoint.get())
+            .withTimeout(1));
+
+    NamedCommands.registerCommand("RunIntake", intake.runIntakeCommand(IntakeMode.INTAKE));
     NamedCommands.registerCommand(
         "RevShooterClose", shooter.runShooterCommand(ShooterModes.SHOOT_CLOSE).withTimeout(0.5));
+
+    NamedCommands.registerCommand(
+        "AutoShoot",
+        new AutoShootCommand(drive, shooter, carpet, intake, () -> 0, () -> 0));
   }
 
   /**
@@ -259,9 +267,10 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY() * 0.8,
-            () -> -controller.getLeftX() * 0.8,
-            () -> -controller.getRightX()));
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX(),
+            () -> Constants.DriveSpeedMultipler.get()));
     intake.setDefaultCommand(intake.stop());
     carpet.setDefaultCommand(carpet.runCarpetCommand(CarpetModes.IDLE));
     shooter.setDefaultCommand(shooter.stop());
@@ -275,7 +284,7 @@ public class RobotContainer {
                 Map.of(
                     ShootMode.SHOOT,
                         new AutoShootCommand(
-                            drive, shooter, carpet,
+                            drive, shooter, carpet, intake,
                             () -> -controller.getLeftY(),
                             () -> -controller.getLeftX()),
                     ShootMode.PASS,
@@ -297,6 +306,7 @@ public class RobotContainer {
     controller.rightTrigger().whileTrue(intake.runIntakeCommand(IntakeMode.INTAKE));
     controller.rightBumper().whileTrue(carpet.runCarpetRPM(() -> 6500));
     controller.leftBumper().whileTrue(intake.runIntakeCommand(IntakeMode.OUTTAKE));
+    controller.leftTrigger().whileTrue(new InhaleCommand(intake, carpet, true));
 
     
     controller.povUp().whileTrue(intake.runPivotPositionCommand(

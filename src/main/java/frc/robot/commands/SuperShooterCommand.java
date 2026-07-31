@@ -23,12 +23,13 @@ public class SuperShooterCommand extends ParallelCommandGroup {
             int shootFar) {
 
         addCommands(
+               
+                shooter.runShooterCustom(() -> shootFar, Constants.Feeder_RPM::getAsDouble),
+                
                 Commands.sequence(
-                       
                         Commands.waitUntil(shooter.atSetpoint()),
                         Commands.parallel(
                                 carpet.runCarpetCommand(CarpetModes.INTAKE),
-                                shooter.runShooterCustom(() -> shootFar, Constants.Feeder_RPM::getAsDouble),
                                 Constants.PIVOT_PULSE.getAsBoolean() ? pivotPulse(intake) : Commands.none()
 )));
 

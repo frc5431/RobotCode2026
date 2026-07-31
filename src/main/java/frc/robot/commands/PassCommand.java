@@ -4,12 +4,13 @@ import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-import org.photonvision.jni.ConstrainedSolvepnpJni;
+
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -81,13 +82,15 @@ public final class PassCommand extends ParallelCommandGroup {
 
 
     private boolean isAligned() {
+        
         double angleErrorDegrees =
                 getPassDifference()
                         .getAngle()
+                        .rotateBy(Rotation2d.fromDegrees(180))
                         .minus(drive.getPose().getRotation())
                         .getDegrees();
 
-        return Math.abs(angleErrorDegrees) <= 3.0;
+        return Math.abs(angleErrorDegrees) <= Constants.Align_Tolerance_Deg.getAsDouble();
     }
 
     private boolean isReadyToShoot() {

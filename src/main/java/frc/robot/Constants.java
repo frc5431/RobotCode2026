@@ -56,8 +56,12 @@ public static final LoggedNetworkNumber Intake_RPM =
 public static final LoggedNetworkBoolean PIVOT_PULSE =
         new LoggedNetworkBoolean("/Tuning/Intake/PivotPulse", false);
 
-
-
+//AIMING
+public static final LoggedNetworkNumber Align_Tolerance_Deg =
+        new LoggedNetworkNumber("/Tuning/Aiming/AlignToleranceDeg", 3.0);
+// DRIVE SPEED
+public static final LoggedNetworkNumber DriveSpeedMultipler =
+        new LoggedNetworkNumber("/Tuning/Drive/DriveSpeedMultiplier", 0.8);
 
 
   // CAN bus that the devices are located on;
